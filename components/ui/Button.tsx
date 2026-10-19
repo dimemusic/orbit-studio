@@ -28,7 +28,7 @@ export function Button(props: AsLink | AsButton) {
   const { variant = "primary", size = "lg", className = "", children, ...rest } = props;
   const cls = `${base} ${variants[variant]} ${sizes[size]} ${className}`;
   if (rest.href !== undefined) {
-    // internal routes ("/features", "/#pricing") use client-side navigation; hashes and mailto stay plain links
+    // internal routes ("/privacy", "/#contact") use client-side navigation; hashes and mailto stay plain links
     if (rest.href.startsWith("/")) {
       const { href, ...a } = rest as ComponentPropsWithoutRef<"a"> & { href: string };
       return (

@@ -1,18 +1,13 @@
 "use client";
 
-import { Buildings, CalendarCheck, UsersThree } from "@phosphor-icons/react/dist/ssr";
+import { Browsers, CalendarCheck, ChatCircleDots, StackSimple } from "@phosphor-icons/react/dist/ssr";
 import { Fragment, useEffect, useRef, type ReactNode } from "react";
+import { ABOUT, TEAM, WORK } from "@/lib/content";
 import { G, type Tone } from "../ui/Bits";
 import { HomeSection } from "../ui/HomeSection";
 
 // manifesto: plain text splits into words, highlighted phrases stay one unit (colour applied once lit)
-const PARTS: { text: string; hl?: string }[] = [
-  { text: "Ми дизайнери та інженери, які роками губили фінали в чатах, на флешках і в пошті. Тому зробили хмару, що пам'ятає не лише файли, а й" },
-  { text: "зв'язки між ними", hl: "[[data-in]>&]:text-cyan" },
-  { text: ": з якого макета народився банер і яка версія фінальна. Усе шифрується ще на твоєму пристрої, тож" },
-  { text: "навіть ми не бачимо", hl: "[[data-in]>&]:text-[#4fe3c1]" },
-  { text: "твоїх файлів." },
-];
+const PARTS: { text: string; hl?: string }[] = ABOUT.manifesto;
 
 // tail = punctuation glued to the unit, so a line never starts with ":"
 type Unit = { text: string; hl?: string; tail?: string };
@@ -25,40 +20,45 @@ const UNITS: Unit[] = PARTS.reduce<Unit[]>((acc, p) => {
   return [...acc, ...words.map((text) => ({ text }))];
 }, []);
 
-const AVATARS = [
-  { t: "ОК", c: "#a78bfa" },
-  { t: "ТМ", c: "#5ee0ff" },
-  { t: "ІР", c: "#4fe3c1" },
-  { t: "АЛ", c: "#ff7ab6" },
-  { t: "ДС", c: "#3d8bff" },
-];
+const AVATAR_BG = ["#a78bfa", "#3d8bff"];
 
 const TIMELINE = [
-  { at: "0%", t: "2021" },
-  { at: "50%", t: "2023" },
-  { at: "100%", t: "зараз" },
+  { at: "0%", t: "Бриф" },
+  { at: "50%", t: "Дизайн" },
+  { at: "100%", t: "Запуск" },
 ];
 
-const CLIENTS = ["Пікселярня", "VARTA", "Кадр 24"];
+const CHIPS = ["Дизайн", "Код", "Адмінка"];
 
+const [F_SITES, F_WEEKS, F_ONE, F_FREE] = ABOUT.facts;
+
+/** 03: who we are. Word-by-word manifesto, then the four trust numbers as glass fact cards. */
 export function About() {
   return (
     <HomeSection
       id="about"
-      label="Хто ми"
+      label={ABOUT.label}
       color="violet"
       title={
-        <span
-          className="mx-auto block max-w-[16ch] text-balance font-medium leading-[1.04] tracking-[-0.04em]"
-        >
-          Ми пам&apos;ятаємо, <G tone="mind">щоб ти не мусив.</G>
+        <span className="mx-auto block max-w-[18ch] text-balance font-medium leading-[1.04] tracking-[-0.04em]">
+          {ABOUT.title[0]} <G tone="mind">{ABOUT.title[1]}</G>
         </span>
       }
     >
       <Manifesto />
 
-      <ul className="mt-12 grid w-full max-w-[960px] gap-4 md:grid-cols-3">
-        <Fact value="2021" label="почали у Львові з однієї втраченої правки" i={0} tone="mind" color="#a78bfa" Icon={CalendarCheck}>
+      <ul className="mt-12 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Fact value={F_SITES.value} label={F_SITES.label} i={0} tone="warm" color="#f9a8d4" Icon={Browsers}>
+          <div className="flex flex-wrap gap-1.5">
+            {WORK.cases.slice(0, 2).map((c) => (
+              <span key={c.id} translate="no" className="rounded-full border border-white/[0.08] px-2.5 py-[5px] text-[12px] font-medium text-body">
+                {c.name}
+              </span>
+            ))}
+          </div>
+        </Fact>
+
+        <Fact value={F_WEEKS.value} label={F_WEEKS.label} i={1} tone="mind" color="#a78bfa" Icon={CalendarCheck}>
           <div className="min-w-0 flex-1 px-1.5">
             <div className="relative h-[2px] rounded-[2px] bg-white/[0.08]">
               <span aria-hidden="true" className="absolute inset-0 rounded-[2px] bg-gradient-to-r from-violet-soft to-blue" />
@@ -85,30 +85,30 @@ export function About() {
           </div>
         </Fact>
 
-        <Fact value="40 людей" label="дизайнери та інженери у Львові й Варшаві" i={1} tone="calm" color="#22d3ee" Icon={UsersThree}>
-          <div className="flex" aria-hidden="true">
-            {AVATARS.map((a) => (
-              <span
-                key={a.t}
-                style={{ background: a.c }}
-                className="-ml-2 grid size-8 place-items-center rounded-full border-2 border-[#0c0f18] text-[12px] font-semibold text-[#0b0e16] first:ml-0"
-              >
-                {a.t}
-              </span>
-            ))}
-            <span className="-ml-2 grid size-8 place-items-center rounded-full border-2 border-[#0c0f18] bg-white/[0.08] text-[12px] font-semibold text-fg">
-              +35
-            </span>
-          </div>
-        </Fact>
-
-        <Fact value="12 400" label="студій уже тримають роботу в Cloud Sphere" i={2} tone="warm" color="#f9a8d4" Icon={Buildings}>
+        <Fact value={F_ONE.value} label={F_ONE.label} i={2} tone="calm" color="#22d3ee" Icon={StackSimple}>
           <div className="flex flex-wrap gap-1.5">
-            {CLIENTS.map((c) => (
+            {CHIPS.map((c) => (
               <span key={c} className="rounded-full border border-white/[0.08] px-2.5 py-[5px] text-[12px] font-medium text-body">
                 {c}
               </span>
             ))}
+          </div>
+        </Fact>
+
+        <Fact value={F_FREE.value} label={F_FREE.label} i={3} tone="fresh" color="#a3e635" Icon={ChatCircleDots}>
+          <div className="flex" aria-hidden="true">
+            {TEAM.people.map((a, k) => (
+              <span
+                key={a.name}
+                style={{ background: AVATAR_BG[k] }}
+                className="-ml-2 grid size-8 place-items-center rounded-full border-2 border-[#0c0f18] text-[11px] font-semibold text-[#0b0e16] first:ml-0"
+              >
+                {a.initials}
+              </span>
+            ))}
+            <span className="-ml-2 grid size-8 place-items-center rounded-full border-2 border-[#0c0f18] bg-white/[0.08] text-[11px] font-semibold text-fg">
+              Ви
+            </span>
           </div>
         </Fact>
       </ul>
@@ -132,7 +132,7 @@ function Fact({
   tone: Tone;
   /** first colour of the tone: tints the icon tile */
   color: string;
-  Icon: typeof CalendarCheck;
+  Icon: typeof Browsers;
   children: ReactNode;
 }) {
   return (

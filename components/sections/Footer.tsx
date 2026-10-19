@@ -1,22 +1,12 @@
 import Link from "next/link";
-
-const LINKS = [
-  ["Як це працює", "/#how"],
-  ["Можливості", "/features"],
-  ["Аналітика", "/analytics"],
-  ["Безпека", "/security"],
-  ["Тарифи", "/#pricing"],
-  ["FAQ", "/#faq"],
-];
+import { BRAND, FOOTER, NAV } from "@/lib/content";
 
 export function Footer() {
   return (
-    <footer
-      className="card relative w-full overflow-hidden rounded-none border-x-0 border-b-0 px-gutter pb-10 pt-16 text-center shadow-none"
-    >
+    <footer className="card relative w-full overflow-hidden rounded-none border-x-0 border-b-0 px-gutter pb-10 pt-16 text-center shadow-none">
       <nav aria-label="Посилання у футері">
         <ul className="flex flex-wrap justify-center gap-x-8 gap-y-1">
-          {LINKS.map(([label, href]) => (
+          {NAV.map(({ label, href }) => (
             <li key={label}>
               <Link href={href} className="inline-block py-2 text-[14px] text-body transition-colors hover:text-fg">
                 {label}
@@ -24,18 +14,26 @@ export function Footer() {
             </li>
           ))}
           <li>
-            <a href="mailto:hello@cloudsphere.example" className="inline-block py-2 text-[14px] text-body transition-colors hover:text-fg">
-              Написати нам
+            <a href={BRAND.telegramUrl} className="inline-block py-2 text-[14px] text-body transition-colors hover:text-fg">
+              Telegram
+            </a>
+          </li>
+          <li>
+            <a href={`mailto:${BRAND.email}`} className="inline-block py-2 text-[14px] text-body transition-colors hover:text-fg">
+              Email
             </a>
           </li>
         </ul>
       </nav>
 
       <p className="mt-10 text-[14px] text-body">
-        © 2026 <span translate="no">Cloud Sphere</span> · Зроблено у Львові
+        {FOOTER.copy} <span translate="no">{BRAND.name}</span> · {BRAND.city}
       </p>
-      <p className="mt-1 text-[13px] text-grey">Дизайн-концепт · Максим</p>
-
+      <p className="mt-1 text-[13px]">
+        <Link href={BRAND.privacyHref} className="text-grey underline decoration-white/20 underline-offset-4 transition-colors hover:text-fg">
+          {FOOTER.privacy}
+        </Link>
+      </p>
     </footer>
   );
 }

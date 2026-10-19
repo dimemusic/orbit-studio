@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { usePathname } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { buildIvy, type IvyData } from "@/lib/ivy";
 import {
@@ -13,6 +13,8 @@ import {
   ivyPointsFragment,
   ivyPointsVertex,
 } from "@/lib/ivyShaders";
+import { WORK } from "@/lib/content";
+import { CASE_HOVER } from "./home";
 
 type Setup = { data: IvyData; camZ: number; visH: number; genWidth: number; genHeight: number; route: string };
 
@@ -31,9 +33,28 @@ function generate(route: string): Setup {
 /** Elements that must not trigger the background impulse wave. */
 const INTERACTIVE = "button, a, input, label, summary, .card";
 
-type IvyProps = { setup: Setup; reduce: boolean };
+/**
+ * Case nodes: the Work section places [data-case-node] anchors in its side margins; each one is snapped to the
+ * nearest real ivy particle, projected to the screen every frame, and hovering near it reveals that case.
+ */
+type CaseNode = { i: number; p: THREE.Vector3 };
+type NodeUi = {
+  enabled: boolean;
+  world: CaseNode[];
+  markers: (HTMLDivElement | null)[];
+  /** case shown right now (node under the cursor, or the hovered case card) */
+  hot: number | null;
+  /** set by the Work cards (CASE_HOVER) */
+  forced: number | null;
+};
+/** cursor distance (px) that counts as hovering a node */
+const NODE_HIT = 40;
+/** max snap distance from an anchor to an ivy particle (world units) */
+const NODE_SNAP = 1.1;
 
-function Ivy({ setup, reduce }: IvyProps) {
+type IvyProps = { setup: Setup; reduce: boolean; nodes: RefObject<NodeUi>; onHot: (i: number | null) => void };
+
+function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
   const { data, camZ, visH } = setup;
   const camera = useThree((s) => s.camera);
   const dpr = useThree((s) => s.viewport.dpr);
@@ -139,6 +160,47 @@ function Ivy({ setup, reduce }: IvyProps) {
     [pointsMat, linesMat, fieldMat],
   );
 
+  // case nodes: anchors → world positions, snapped to the nearest ivy particle of the trunks / first branches
+  useEffect(() => {
+    const ui = nodes.current;
+    ui.world = [];
+    if (!ui.enabled) return;
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const visW = visH * (w / h);
+    const P = data.particles.position;
+    const D = data.particles.depth;
+    // world x of the content edge (cards span the central 1120px) minus a 28px gap: nodes stay in the margins
+    const edge = Math.abs(((Math.max(0, (w - 1120) / 2) - 28) / w - 0.5) * visW);
+    // ...and at least 24px inside the screen edge (the ivy itself reaches past it)
+    const outer = (0.5 - 24 / w) * visW;
+    document.querySelectorAll<HTMLElement>("[data-case-node]").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      // only where the side margin is wide enough to sit beside the cards
+      if (r.left < 40 || r.right > w - 40) return;
+      const wx = ((r.left + r.width / 2) / w - 0.5) * visW;
+      const wy = visH / 2 - ((r.top + window.scrollY) / h) * visH;
+      let best = -1;
+      let bd = NODE_SNAP * NODE_SNAP;
+      for (let k = 0; k < data.particles.count; k++) {
+        // same side as the anchor, outside the cards
+        // x as seen on screen: particles closer to the camera (z > 0) project further out
+        const px = (P[k * 3] * camZ) / (camZ - P[k * 3 + 2]);
+        const ax = Math.abs(px);
+        if (D[k] > 2 || ax < edge || ax > outer || px * wx < 0) continue;
+        const dx = px - wx;
+        const dy = P[k * 3 + 1] - wy;
+        const d = dx * dx + dy * dy;
+        if (d < bd) {
+          bd = d;
+          best = k;
+        }
+      }
+      const p = best >= 0 ? new THREE.Vector3(P[best * 3], P[best * 3 + 1], P[best * 3 + 2]) : new THREE.Vector3(wx, wy, 0);
+      ui.world.push({ i: Number(el.dataset.caseNode), p });
+    });
+  }, [data, visH, camZ, nodes]);
+
   // camera distance depends on aspect at generation time (as in the prototype)
   useEffect(() => {
     camera.position.z = camZ;
@@ -163,6 +225,11 @@ function Ivy({ setup, reduce }: IvyProps) {
     const onDown = (ev: PointerEvent) => {
       const target = ev.target as Element | null;
       if (target?.closest?.(INTERACTIVE)) return;
+      // click on a case node: scroll to its card
+      const hot = nodes.current.hot;
+      if (hot !== null && nodes.current.forced === null) {
+        document.querySelector(`[data-case-card="${hot}"]`)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+      }
       ndc.set((ev.clientX / window.innerWidth) * 2 - 1, -(ev.clientY / window.innerHeight) * 2 + 1);
       ray.setFromCamera(ndc, camera);
       if (ray.ray.intersectPlane(plane, hit)) {
@@ -184,7 +251,7 @@ function Ivy({ setup, reduce }: IvyProps) {
       document.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("blur", onLeave);
     };
-  }, [camera, uniforms]);
+  }, [camera, uniforms, nodes, reduce]);
 
   // ---------- loop ----------
   const loop = useRef({
@@ -195,6 +262,7 @@ function Ivy({ setup, reduce }: IvyProps) {
     ndc: new THREE.Vector2(),
     hit: new THREE.Vector3(),
     plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0),
+    node: new THREE.Vector3(),
   });
   useEffect(() => {
     loop.current.fresh = true;
@@ -245,6 +313,36 @@ function Ivy({ setup, reduce }: IvyProps) {
       grp.rotation.x += (st.tiltX - grp.rotation.x) * k;
       grp.rotation.y += (st.tiltY - grp.rotation.y) * k;
     }
+
+    // case nodes: project onto the screen, move their DOM markers, pick the one under the cursor
+    const ui = nodes.current;
+    if (grp && ui.world.length) {
+      grp.updateMatrixWorld();
+      camera.updateMatrixWorld();
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      let hit: number | null = null;
+      let bd = NODE_HIT * NODE_HIT;
+      for (const n of ui.world) {
+        L.node.copy(n.p).applyMatrix4(grp.matrixWorld).project(camera);
+        const sx = ((L.node.x + 1) / 2) * W;
+        const sy = ((1 - L.node.y) / 2) * H;
+        const el = ui.markers[n.i];
+        if (el) el.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`;
+        if (st.client && st.onTarget) {
+          const d = (st.client[0] - sx) ** 2 + (st.client[1] - sy) ** 2;
+          if (d < bd) {
+            bd = d;
+            hit = n.i;
+          }
+        }
+      }
+      const show = hit ?? ui.forced;
+      if (show !== ui.hot) {
+        ui.hot = show;
+        onHot(show);
+      }
+    }
   });
 
   return (
@@ -266,6 +364,25 @@ export default function IvyScene() {
     () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     [],
   );
+  // case nodes only for hover-capable fine pointers (touch keeps the plain ivy)
+  const fine = useMemo(() => typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches, []);
+  const nodes = useRef<NodeUi>({ enabled: fine, world: [], markers: [], hot: null, forced: null });
+  const [hot, setHot] = useState<number | null>(null);
+
+  // a Work card hover lights its node; the shown case marks its card (data-hot) so both light up together
+  useEffect(() => {
+    const on = (e: Event) => {
+      nodes.current.forced = (e as CustomEvent<number | null>).detail;
+    };
+    window.addEventListener(CASE_HOVER, on);
+    return () => window.removeEventListener(CASE_HOVER, on);
+  }, []);
+  useEffect(() => {
+    document.querySelectorAll<HTMLElement>("[data-case-card]").forEach((el) => {
+      if (Number(el.dataset.caseCard) === hot) el.setAttribute("data-hot", "");
+      else el.removeAttribute("data-hot");
+    });
+  }, [hot]);
 
   // per page: first pass after fonts + one frame; once the page has loaded and its height is quiet for
   // 600ms, regenerate once if the document height moved, so DEPTH_TOTAL matches the final scrollHeight
@@ -341,9 +458,62 @@ export default function IvyScene() {
           style={{ pointerEvents: "none" }}
           fallback={<p className="fixed inset-x-4 bottom-20 text-center text-[13px] text-grey">Цей браузер не підтримує WebGL.</p>}
         >
-          {setup && <Ivy setup={setup} reduce={reduce} />}
+          {setup && <Ivy setup={setup} reduce={reduce} nodes={nodes} onHot={setHot} />}
         </Canvas>
       </div>
+      {fine && <CaseNodes nodes={nodes} hot={hot} />}
     </>
+  );
+}
+
+/** DOM layer above the content: one marker per case (moved by the render loop) + a glass preview on hover. */
+function CaseNodes({ nodes, hot }: { nodes: RefObject<NodeUi>; hot: number | null }) {
+  return (
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[3] overflow-hidden">
+      {WORK.cases.map((c, i) => {
+        const on = hot === i;
+        // right-margin nodes open their preview to the left
+        const right = i % 2 === 1;
+        return (
+          <div
+            key={c.id}
+            ref={(el) => {
+              nodes.current.markers[i] = el;
+            }}
+            className="absolute left-0 top-0"
+            style={{ transform: "translate3d(-200px, -200px, 0)", ["--c" as string]: c.color }}
+          >
+            <span
+              className={`absolute left-0 top-0 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--c)] transition-[scale] duration-300 ${on ? "scale-150" : ""}`}
+            />
+            <span
+              className={`absolute left-0 top-0 size-7 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-[scale] duration-500 ease-[var(--ease)] ${on ? "scale-150" : ""}`}
+              style={{ borderColor: "color-mix(in srgb, var(--c) 50%, transparent)" }}
+            />
+            <div
+              className={`card absolute top-0 w-[248px] -translate-y-1/2 p-3 text-left transition-[translate,visibility] duration-500 ease-[var(--ease)] ${
+                right ? "right-7" : "left-7"
+              } ${on ? "visible translate-x-0" : `invisible ${right ? "translate-x-2" : "-translate-x-2"}`}`}
+            >
+              <div
+                className="grid aspect-[16/10] place-items-center rounded-lg border border-white/[0.07]"
+                style={{ background: "radial-gradient(80% 90% at 50% 100%, color-mix(in srgb, var(--c) 30%, transparent), transparent 70%)" }}
+              >
+                <span translate="no" className="text-[22px] font-semibold tracking-[-0.04em] text-fg">
+                  {c.name}
+                </span>
+              </div>
+              <p className="mt-3 px-1">
+                <span className="block text-[14px] font-semibold text-fg" translate="no">
+                  {c.name}
+                </span>
+                <span className="block text-[12px] text-grey">{c.kind}</span>
+              </p>
+              <p className="mt-1 px-1 pb-0.5 text-[12px] text-body">{c.tags.join(" · ")}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

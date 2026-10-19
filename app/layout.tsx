@@ -6,6 +6,7 @@ import { Footer } from "@/components/sections/Footer";
 import { CardFx } from "@/components/ui/CardFx";
 import { HideOn } from "@/components/ui/HideOn";
 import { RevealRoot } from "@/components/ui/RevealRoot";
+import { META } from "@/lib/content";
 import "./globals.css";
 
 const geologica = Geologica({
@@ -15,13 +16,12 @@ const geologica = Geologica({
   display: "swap",
 });
 
-// pages without ivy, nav and footer: one-screen signup and the logged-in app
-const FOCUSED = ["/signup", "/app"];
+// pages without ivy, nav and footer (none on the studio site yet)
+const FOCUSED: string[] = [];
 
 export const metadata: Metadata = {
-  title: { default: "Cloud Sphere · хмара, що пам'ятає", template: "%s · Cloud Sphere" },
-  description:
-    "Хмара для креативних команд, що пам'ятає кожну версію, правку й експорт. Концепт для портфоліо.",
+  title: { default: META.title, template: "%s · Orbit.studio" },
+  description: META.description,
 };
 
 export const viewport: Viewport = {
@@ -43,7 +43,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Scene />
           <Nav />
         </HideOn>
-        <main id="main" className="relative z-[2]">
+        {/* overflow-x-clip: the .plate halos (inset -12%) must never widen the page */}
+        <main id="main" className="relative z-[2] overflow-x-clip">
           {children}
         </main>
         <HideOn paths={FOCUSED}>

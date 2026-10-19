@@ -5,35 +5,10 @@ import { useState } from "react";
 import { ACCENT, type Accent } from "../ui/accent";
 import { G } from "../ui/Bits";
 import { HomeSection } from "../ui/HomeSection";
+import { FAQ } from "@/lib/content";
 
-// The 5 questions that matter most; short answers, max 2 lines each. Colour = topic (green security, violet links, cyan sync).
-const FAQ: { q: string; a: string; color: Accent }[] = [
-  {
-    q: "Чи бачить Cloud Sphere вміст моїх файлів?",
-    a: "Ні. Файли шифруються на твоєму пристрої, на сервері лише шифротекст. Пошуковий індекс теж будується локально.",
-    color: "green",
-  },
-  {
-    q: "Як Cloud Sphere розуміє зв'язки між файлами?",
-    a: "Бачить, з чого зроблено експорт, які версії йдуть підряд і до чого прив'язані правки. Будь-який зв'язок можна змінити.",
-    color: "violet",
-  },
-  {
-    q: "Що, якщо інтернет обірветься під час завантаження?",
-    a: "Файли вантажаться частинами по 64 МБ. Завантаження продовжиться з місця обриву.",
-    color: "cyan",
-  },
-  {
-    q: "Чи можна перенести архів з іншої хмари?",
-    a: "Так, з Google Drive, Dropbox і локальних дисків. Зв'язки між версіями Cloud Sphere відновить автоматично.",
-    color: "violet",
-  },
-  {
-    q: "Чи можна дати доступ клієнту без акаунта?",
-    a: "Так, за посиланням із терміном дії. Клієнт бачить лише потрібні файли й лишає правки на макеті.",
-    color: "green",
-  },
-];
+// The 5 questions that matter most (copy in lib/content.ts); short answers, max 2 lines each.
+const FAQ_ITEMS: { q: string; a: string; color: Accent }[] = FAQ.items;
 
 export function Faq() {
   const [open, setOpen] = useState<Set<number>>(() => new Set([0]));
@@ -48,18 +23,18 @@ export function Faq() {
   return (
     <HomeSection
       id="faq"
-      label="Питання"
+      label={FAQ.label}
       color="cyan"
       title={
         <>
-          Часті <G tone="soft">питання.</G>
+          {FAQ.title[0]} <G tone="soft">{FAQ.title[1]}</G>
         </>
       }
     >
       {/* ONE card, one column; hairlines between the questions */}
       <div data-reveal className="w-full">
         <div className="card text-left">
-          {FAQ.map((item, i) => {
+          {FAQ_ITEMS.map((item, i) => {
             const isOpen = open.has(i);
             const a = ACCENT[item.color];
             return (

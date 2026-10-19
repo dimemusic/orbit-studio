@@ -5,14 +5,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "./ui/Button";
 import { Logo } from "./ui/Logo";
+import { BRAND, CTA, NAV } from "@/lib/content";
 
-const LINKS = [
-  { href: "/#how", label: "Як це працює" },
-  { href: "/features", label: "Можливості" },
-  { href: "/security", label: "Безпека" },
-  { href: "/#pricing", label: "Тарифи" },
-  { href: "/#faq", label: "FAQ" },
-];
+const LINKS = NAV;
 
 /** page links are active on their own route; home anchors never are */
 const isActive = (href: string, path: string) => !href.includes("#") && path.startsWith(href);
@@ -54,11 +49,11 @@ export function Nav() {
       {/* floating card bar (slightly lighter than content cards) */}
       <div className="card card-nav">
         <nav aria-label="Головна навігація" className="flex h-16 items-center gap-6 pl-5 pr-2.5">
-          <Link href="/" aria-label="Cloud Sphere, на головну" className="shrink-0">
+          <Link href="/" aria-label={`${BRAND.name}, на головну`} className="shrink-0">
             <Logo />
           </Link>
 
-          {/* gap-6 = 24px minimum between every link, incl. «FAQ» → «Увійти» */}
+          {/* gap-6 = 24px minimum between every link */}
           <ul className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8">
             {LINKS.map((l) => {
               const on = isActive(l.href, pathname);
@@ -80,14 +75,10 @@ export function Nav() {
           </ul>
 
           <div className="ml-auto flex shrink-0 items-center gap-6 lg:ml-0">
-            {/* TODO: replace with real /login page before publishing */}
-            <a href="/app?plan=pro" className="hidden whitespace-nowrap py-2.5 text-[14px] text-body transition-colors hover:text-fg sm:inline-block">
-              Увійти
-            </a>
             {/* wrapper owns visibility: the Button base class is inline-flex and would override `hidden` */}
             <span className="hidden sm:contents">
-              <Button href="/signup" size="nav">
-                Почати безкоштовно
+              <Button href={CTA.primaryHref} size="nav">
+                {CTA.primary}
               </Button>
             </span>
             <button
@@ -105,11 +96,7 @@ export function Nav() {
 
         <div id={menuId} hidden={!open} className="border-t border-white/10 px-5 pb-7 pt-3 lg:hidden">
           <ul className="flex flex-col items-center gap-1 text-center">
-            {[
-              ...LINKS,
-              // TODO: replace with real /login page before publishing
-              { href: "/app?plan=pro", label: "Увійти" },
-            ].map((l) => {
+            {LINKS.map((l) => {
               const on = isActive(l.href, pathname);
               return (
                 <li key={l.href}>
@@ -126,8 +113,8 @@ export function Nav() {
             })}
           </ul>
           <div className="mt-4 flex justify-center">
-            <Button href="/signup" onClick={() => setOpen(false)} className="w-full max-w-xs">
-              Почати безкоштовно
+            <Button href={CTA.primaryHref} onClick={() => setOpen(false)} className="w-full max-w-xs">
+              {CTA.primary}
             </Button>
           </div>
         </div>
