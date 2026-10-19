@@ -1,0 +1,460 @@
+<title>Particle Morph Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;600&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: fixed WebGL stage behind four full-height scroll "chapters"; text alternates sides so the particles stay visible. */
+:root {
+  --bg: #05070d;
+  --fg: #e8edf7;
+  --muted: #8b95ab;
+  --line: rgba(160, 180, 220, 0.14);
+  --accent: #3d8bff;
+  --panel: rgba(10, 14, 24, 0.6);
+  --f-display: "Geologica", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+:root[data-accent="lime"] { --accent: #b6ff3b; }
+
+html, body { background: var(--bg); color: var(--fg); }
+body {
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+#stage {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  z-index: 0;
+  touch-action: pan-y;
+}
+.vignette {
+  position: fixed; inset: 0; pointer-events: none; z-index: 1;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, var(--bg) 100%);
+}
+
+header.bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  padding-bottom: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  pointer-events: none;
+}
+.logo {
+  font-family: var(--f-display); font-weight: 600; font-size: 15px; letter-spacing: 0.04em;
+}
+.logo span { color: var(--accent); }
+.swatches {
+  pointer-events: auto;
+  display: flex; gap: 4px; padding: 4px;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--panel); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.swatches button {
+  font: 500 12px/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); background: transparent; border: 0; border-radius: 999px;
+  padding: 8px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+}
+.swatches button i { width: 8px; height: 8px; border-radius: 50%; display: block; }
+.swatches button[aria-pressed="true"] { color: var(--fg); background: rgba(255,255,255,0.07); }
+.swatches button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+main { position: relative; z-index: 2; pointer-events: none; }
+section.chapter {
+  min-height: 100vh;
+  display: flex; align-items: center;
+  padding-block: 96px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+section.chapter { justify-content: center; text-align: center; }
+.chapter .copy {
+  max-width: 40rem; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  pointer-events: auto;
+  padding: 32px 8px;
+  background: radial-gradient(closest-side, rgba(5,7,13,0.72), rgba(5,7,13,0) 100%);
+  text-shadow: 0 2px 24px rgba(5,7,13,0.9);
+}
+.chapter.hero .copy { max-width: 46rem; }
+.ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 6px; }
+.btn {
+  font: 600 14px/1 var(--f-body); border-radius: 999px; padding: 14px 22px; cursor: pointer;
+  border: 1px solid var(--line); color: var(--fg); background: var(--panel);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); text-shadow: none;
+}
+.btn.primary { background: var(--accent); color: #05070d; border-color: transparent; box-shadow: 0 8px 40px color-mix(in srgb, var(--accent) 45%, transparent); }
+.btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.small { font: 400 12px/1.5 var(--f-mono); color: var(--muted); letter-spacing: 0.04em; }
+
+.eyebrow {
+  font: 500 12px/1 var(--f-mono); letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent);
+}
+h1, h2 {
+  font-family: var(--f-display); font-weight: 600; margin: 0;
+  text-wrap: balance; letter-spacing: -0.01em; line-height: 1.08;
+}
+h1 { font-size: clamp(34px, 6vw, 72px); }
+h2 { font-size: clamp(26px, 3.6vw, 44px); }
+h1 em, h2 em { font-style: normal; color: var(--accent); }
+p { margin: 0; color: var(--muted); max-width: 62ch; }
+.tech {
+  font: 400 13px/1.6 var(--f-mono); color: var(--muted);
+  border-top: 1px solid var(--line); padding-top: 14px;
+}
+.tech b { color: var(--fg); font-weight: 500; }
+
+.hint {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  font: 500 12px/1 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase;
+}
+.hint span {
+  border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px;
+  background: var(--panel); color: var(--fg);
+}
+
+nav.rail {
+  position: fixed; z-index: 5;
+  right: max(16px, env(safe-area-inset-right, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  display: flex; gap: 6px; align-items: center;
+  font: 500 11px/1 var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--panel); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+nav.rail a { color: var(--muted); text-decoration: none; padding: 4px 6px; border-radius: 6px; }
+nav.rail a.on { color: var(--accent); }
+nav.rail a:focus-visible { outline: 2px solid var(--accent); }
+
+.fallback {
+  position: fixed; inset: auto 16px 80px; z-index: 6; text-align: center;
+  font: 13px var(--f-mono); color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .chapter .copy { padding: 24px 0; }
+  nav.rail { left: max(16px, env(safe-area-inset-left, 0px)); justify-content: space-between; }
+  .swatches button { padding: 8px 10px; }
+}
+</style>
+
+<canvas id="stage" aria-hidden="true"></canvas>
+<div class="vignette"></div>
+
+<header class="bar">
+  <div class="logo">MNEMA<span>.</span></div>
+  <div class="swatches" role="group" aria-label="Колір акценту">
+    <button id="acc-blue" aria-pressed="true" data-acc="blue"><i style="background:#3d8bff"></i>Blue</button>
+    <button id="acc-lime" aria-pressed="false" data-acc="lime"><i style="background:#b6ff3b"></i>Lime</button>
+  </div>
+</header>
+
+<main>
+  <section class="chapter hero" id="s0">
+    <div class="copy">
+      <div class="eyebrow">Хмара для креативних команд</div>
+      <h1>Усі твої файли. <em>Одна</em> хмара.</h1>
+      <p>Макети, відео й 3D твоєї команди в одному сховищі, яке пам'ятає, як файли пов'язані між собою.</p>
+      <div class="ctas"><button class="btn primary" type="button">Почати з 20 GB безкоштовно</button><button class="btn" type="button">Як це працює</button></div>
+      <div class="small">Клікни по фону, щоб пустити імпульс · скроль, щоб змінити форму</div>
+    </div>
+  </section>
+
+  <section class="chapter right" id="s1">
+    <div class="copy">
+      <div class="eyebrow">Синхронізація</div>
+      <h2>Розкидані файли збираються <em>в одне ціле</em></h2>
+      <p>Ноутбук, телефон, флешка й чат із клієнтом більше не живуть окремо. Mnema синхронізує все між пристроями за секунди.</p>
+      <div class="tech"><b>&lt; 2 с</b> на синхронізацію · <b>10 000</b> файлів за раз</div>
+    </div>
+  </section>
+
+  <section class="chapter" id="s2">
+    <div class="copy">
+      <div class="eyebrow">Безпека</div>
+      <h2>Ключ, унікальний як <em>відбиток</em></h2>
+      <p>Файли шифруються ще на твоєму пристрої. Ми їх зберігаємо, але прочитати не можемо.</p>
+      <div class="tech"><b>AES-256</b> · вхід за біометрією · <b>2FA</b></div>
+    </div>
+  </section>
+
+  <section class="chapter right" id="s3">
+    <div class="copy">
+      <div class="eyebrow">Команди</div>
+      <h2>Усі зв'язки між файлами <em>в одному вузлі</em></h2>
+      <p>Відкриваєш макет і бачиш його версії, правки клієнта й фінальний експорт. Без пошуку по папках.</p>
+      <div class="tech"><b>Free</b> 20 GB · <b>Pro</b> 2 TB · <b>Team</b> 10 TB</div>
+      <div class="ctas"><button class="btn primary" type="button">Обрати тариф</button></div>
+    </div>
+  </section>
+</main>
+
+<nav class="rail" aria-label="Форми">
+  <a href="#s0" data-i="0" class="on">Старт</a>
+  <a href="#s1" data-i="1">Синк</a>
+  <a href="#s2" data-i="2">Безпека</a>
+  <a href="#s3" data-i="3">Команди</a>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  if (!window.THREE) {
+    var f = document.createElement('div'); f.className = 'fallback';
+    f.textContent = 'Не вдалося завантажити Three.js, тож 3D-сцена не показується.';
+    document.body.appendChild(f); return;
+  }
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var isSmall = Math.min(window.innerWidth, window.innerHeight) < 700;
+  var COUNT = isSmall ? 14000 : 24000;
+
+  var canvas = document.getElementById('stage');
+  var renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
+  } catch (e) {
+    var f2 = document.createElement('div'); f2.className = 'fallback';
+    f2.textContent = 'Цей браузер не підтримує WebGL.'; document.body.appendChild(f2); return;
+  }
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  renderer.setPixelRatio(DPR);
+  renderer.setClearColor(0x05070d, 1);
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.set(0, 0, 10);
+
+  // ---------- shapes ----------
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  var s0 = new Float32Array(COUNT * 3), s1 = new Float32Array(COUNT * 3),
+      s2 = new Float32Array(COUNT * 3), s3 = new Float32Array(COUNT * 3),
+      seed = new Float32Array(COUNT);
+
+  // 0: tilted wavy field (grid with jitter)
+  var cols = Math.round(Math.sqrt(COUNT * 1.8)), rows = Math.ceil(COUNT / cols);
+  var tilt = -1.05, ct = Math.cos(tilt), st = Math.sin(tilt);
+  for (var i = 0; i < COUNT; i++) {
+    var cx = i % cols, cy = Math.floor(i / cols);
+    var x = (cx / cols - 0.5) * 16 + rnd(-0.02, 0.02);
+    var y = (cy / rows - 0.5) * 12 + rnd(-0.02, 0.02);
+    var z = 0.35 * Math.sin(x * 0.7) * Math.cos(y * 0.6);
+    // rotate around X so the plane reads like a floor receding away
+    s0[i*3] = x;
+    s0[i*3+1] = y * ct - z * st - 1.4;
+    s0[i*3+2] = y * st + z * ct;
+    seed[i] = Math.random();
+  }
+  // 1: fibonacci sphere shell with slight thickness
+  var golden = Math.PI * (3 - Math.sqrt(5));
+  for (var j = 0; j < COUNT; j++) {
+    var yy = 1 - (j / (COUNT - 1)) * 2, r = Math.sqrt(1 - yy * yy), th = golden * j;
+    var R = 2.7 + rnd(-0.04, 0.04);
+    s1[j*3] = Math.cos(th) * r * R; s1[j*3+1] = yy * R; s1[j*3+2] = Math.sin(th) * r * R;
+  }
+  // 2: fingerprint-like concentric ovals
+  var rings = 46;
+  for (var k = 0; k < COUNT; k++) {
+    var ring = k % rings, a = rnd(0, Math.PI * 2);
+    var rr = 0.25 + ring * 0.075;
+    rr += 0.06 * Math.sin(a * 3 + ring * 0.7) + 0.03 * Math.sin(a * 7 - ring);
+    s2[k*3] = Math.cos(a) * rr * 0.82 + rnd(-0.01, 0.01);
+    s2[k*3+1] = Math.sin(a) * rr * 1.18 + rnd(-0.01, 0.01);
+    s2[k*3+2] = 0.45 * Math.sin(rr * 3.2) - 0.2 * rr;
+  }
+  // 3: torus knot (p=2, q=3) with tube scatter
+  for (var m = 0; m < COUNT; m++) {
+    var t = rnd(0, Math.PI * 2), p = 2, q = 3;
+    var rk = Math.cos(q * t) + 2.1;
+    var kx = rk * Math.cos(p * t), ky = rk * Math.sin(p * t), kz = -Math.sin(q * t);
+    var tube = 0.32 * Math.sqrt(Math.random()), ang = rnd(0, Math.PI * 2);
+    s3[m*3] = (kx + Math.cos(ang) * tube) * 0.95;
+    s3[m*3+1] = (ky + Math.sin(ang) * tube) * 0.95;
+    s3[m*3+2] = (kz * 1.2 + Math.cos(ang + 1.3) * tube) * 0.95;
+  }
+
+  var geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(s0, 3));
+  geo.setAttribute('aS1', new THREE.BufferAttribute(s1, 3));
+  geo.setAttribute('aS2', new THREE.BufferAttribute(s2, 3));
+  geo.setAttribute('aS3', new THREE.BufferAttribute(s3, 3));
+  geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1));
+
+  var uniforms = {
+    uTime: { value: 0 },
+    uProgress: { value: 0 },
+    uMouse: { value: new THREE.Vector3(99, 99, 0) },
+    uMouseOn: { value: 0 },
+    uPulse: { value: 0 },
+    uPulseOrigin: { value: new THREE.Vector3() },
+    uColor: { value: new THREE.Color('#3d8bff') },
+    uSize: { value: isSmall ? 34 : 30 },
+    uDPR: { value: DPR },
+    uMotion: { value: reduce ? 0 : 1 }
+  };
+
+  var mat = new THREE.ShaderMaterial({
+    uniforms: uniforms,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexShader: [
+      'attribute vec3 aS1; attribute vec3 aS2; attribute vec3 aS3; attribute float aSeed;',
+      'uniform float uTime, uProgress, uMouseOn, uPulse, uSize, uDPR, uMotion;',
+      'uniform vec3 uMouse, uPulseOrigin;',
+      'varying float vAlpha; varying float vHot;',
+      'float ease(float x){ x = clamp(x,0.,1.); return x*x*(3.-2.*x); }',
+      'void main(){',
+      '  float p = uProgress;',
+      '  // stagger each point a little so the morph ripples instead of moving in lockstep',
+      '  float sp = aSeed * 0.35;',
+      '  vec3 pos = mix(position, aS1, ease((p - sp*0.5) * 1.35));',
+      '  pos = mix(pos, aS2, ease((p - 1.0 - sp*0.5) * 1.35));',
+      '  pos = mix(pos, aS3, ease((p - 2.0 - sp*0.5) * 1.35));',
+      '  float t = uTime * uMotion;',
+      '  pos += 0.06 * vec3(sin(t*0.9 + pos.y*2.1 + aSeed*6.28), cos(t*0.7 + pos.x*1.9), sin(t*0.8 + pos.z*2.3 + aSeed*3.));',
+      '  // field wave only while in the first shape',
+      '  float field = 1.0 - ease(p*1.4);',
+      '  pos.z += field * 0.35 * sin(pos.x*0.8 + t*1.1) * cos(pos.y*0.9 + t*0.7);',
+      '  vec4 world = modelMatrix * vec4(pos, 1.0);',
+      '  // click impulse: a wave front travels through the shape, lifting points along their normal (no hole)',
+      '  float pd = length(world.xyz - uPulseOrigin);',
+      '  float front = (1.0 - uPulse) * 10.0;',
+      '  float band = uPulse * smoothstep(1.4, 0.0, abs(pd - front));',
+      '  float wob = sin((pd - front) * 4.0);',
+      '  vec3 nrm = normalize((modelMatrix * vec4(pos, 0.0)).xyz + vec3(0.0, 0.0, 1e-3));',
+      '  world.xyz += nrm * band * (0.22 + 0.12 * wob);',
+      '  float ringF = band * 0.55;',
+      '  vec4 mv = viewMatrix * world;',
+      '  gl_Position = projectionMatrix * mv;',
+      '  float sz = uSize * (0.55 + aSeed * 0.9);',
+      '  gl_PointSize = sz * uDPR / -mv.z;',
+      '  vHot = clamp(ringF, 0.0, 1.0);',
+      '  vAlpha = 0.35 + 0.65 * smoothstep(-6.0, 3.0, world.z);',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'uniform vec3 uColor;',
+      'varying float vAlpha; varying float vHot;',
+      'void main(){',
+      '  float d = length(gl_PointCoord - 0.5);',
+      '  float a = smoothstep(0.5, 0.0, d);',
+      '  a *= a;',
+      '  vec3 col = mix(uColor, vec3(1.0), vHot * 0.85 + 0.12);',
+      '  gl_FragColor = vec4(col, a * vAlpha * 0.9);',
+      '}'
+    ].join('\n')
+  });
+
+  var points = new THREE.Points(geo, mat);
+  var group = new THREE.Group();
+  group.add(points);
+  scene.add(group);
+
+  // ---------- input ----------
+  var raycaster = new THREE.Raycaster();
+  var plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+  var ndc = new THREE.Vector2(), hit = new THREE.Vector3();
+  var mouseTarget = new THREE.Vector3(99, 99, 0), mouseOnTarget = 0;
+  var tiltX = 0, tiltY = 0;
+
+  function toWorld(cx, cy) {
+    ndc.x = (cx / window.innerWidth) * 2 - 1;
+    ndc.y = -(cy / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(ndc, camera);
+    raycaster.ray.intersectPlane(plane, hit);
+    return hit;
+  }
+  window.addEventListener('pointermove', function (e) {
+    var w = toWorld(e.clientX, e.clientY);
+    mouseTarget.copy(w); mouseOnTarget = 1;
+    tiltX = ndc.y * 0.12; tiltY = ndc.x * 0.18;
+  }, { passive: true });
+  document.addEventListener('pointerleave', function () { mouseOnTarget = 0; });
+  window.addEventListener('blur', function () { mouseOnTarget = 0; });
+  window.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('button, a')) return;
+    var w = toWorld(e.clientX, e.clientY);
+    uniforms.uPulseOrigin.value.copy(w);
+    // start the wave from the shape's surface under the click (nearest point on a sphere around the centre)
+    uniforms.uPulseOrigin.value.set(w.x, w.y, 0).clampLength(0, 3.0);
+    uniforms.uPulse.value = 1;
+  });
+
+  // ---------- accent ----------
+  var colors = { blue: new THREE.Color('#3d8bff'), lime: new THREE.Color('#b6ff3b') };
+  var colorTarget = colors.blue.clone();
+  document.querySelectorAll('.swatches button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var acc = b.getAttribute('data-acc');
+      document.documentElement.setAttribute('data-accent', acc);
+      colorTarget.copy(colors[acc]);
+      document.querySelectorAll('.swatches button').forEach(function (o) {
+        o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+      });
+      try { localStorage.setItem('pl-accent', acc); } catch (e) {}
+    });
+  });
+  try {
+    var saved = localStorage.getItem('pl-accent');
+    if (saved === 'lime') document.getElementById('acc-lime').click();
+  } catch (e) {}
+
+  // ---------- scroll ----------
+  var links = document.querySelectorAll('nav.rail a');
+  var progressTarget = 0, progress = 0;
+  function readScroll() {
+    var vh = window.innerHeight;
+    var maxScroll = Math.max(1, document.documentElement.scrollHeight - vh);
+    progressTarget = Math.min(3, (window.scrollY / maxScroll) * 3);
+    var idx = Math.round(progressTarget);
+    links.forEach(function (l, n) { l.classList.toggle('on', n === idx); });
+  }
+  window.addEventListener('scroll', readScroll, { passive: true });
+
+  function resize() {
+    var w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    // pull back on narrow screens so shapes fit
+    camera.position.z = w / h < 0.8 ? 14 : 10;
+    camera.updateProjectionMatrix();
+    readScroll();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ---------- loop ----------
+  var clock = new THREE.Clock();
+  function frame() {
+    var dt = Math.min(clock.getDelta(), 0.05);
+    var t = clock.elapsedTime;
+    uniforms.uTime.value = t;
+
+    progress += (progressTarget - progress) * Math.min(1, dt * 4);
+    uniforms.uProgress.value = progress;
+
+    uniforms.uMouse.value.lerp(mouseTarget, Math.min(1, dt * 8));
+    uniforms.uMouseOn.value += (mouseOnTarget - uniforms.uMouseOn.value) * Math.min(1, dt * 5);
+    uniforms.uPulse.value = Math.max(0, uniforms.uPulse.value - dt * 0.55);
+    uniforms.uColor.value.lerp(colorTarget, Math.min(1, dt * 5));
+
+    var spin = reduce ? 0 : t * 0.06;
+    // the field (shape 0) stays square-on; later shapes rotate
+    var shapeSpin = Math.min(1, progress);
+    group.rotation.y += ((spin + progress * 0.9) * shapeSpin + tiltY - group.rotation.y) * Math.min(1, dt * 3);
+    group.rotation.x += (tiltX - group.rotation.x) * Math.min(1, dt * 3);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>

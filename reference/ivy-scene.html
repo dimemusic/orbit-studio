@@ -1,0 +1,641 @@
+<title>Mnema Flow</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: fixed WebGL "matter" ribbon behind full-bleed, centered sections; dark frosted cards over it. */
+:root {
+  --bg: #05070d;
+  --fg: #f5f7fa;
+  --text: #c4cad4;
+  --muted: #8b919c;
+  --line: rgba(255, 255, 255, 0.08);
+  --accent: #3d8bff;
+  --cyan: #22d3ee;
+  --f-sans: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { background: var(--bg); color: var(--fg); }
+body { font-family: var(--f-sans); font-size: 16px; line-height: 1.6; overflow-x: hidden; }
+
+#stage { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; z-index: 0; touch-action: pan-y; }
+
+.card {
+  position: relative;
+  background: rgba(6, 8, 14, 0.72);
+  backdrop-filter: blur(40px) saturate(140%);
+  -webkit-backdrop-filter: blur(40px) saturate(140%);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+.card::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.35) 100%);
+}
+.card > * { position: relative; }
+
+header.nav {
+  position: fixed; z-index: 10;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  left: max(16px, env(safe-area-inset-left, 0px));
+  right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; justify-content: center;
+}
+header.nav .card {
+  background: rgba(6, 8, 14, 0.6);
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  width: min(100%, 980px); padding: 10px 10px 10px 20px; border-radius: 999px;
+}
+.logo { font-weight: 600; font-size: 17px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
+.logo i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+.links { display: flex; gap: 28px; font-size: 14px; color: var(--text); }
+.links span { cursor: default; }
+.btn {
+  font: 600 16px/1 var(--f-sans); border-radius: 999px; height: 56px; padding: 0 32px;
+  display: inline-flex; align-items: center; justify-content: center; cursor: pointer; white-space: nowrap;
+  border: 1px solid transparent; transition: transform .2s, box-shadow .2s, background .2s, border-color .2s;
+}
+.btn.primary { background: var(--accent); color: #fff; }
+.btn.primary:hover { transform: translateY(-1px); box-shadow: 0 10px 36px rgba(61, 139, 255, 0.4); }
+.btn.ghost { background: transparent; color: var(--fg); border-color: rgba(255,255,255,0.16); }
+.btn.ghost:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.3); }
+.btn.sm { height: 44px; padding: 0 22px; font-size: 14px; }
+.btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+
+main { position: relative; z-index: 2; }
+section {
+  min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 40px;
+  padding-block: 120px;
+  padding-left: max(clamp(24px, 5vw, 80px), env(safe-area-inset-left, 0px));
+  padding-right: max(clamp(24px, 5vw, 80px), env(safe-area-inset-right, 0px));
+}
+.intro { display: flex; flex-direction: column; align-items: center; gap: 20px; max-width: 760px; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px;
+  font: 500 12px/1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent); background: rgba(61, 139, 255, 0.12);
+}
+.eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+h1, h2, h3 { margin: 0; text-wrap: balance; letter-spacing: -0.035em; font-weight: 600; }
+h1 { font-size: clamp(48px, 8.5vw, 128px); line-height: 0.95; }
+h2 { font-size: clamp(36px, 5.4vw, 80px); line-height: 1; }
+h3 { font-size: 20px; letter-spacing: -0.01em; }
+.grad { background: linear-gradient(90deg, var(--accent), var(--cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { margin: 0; font-size: clamp(17px, 1.6vw, 20px); color: var(--text); max-width: 56ch; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: 100%; }
+.grid .card { padding: 32px 28px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.tile { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: rgba(61,139,255,0.12); color: var(--accent); }
+.tile.c { background: rgba(34,211,238,0.12); color: var(--cyan); }
+.tile.v { background: rgba(139,92,246,0.14); color: #a78bfa; }
+.grid p { margin: 0; color: var(--text); font-size: 15px; max-width: 34ch; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.tag { font: 500 12px/1 var(--f-sans); padding: 6px 12px; border-radius: 999px; color: var(--accent); background: rgba(61,139,255,0.12); }
+.tag.c { color: var(--cyan); background: rgba(34,211,238,0.12); }
+.tag.v { color: #a78bfa; background: rgba(139,92,246,0.14); }
+
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+.stats .card { padding: 40px 24px; border-radius: 0; display: flex; flex-direction: column; gap: 8px; }
+.stats .card:first-child { border-radius: 16px 0 0 16px; }
+.stats .card:last-child { border-radius: 0 16px 16px 0; }
+.stats strong { font-size: clamp(40px, 5vw, 72px); font-weight: 600; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.stats span { color: var(--muted); font-size: 14px; }
+
+.final .card { padding: clamp(40px, 6vw, 80px); width: min(100%, 980px); display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+.counter {
+  position: fixed; z-index: 10; left: 50%; transform: translateX(-50%);
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+}
+.counter .card {
+  border-radius: 999px; padding: 10px 18px; display: flex; align-items: center; gap: 10px;
+  font: 500 13px/1 var(--f-mono); color: var(--text); background: rgba(6,8,14,0.6);
+}
+.counter b { color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+.counter i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+.hint { font: 400 12px/1.5 var(--f-mono); color: var(--muted); }
+
+.fallback { position: fixed; left: 16px; right: 16px; top: 45%; z-index: 20; text-align: center; font: 14px var(--f-mono); color: var(--muted); }
+
+@media (max-width: 860px) {
+  .links { display: none; }
+  .grid, .stats { grid-template-columns: 1fr; }
+  .stats .card, .stats .card:first-child, .stats .card:last-child { border-radius: 16px; }
+  .stats { gap: 12px; }
+}
+@media (max-width: 480px) {
+  header.nav .btn { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+</style>
+
+<canvas id="stage" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <div class="card">
+    <div class="logo"><i></i>mnema</div>
+    <nav class="links" aria-label="Розділи"><span>Можливості</span><span>Безпека</span><span>Тарифи</span><span>Питання</span></nav>
+    <button class="btn primary sm" type="button">Почати безкоштовно</button>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="intro">
+      <span class="eyebrow">Хмара для креативних команд</span>
+      <h1>Усі файли.<br><span class="grad">Одна пам'ять.</span></h1>
+      <p class="lead">Mnema пам'ятає кожну версію, правку й експорт. Скроль униз і дивись, як твої файли проростають зв'язками, ніби коріння.</p>
+      <div class="ctas">
+        <button class="btn primary" type="button">Почати безкоштовно</button>
+        <button class="btn ghost" type="button">Як це працює</button>
+      </div>
+      <span class="hint">Клікни по фону, щоб пустити імпульс</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="intro">
+      <span class="eyebrow">Можливості</span>
+      <h2>Сховище, яке <span class="grad">розуміє</span> твою роботу</h2>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="tile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>Кожна версія на місці</h3>
+        <p>Порівнюй, повертай і бач, хто що змінив.</p>
+        <div class="tags"><span class="tag">Без ліміту версій</span></div>
+      </div>
+      <div class="card">
+        <div class="tile c"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></div>
+        <h3>Граф зв'язків</h3>
+        <p>Відкрий файл і побач усе, що з ним пов'язано.</p>
+        <div class="tags"><span class="tag c">Автоматично</span></div>
+      </div>
+      <div class="card">
+        <div class="tile v"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="m16 6-4-4-4 4M12 2v13"/></svg></div>
+        <h3>Експорт пам'ятає джерело</h3>
+        <p>Кожен PNG чи PDF знає свій макет і версію.</p>
+        <div class="tags"><span class="tag v">.png</span><span class="tag v">.pdf</span><span class="tag v">.mp4</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="intro">
+      <span class="eyebrow">Зв'язки</span>
+      <h2>Кожен новий файл <span class="grad">знаходить своїх</span></h2>
+      <p class="lead">Макет, його версії, правки клієнта й фінальний експорт з'єднуються самі, щойно ти їх завантажуєш.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="stats">
+      <div class="card"><strong>2 TB</strong><span>у тарифі Pro</span></div>
+      <div class="card"><strong class="grad">&lt; 2 с</strong><span>на синхронізацію</span></div>
+      <div class="card"><strong>AES-256</strong><span>шифрування на пристрої</span></div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="card">
+      <span class="eyebrow">Старт</span>
+      <h2>Почни з <span class="grad">20 GB</span> безкоштовно</h2>
+      <p class="lead">Без картки. Перенеси перший проєкт і подивись, які зв'язки Mnema знайде сама.</p>
+      <div class="ctas"><button class="btn primary" type="button">Створити акаунт</button></div>
+    </div>
+  </section>
+</main>
+
+<div class="counter" aria-live="polite"><div class="card"><i></i><span><b id="branch-count">0</b> гілок · <b id="links-count">0</b> зв'язків</span></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  function fail(msg) { var f = document.createElement('div'); f.className = 'fallback'; f.textContent = msg; document.body.appendChild(f); }
+  if (!window.THREE) { fail('Не вдалося завантажити Three.js, тож 3D-сцена не показується.'); return; }
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var small = Math.min(innerWidth, innerHeight) < 700;
+  var COUNT = small ? 18000 : 34000;
+  var MAX_SEGS = small ? 9000 : 16000;
+
+  var canvas = document.getElementById('stage'), renderer;
+  try { renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, powerPreference: 'high-performance' }); }
+  catch (e) { fail('Цей браузер не підтримує WebGL.'); return; }
+  var DPR = Math.min(devicePixelRatio || 1, 2);
+  renderer.setPixelRatio(DPR);
+  renderer.setClearColor(0x05070d, 1);
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(45, innerWidth / innerHeight, 0.1, 100);
+  var camZ = innerWidth / innerHeight < 0.8 ? 15 : 10;
+  camera.position.set(0, 0, camZ);
+  var visH = 2 * Math.tan(THREE.MathUtils.degToRad(22.5)) * camZ;   // world units per viewport height
+  var visW = visH * (innerWidth / innerHeight);
+  var group = new THREE.Group();
+  scene.add(group);
+
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+
+  // muted palette: blue, cyan, violet, teal, indigo, rose
+  var PALETTE = ['#3d8bff', '#22d3ee', '#8b5cf6', '#2dd4bf', '#6366f1', '#f472b6'].map(function (h) { return new THREE.Color(h); });
+
+  // ---------- grow the ivy ----------
+  var screens = Math.max(3, document.documentElement.scrollHeight / innerHeight);
+  var TOP = visH / 2 + 0.6;
+  var DEPTH_TOTAL = screens * visH + 4;
+  var X_LIMIT = Math.max(4, visW / 2 + 0.8);
+  var STEP = [0.16, 0.13, 0.1, 0.08, 0.06];
+  var SPAWN = [0.13, 0.08, 0.06, 0.05, 0];
+  var LEN = [[0, 0], [4, 9], [1.6, 3.8], [0.6, 1.6], [0.3, 0.8]];
+  var THICK = [0.26, 0.15, 0.09, 0.05, 0.03];
+  var K = [1.0, 0.55, 0.5, 0.45, 0.4];   // how fast a branch grows relative to scroll depth
+
+  var segs = [];      // {a:[x,y,z], b:[x,y,z], birth, depth, thick, col}
+  var tips = [];      // {p:[x,y,z], birth, col, family}
+  var branchBirths = [];
+
+  function spreadAt(y) { var f = Math.max(0, Math.min(1, (TOP - y) / (visH * 2.2))); return f * f * (3 - 2 * f); }
+  var CAP = [Infinity, 70, 26, 10, 6], MAX_SEGS_LOCAL = MAX_SEGS;
+  function branch(x, y, z, ang, depth, len, birth0, col, family, lane, limit) {
+    // trunks grow until they reach the bottom of the page (their path wanders, so length alone is not enough)
+    var steps = depth === 0 ? 100000 : Math.max(3, Math.round(len / STEP[depth])), dist = 0, birth = birth0;
+    branchBirths.push(birth0);
+    for (var s = 0; s < steps && (depth === 0 || segs.length < Math.min(limit, MAX_SEGS_LOCAL)); s++) {
+      if (depth === 0 && TOP - y >= DEPTH_TOTAL) break;
+      ang += gauss() * 0.2 * (1 + depth * 0.3);
+      if (depth === 0 && lane) {
+        // roots meander around their own lane so the whole page width stays covered
+        var desired = Math.atan2(-1, (lane(y) - x) * 0.6);
+        ang += (desired - ang) * 0.08;
+      } else {
+        ang += (-Math.PI / 2 - ang) * 0.012;                                  // gentle pull downwards
+      }
+      var st = STEP[depth] * rnd(0.8, 1.2);
+      var nx = x + Math.cos(ang) * st, ny = y + Math.sin(ang) * st, nz = Math.max(-1.6, Math.min(1.6, z + gauss() * 0.05));
+      if (Math.abs(nx) > X_LIMIT) { ang = Math.PI - ang; nx = x + Math.cos(ang) * st; }
+      var t = s / steps, fy = spreadAt(y);
+      birth = Math.max(birth0 + dist * K[depth] * 0.25, TOP - y);
+      segs.push({ a: [x, y, z], b: [nx, ny, nz], birth: birth, depth: depth, thick: THICK[depth] * (1 - 0.7 * t) * (0.18 + 0.82 * fy), col: col });
+      dist += st; x = nx; y = ny; z = nz;
+      if (depth < 4 && Math.random() < SPAWN[depth] * (0.12 + 0.88 * fy)) {
+        var side = Math.random() < 0.5 ? 1 : -1;
+        var cAng = ang + side * rnd(0.55, 1.25);
+        var cLen = rnd(LEN[depth + 1][0], LEN[depth + 1][1]) * (0.3 + 0.7 * fy);
+        var cCol = depth === 0 ? ((col + 1 + ((Math.random() * (PALETTE.length - 1)) | 0)) % PALETTE.length) : (Math.random() < 0.2 ? (col + 1) % PALETTE.length : col);
+        branch(x, y, z, cAng, depth + 1, cLen, birth, cCol, depth === 0 ? Math.random() : family, null, Math.min(limit, segs.length + CAP[depth + 1]));
+      }
+      // ivy leaves along thinner branches
+      if (depth >= 2 && Math.random() < 0.05) tips.push({ p: [x, y, z], birth: birth + 0.3, col: col, family: family, leaf: true });
+    }
+    if (depth >= 1) tips.push({ p: [x, y, z], birth: birth + 0.2, col: col, family: family, leaf: true });
+  }
+
+  var roots = small
+    ? [{ f: -0.55, col: 0 }, { f: 0.55, col: 2 }, { f: 0.05, col: 1 }]
+    : [{ f: -0.78, col: 0 }, { f: -0.3, col: 3 }, { f: 0.3, col: 1 }, { f: 0.78, col: 2 }];
+  var perRoot = Math.floor(MAX_SEGS / roots.length);
+  roots.forEach(function (r, i) {
+    MAX_SEGS_LOCAL = segs.length + perRoot;
+    var base = r.f * X_LIMIT, amp = X_LIMIT * 0.16, ph = rnd(0, 6.28), fr = rnd(0.12, 0.2);
+    var lane = function (y) { var f = spreadAt(y); return (base + amp * Math.sin(y * fr + ph)) * f + (i - (roots.length - 1) / 2) * 0.12; };
+    branch(lane(TOP), TOP, rnd(-0.5, 0.5), -Math.PI / 2, 0, DEPTH_TOTAL, 0, r.col, i / roots.length, lane, Infinity);
+  });
+
+  // ---------- particles along the branches ----------
+  var weights = segs.map(function (sg) {
+    var dx = sg.b[0] - sg.a[0], dy = sg.b[1] - sg.a[1], dz = sg.b[2] - sg.a[2];
+    sg.len = Math.hypot(dx, dy, dz); return sg.thick * sg.len;
+  });
+  var leafShare = 0.16;
+  var stemBudget = COUNT * (1 - leafShare), W = weights.reduce(function (s, w) { return s + w; }, 0);
+  var P = { pos: [], birth: [], col: [], depth: [], seed: [] };
+  function pushP(x, y, z, b, c, d, bright) {
+    P.pos.push(x, y, z); P.birth.push(b); P.depth.push(d); P.seed.push(Math.random());
+    var jitter = 0.85 + Math.random() * 0.3;
+    P.col.push(c.r * bright * jitter, c.g * bright * jitter, c.b * bright * jitter);
+  }
+  segs.forEach(function (sg, i) {
+    var exact = stemBudget * weights[i] / W, n = Math.floor(exact) + (Math.random() < exact % 1 ? 1 : 0);
+    var c = PALETTE[sg.col];
+    for (var k = 0; k < n; k++) {
+      var r = Math.random(), spread = sg.thick * 0.7;
+      pushP(sg.a[0] + (sg.b[0] - sg.a[0]) * r + gauss() * spread,
+            sg.a[1] + (sg.b[1] - sg.a[1]) * r + gauss() * spread,
+            sg.a[2] + (sg.b[2] - sg.a[2]) * r + gauss() * spread,
+            sg.birth + r * 0.05, c, sg.depth, 1.0 + (4 - sg.depth) * 0.08);
+    }
+  });
+  // leaves: small elongated clusters, slightly brighter
+  var leafBudget = COUNT * leafShare, perLeaf = Math.max(8, Math.floor(leafBudget / Math.max(1, tips.length)));
+  tips.forEach(function (tp) {
+    var c = PALETTE[tp.col], ang = rnd(0, Math.PI * 2), L = rnd(0.12, 0.26), Wd = L * 0.4;
+    var ca = Math.cos(ang), sa = Math.sin(ang);
+    for (var k = 0; k < perLeaf; k++) {
+      var u = gauss() * 0.5 * L, v = gauss() * 0.5 * Wd;
+      pushP(tp.p[0] + ca * u - sa * v + ca * L * 0.5, tp.p[1] + sa * u + ca * v + sa * L * 0.5, tp.p[2] + gauss() * 0.03,
+            tp.birth + Math.random() * 0.2, c, 4, 0.75);
+    }
+  });
+
+  var pg = new THREE.BufferGeometry();
+  pg.setAttribute('position', new THREE.Float32BufferAttribute(P.pos, 3));
+  pg.setAttribute('aBirth', new THREE.Float32BufferAttribute(P.birth, 1));
+  pg.setAttribute('aColor', new THREE.Float32BufferAttribute(P.col, 3));
+  pg.setAttribute('aDepth', new THREE.Float32BufferAttribute(P.depth, 1));
+  pg.setAttribute('aSeed', new THREE.Float32BufferAttribute(P.seed, 1));
+
+  var uniforms = {
+    uTime: { value: 0 }, uMotion: { value: reduce ? 0 : 1 }, uGrow: { value: 0 },
+    uPulse: { value: 0 }, uPulseOrigin: { value: new THREE.Vector3(99, 99, 0) }, uDPR: { value: DPR },
+    uMouse: { value: new THREE.Vector3(999, 999, 0) }, uMouseOn: { value: 0 },
+    uMorph: { value: 0 }, uIvy: { value: 0 }
+  };
+  var common = [
+    'uniform float uTime, uMotion, uGrow, uPulse, uMouseOn, uMorph, uIvy; uniform vec3 uPulseOrigin, uMouse;',
+    'float hoverAt(vec4 w){ return uMouseOn * smoothstep(2.2, 0.0, length(w.xy - uMouse.xy)); }',
+    // continuous sway field: everything at the same spot moves together, so stems, lines and leaves stay attached
+    'vec3 sway(vec3 p, float depth){',
+    '  float t = uTime * uMotion; float amp = 0.03 + depth * 0.035;',
+    '  return vec3(sin(p.y*0.9 + t*0.5), cos(p.x*0.7 + t*0.4), sin((p.x+p.y)*0.5 + t*0.3)) * amp;',
+    '}',
+    'float waveAt(inout vec4 w){',
+    '  float pd = length(w.xy - uPulseOrigin.xy);',
+    '  float front = (1.0 - uPulse) * 11.0;',
+    '  float band = uPulse * smoothstep(1.5, 0.0, abs(pd - front));',
+    '  w.z += band * 0.5;',
+    '  return band;',
+    '}'
+  ].join('\n');
+
+  var pMat = new THREE.ShaderMaterial({
+    uniforms: uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: common + '\n' + [
+      'uniform float uDPR; attribute float aBirth; attribute vec3 aColor; attribute float aDepth; attribute float aSeed; attribute float aClaimed;',
+      'varying vec3 vCol; varying float vA; varying float vHot; varying float vHov;',
+      'void main(){',
+      '  vec3 p = position + sway(position, aDepth);',
+      '  vec4 w = modelMatrix * vec4(p, 1.0);',
+      '  float band = waveAt(w);',
+      '  vec4 mv = viewMatrix * w;',
+      '  gl_Position = projectionMatrix * mv;',
+      '  float on = smoothstep(aBirth, aBirth + 0.35, uGrow);',
+      '  float fresh = 1.0 - smoothstep(0.0, 1.6, uGrow - aBirth);',
+      '  float hov = hoverAt(w);',
+      '  vHot = clamp(fresh * on + band, 0.0, 1.0); vHov = hov;',
+      '  float twinkle = 0.8 + 0.2 * sin(uTime * 1.5 + aSeed * 30.0);',
+      '  gl_PointSize = (16.0 + aSeed * 24.0 + vHot * 16.0 + hov * 14.0) * on * uDPR / -mv.z;',
+      '  vA = on * twinkle * (0.45 + 0.55 * smoothstep(-3.0, 2.0, w.z)) * (1.0 + hov * 1.6) * (1.0 - aClaimed);',
+      '  vCol = aColor;',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; varying float vA; varying float vHot; varying float vHov;',
+      'void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, 0., d); a *= a;',
+      '  vec3 col = mix(vCol * (1.6 + vHov * 1.6), vec3(1.0), vHot * 0.45 + vHov * 0.12);',
+      '  gl_FragColor = vec4(col, a * vA); }'
+    ].join('\n')
+  });
+  group.add(new THREE.Points(pg, pMat));
+
+  // ---------- thin skeleton lines (drawn as they grow) ----------
+  var L = { pos: [], birth: [], col: [], depth: [], end: [] };
+  segs.forEach(function (sg) {
+    var c = PALETTE[sg.col], br = 0.4 - sg.depth * 0.06;
+    L.pos.push(sg.a[0], sg.a[1], sg.a[2], sg.b[0], sg.b[1], sg.b[2]);
+    L.birth.push(sg.birth, sg.birth); L.depth.push(sg.depth, sg.depth); L.end.push(0, 1);
+    L.col.push(c.r * br, c.g * br, c.b * br, c.r * br, c.g * br, c.b * br);
+  });
+
+  // ---------- cross links between nearby tips of different branches ----------
+  var links = [];
+  var usedTip = new Set();
+  for (var i = 0; i < tips.length && links.length < (small ? 120 : 240); i++) {
+    if (usedTip.has(i)) continue;
+    for (var j = i + 1; j < tips.length; j++) {
+      if (Math.abs(tips[i].family - tips[j].family) < 0.02) continue;
+      var dx = tips[i].p[0] - tips[j].p[0], dy = tips[i].p[1] - tips[j].p[1];
+      if (Math.abs(dy) > 0.9 || usedTip.has(j)) continue;
+      var d = Math.hypot(dx, dy, tips[i].p[2] - tips[j].p[2]);
+      if (d > 0.2 && d < 0.6) { links.push([tips[i], tips[j]]); usedTip.add(i); usedTip.add(j); break; }
+    }
+  }
+  var linkBirths = [];
+  links.forEach(function (lk) {
+    var b = Math.max(lk[0].birth, lk[1].birth) + 0.9;
+    linkBirths.push(b);
+    var c = new THREE.Color('#9cc4ff');
+    L.pos.push(lk[0].p[0], lk[0].p[1], lk[0].p[2], lk[1].p[0], lk[1].p[1], lk[1].p[2]);
+    L.birth.push(b, b); L.depth.push(4, 4); L.end.push(0, 1);
+    L.col.push(c.r * 0.4, c.g * 0.4, c.b * 0.4, c.r * 0.4, c.g * 0.4, c.b * 0.4);
+  });
+  linkBirths.sort(function (a, b) { return a - b; });
+  branchBirths.sort(function (a, b) { return a - b; });
+
+  var lg = new THREE.BufferGeometry();
+  lg.setAttribute('position', new THREE.Float32BufferAttribute(L.pos, 3));
+  lg.setAttribute('aBirth', new THREE.Float32BufferAttribute(L.birth, 1));
+  lg.setAttribute('aColor', new THREE.Float32BufferAttribute(L.col, 3));
+  lg.setAttribute('aDepth', new THREE.Float32BufferAttribute(L.depth, 1));
+  lg.setAttribute('aEnd', new THREE.Float32BufferAttribute(L.end, 1));
+  var lMat = new THREE.ShaderMaterial({
+    uniforms: uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: common + '\n' + [
+      'attribute float aBirth; attribute vec3 aColor; attribute float aDepth; attribute float aEnd;',
+      'varying vec3 vCol; varying float vA;',
+      'void main(){',
+      '  vec3 p = position + sway(position, aDepth);',
+      '  vec4 w = modelMatrix * vec4(p, 1.0);',
+      '  float band = waveAt(w);',
+      '  gl_Position = projectionMatrix * viewMatrix * w;',
+      '  float b = aBirth + aEnd * 0.12;',
+      '  float on = smoothstep(b, b + 0.08, uGrow);',
+      '  float fresh = 1.0 - smoothstep(0.0, 1.2, uGrow - aBirth);',
+      '  float hov = hoverAt(w);',
+      '  vA = on * (0.5 + fresh * 0.8 + band + hov * 2.6) * uIvy;',
+      '  vCol = aColor;',
+      '}'
+    ].join('\n'),
+    fragmentShader: 'varying vec3 vCol; varying float vA; void main(){ gl_FragColor = vec4(vCol, vA); }'
+  });
+  group.add(new THREE.LineSegments(lg, lMat));
+
+  // ---------- hero: a breathing field of points that collapses into the top of the ivy on scroll ----------
+  var FIELD = small ? 9000 : 18000;
+  var topPts = [];                                   // ivy particles in the first ~1.6 screens: the field turns into them
+  for (var tp = 0; tp < P.birth.length; tp++) {
+    if (P.pos[tp * 3 + 1] > TOP - visH * 1.6) topPts.push(tp);
+  }
+  FIELD = Math.max(FIELD, topPts.length);
+  var claimed = new Float32Array(P.birth.length), mult = new Float32Array(P.birth.length);
+  var fPos = new Float32Array(FIELD * 3), fTgt = new Float32Array(FIELD * 3), fCol = new Float32Array(FIELD * 3);
+  var fSeed = new Float32Array(FIELD), fTSeed = new Float32Array(FIELD), fDepth = new Float32Array(FIELD), fIdx = new Int32Array(FIELD);
+  var fCols = Math.round(Math.sqrt(FIELD * 1.9)), fRows = Math.ceil(FIELD / fCols);
+  var tilt = -1.08, ct = Math.cos(tilt), st = Math.sin(tilt), fW = visW * 1.5;
+  // field positions first
+  // hero: scattered dust filling the whole first screen in depth (a bit denser towards the bottom and the sides)
+  for (var fi = 0; fi < FIELD; fi++) {
+    var fz = rnd(-5, 2.5);
+    var scale = (camZ - fz) / camZ;                             // spread wider further back so the screen stays covered
+    var ux = Math.random() * 2 - 1;
+    ux = Math.sign(ux) * Math.pow(Math.abs(ux), 0.8);
+    var uy = Math.pow(Math.random(), 0.85) * 2 - 1;            // y in [-1, 1], bias downwards
+    fPos[fi * 3] = ux * (visW / 2 + 0.6) * scale;
+    fPos[fi * 3 + 1] = -uy * (visH / 2 + 0.4) * scale;
+    fPos[fi * 3 + 2] = fz;
+    fSeed[fi] = Math.random();
+  }
+  // each point goes to a branch in its own vertical strip, keeping its top-to-bottom order:
+  // the floor rebuilds itself into the roots right where it is, instead of flying across the screen
+  fW = visW * 1.8;
+  var COLS = 48, colW = (fW + 2) / COLS;
+  function colOf(x) { return Math.max(0, Math.min(COLS - 1, Math.floor((x + fW / 2 + 1) / colW))); }
+  var fBins = [], tBins = [];
+  for (var cb = 0; cb < COLS; cb++) { fBins.push([]); tBins.push([]); }
+  for (var fb = 0; fb < FIELD; fb++) fBins[colOf(fPos[fb * 3])].push(fb);
+  topPts.forEach(function (ti) { tBins[colOf(P.pos[ti * 3])].push(ti); });
+  function nearestBin(c) { for (var dd = 0; dd < COLS; dd++) { if (c - dd >= 0 && tBins[c - dd].length) return tBins[c - dd]; if (c + dd < COLS && tBins[c + dd].length) return tBins[c + dd]; } return topPts; }
+  for (var c2 = 0; c2 < COLS; c2++) {
+    var fl = fBins[c2], tl = tBins[c2].length ? tBins[c2] : nearestBin(c2);
+    fl.sort(function (a, b) { return fPos[a * 3 + 1] - fPos[b * 3 + 1]; });             // field: low → high
+    tl = tl.slice().sort(function (a, b) { return P.pos[a * 3 + 1] - P.pos[b * 3 + 1]; }); // roots: low → high
+    fl.forEach(function (fIdx2, k) {
+      var tI = tl.length ? tl[Math.min(tl.length - 1, Math.floor(k * tl.length / fl.length))] : 0;
+      fIdx[fIdx2] = tI; claimed[tI] = 1; mult[tI] += 1;
+      fTgt[fIdx2 * 3] = P.pos[tI * 3]; fTgt[fIdx2 * 3 + 1] = P.pos[tI * 3 + 1]; fTgt[fIdx2 * 3 + 2] = P.pos[tI * 3 + 2];
+      fCol[fIdx2 * 3] = P.col[tI * 3]; fCol[fIdx2 * 3 + 1] = P.col[tI * 3 + 1]; fCol[fIdx2 * 3 + 2] = P.col[tI * 3 + 2];
+      fTSeed[fIdx2] = P.seed[tI]; fDepth[fIdx2] = P.depth[tI];
+    });
+  }
+  // top particles no field point reached stay visible on their own
+  topPts.forEach(function (ti) { if (!mult[ti]) claimed[ti] = 0; });
+  var fMult = new Float32Array(FIELD);
+  for (var fm = 0; fm < FIELD; fm++) fMult[fm] = Math.max(1, mult[fIdx[fm]]);
+  pg.setAttribute('aClaimed', new THREE.BufferAttribute(claimed, 1));
+
+  var fg = new THREE.BufferGeometry();
+  fg.setAttribute('position', new THREE.BufferAttribute(fPos, 3));
+  fg.setAttribute('aTarget', new THREE.BufferAttribute(fTgt, 3));
+  fg.setAttribute('aColor', new THREE.BufferAttribute(fCol, 3));
+  fg.setAttribute('aSeed', new THREE.BufferAttribute(fSeed, 1));
+  fg.setAttribute('aTSeed', new THREE.BufferAttribute(fTSeed, 1));
+  fg.setAttribute('aDepth', new THREE.BufferAttribute(fDepth, 1));
+  fg.setAttribute('aMult', new THREE.BufferAttribute(fMult, 1));
+  uniforms.uFieldColor = { value: new THREE.Color('#3d8bff') };
+  var fMat = new THREE.ShaderMaterial({
+    uniforms: uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: common + '\n' + [
+      'uniform float uDPR; uniform vec3 uFieldColor;',
+      'attribute vec3 aTarget; attribute vec3 aColor; attribute float aSeed; attribute float aTSeed; attribute float aDepth; attribute float aMult;',
+      'varying vec3 vCol; varying float vA; varying float vHov;',
+      'float ease(float x){ x = clamp(x, 0., 1.); return x * x * (3. - 2. * x); }',
+      'void main(){',
+      '  float t = uTime * uMotion;',
+      '  vec3 f = position;',
+      '  f += vec3(sin(t * 0.21 + aSeed * 6.28), cos(t * 0.17 + aSeed * 4.0), sin(t * 0.13 + aSeed * 9.0)) * 0.18;',
+      '  float m = ease((uMorph - aSeed * 0.2) / 0.6);',
+      '  vec3 tgt = aTarget + sway(aTarget, aDepth);',                                   // exactly where the ivy particle lives
+      '  vec3 p = mix(f, tgt, m) + vec3(0.0, 0.0, sin(m * 3.14159) * (0.4 + aSeed * 0.6));',
+      '  vec4 w = modelMatrix * vec4(p, 1.0);',
+      '  float band = waveAt(w);',
+      '  float hov = hoverAt(w);',
+      '  vec4 mv = viewMatrix * w;',
+      '  gl_Position = projectionMatrix * mv;',
+      // at m = 1 size, colour and alpha match the ivy particle 1:1, so the hand-over is invisible
+      '  float sField = 16.0 + aSeed * 22.0;',
+      '  float sIvy = 16.0 + aTSeed * 24.0;',
+      '  gl_PointSize = (mix(sField, sIvy, m) + hov * 14.0) * uDPR / -mv.z;',
+      '  float twinkle = 0.8 + 0.2 * sin(uTime * 1.5 + aTSeed * 30.0);',
+      '  float aField = (0.35 + 0.65 * smoothstep(-5.0, 2.5, w.z)) * 0.85;',
+      '  float aIvy = twinkle * (0.45 + 0.55 * smoothstep(-3.0, 2.0, w.z)) / aMult;',
+      '  vA = mix(aField, aIvy, m) * (1.0 + band + hov * 1.6);',
+      '  vCol = mix(uFieldColor * 1.4 / 1.6, aColor, m);',
+      '  vHov = hov;',
+      '}'
+    ].join('\n'),
+    fragmentShader: [
+      'varying vec3 vCol; varying float vA; varying float vHov;',
+      'void main(){ float d = length(gl_PointCoord - .5); float a = smoothstep(.5, 0., d); a *= a;',
+      '  vec3 col = vCol * (1.6 + vHov * 0.9);',
+      '  gl_FragColor = vec4(col, a * vA); }'
+    ].join('\n')
+  });
+  var fieldPoints = new THREE.Points(fg, fMat);
+  group.add(fieldPoints);
+
+  // ---------- input ----------
+  var ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+  var ndc = new THREE.Vector2(), hit = new THREE.Vector3(), tiltX = 0, tiltY = 0;
+  var mouseClient = null, mouseOnTarget = 0;
+  document.addEventListener('pointerleave', function () { mouseOnTarget = 0; });
+  addEventListener('blur', function () { mouseOnTarget = 0; });
+  addEventListener('pointermove', function (ev) {
+    mouseClient = [ev.clientX, ev.clientY]; mouseOnTarget = 1;
+    tiltX = -((ev.clientY / innerHeight) * 2 - 1) * 0.05;
+    tiltY = ((ev.clientX / innerWidth) * 2 - 1) * 0.08;
+  }, { passive: true });
+  addEventListener('pointerdown', function (ev) {
+    if (ev.target.closest && ev.target.closest('button, a, .card')) return;
+    ndc.set((ev.clientX / innerWidth) * 2 - 1, -(ev.clientY / innerHeight) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    var pl = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    if (ray.ray.intersectPlane(pl, hit)) { uniforms.uPulseOrigin.value.copy(hit); uniforms.uPulse.value = 1; }
+  });
+
+  function resize() {
+    renderer.setSize(innerWidth, innerHeight, false);
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+  }
+  addEventListener('resize', resize); resize();
+
+  function countBelow(arr, v) { var lo = 0, hi = arr.length; while (lo < hi) { var m = (lo + hi) >> 1; if (arr[m] < v) lo = m + 1; else hi = m; } return lo; }
+  var brEl = document.getElementById('branch-count'), lkEl = document.getElementById('links-count'), lastB = -1, lastL = -1;
+
+  // ---------- loop ----------
+  var clock = new THREE.Clock(), camY = 0;
+  function frame() {
+    var dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+    uniforms.uTime.value = t;
+    uniforms.uPulse.value = Math.max(0, uniforms.uPulse.value - dt * 0.55);
+
+    // the ivy is attached to the page: camera follows scroll 1:1
+    var targetY = -(scrollY / innerHeight) * visH;
+    camY += (targetY - camY) * Math.min(1, dt * 10);
+    camera.position.y = camY;
+    var morphTarget = Math.min(1, Math.max(0, scrollY / (innerHeight * 0.9)));
+    uniforms.uMorph.value += (morphTarget - uniforms.uMorph.value) * Math.min(1, dt * 4);
+    uniforms.uIvy.value = Math.min(1, Math.max(0, (uniforms.uMorph.value - 0.45) / 0.5));
+
+
+    // growth front sits in the lower part of the screen; it never jumps, it grows
+    var depthNow = -camY;
+    var growTarget = depthNow + visH * 1.08;   // front sits just below the bottom edge
+    var g = uniforms.uGrow.value, diff = growTarget - g;
+    var maxSpeed = reduce ? 100 : 9;
+    uniforms.uGrow.value = g + Math.sign(diff) * Math.min(Math.abs(diff), maxSpeed * dt, Math.abs(diff) * dt * 6 + 0.004);
+
+    if (mouseClient) {
+      ndc.set((mouseClient[0] / innerWidth) * 2 - 1, -(mouseClient[1] / innerHeight) * 2 + 1);
+      ray.setFromCamera(ndc, camera);
+      if (ray.ray.intersectPlane(plane, hit)) uniforms.uMouse.value.lerp(hit, Math.min(1, dt * 10));
+    }
+    uniforms.uMouseOn.value += (mouseOnTarget - uniforms.uMouseOn.value) * Math.min(1, dt * 5);
+    group.rotation.x += (tiltX - group.rotation.x) * Math.min(1, dt * 3);
+    group.rotation.y += (tiltY - group.rotation.y) * Math.min(1, dt * 3);
+
+    var nb = countBelow(branchBirths, uniforms.uGrow.value), nl = countBelow(linkBirths, uniforms.uGrow.value);
+    if (nb !== lastB) { lastB = nb; brEl.textContent = nb.toLocaleString('uk-UA'); }
+    if (nl !== lastL) { lastL = nl; lkEl.textContent = nl.toLocaleString('uk-UA'); }
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>

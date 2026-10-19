@@ -1,0 +1,128 @@
+<title>Cloud Sphere About</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600&family=Manrope:wght@400;500;600&display=swap">
+<style>
+/* layout: one centred section — heading, manifesto with inline UI chips lit by scroll, three fact cards with micro-visuals */
+:root{
+  --bg:#05070d; --fg:#e8edf7; --body:#8b95ab; --dim:#2a3142; --blue:#3d8bff; --violet:#a78bfa; --mint:#4fe3c1; --cyan:#5ee0ff; --rose:#ff7ab6;
+  --glass:rgb(12 15 24/.66); --line:rgb(255 255 255/.08);
+  --f-d:"Geologica",system-ui,sans-serif; --f-b:"Manrope",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--f-b);font-size:16px;line-height:1.5;
+  background:radial-gradient(60% 40% at 50% 45%,rgb(61 139 255/.07),transparent 70%),var(--bg)}
+.spacer{height:70vh;display:grid;place-items:center;color:var(--body);font-size:14px}
+section{min-height:100vh;display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:center;
+  padding-block:96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font:600 12px/1 var(--f-b);letter-spacing:.12em;text-transform:uppercase;color:var(--violet);
+  background:rgb(167 139 250/.1);border-radius:999px;padding:7px 12px}
+.eyebrow i{width:5px;height:5px;border-radius:50%;background:currentColor}
+h2{font:500 clamp(36px,4vw,60px)/1.04 var(--f-d);letter-spacing:-.04em;margin:20px 0 0;max-width:16ch;text-wrap:balance}
+.g-mind{background:linear-gradient(100deg,#a78bfa,#3d8bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* manifesto: medium weight, quieter than the heading; words light up as you read */
+.manifesto{margin:56px 0 0;max-width:30em;font:500 clamp(21px,2.1vw,31px)/1.55 var(--f-d);letter-spacing:-.02em;text-wrap:pretty}
+.w{color:var(--dim);transition:color .6s ease}
+.w.on{color:var(--fg)}
+.w.k.on{color:var(--cyan)}
+/* inline UI chips sit in the line like words */
+.chip{display:inline-flex;align-items:center;gap:.35em;vertical-align:.12em;height:1.45em;padding:0 .55em 0 .4em;margin:0 .08em;
+  font:500 .58em/1 var(--f-b);letter-spacing:0;border-radius:999px;border:1px solid var(--line);background:var(--glass);color:var(--body);
+  transform:scale(.85);opacity:.35;transition:transform .45s cubic-bezier(.2,.9,.3,1.3),opacity .35s,color .35s,border-color .35s}
+.chip.on{transform:none;opacity:1;color:var(--fg);border-color:rgb(255 255 255/.16)}
+.chip svg{width:1.25em;height:1.25em;flex:none}
+.chip .tag{font-size:.85em;padding:.2em .45em;border-radius:.5em;font-weight:600}
+.t-psd{background:rgb(167 139 250/.16);color:var(--violet)}
+.t-png{background:rgb(94 224 255/.14);color:var(--cyan)}
+.chip.lock.on{color:var(--mint);border-color:rgb(79 227 193/.35);box-shadow:0 0 24px rgb(79 227 193/.18)}
+.arrow{display:inline-block;width:1.1em;height:1px;vertical-align:.32em;background:linear-gradient(90deg,var(--violet),var(--cyan));
+  transform:scaleX(0);transform-origin:left;transition:transform .5s .1s}
+.arrow.on{transform:none}
+
+/* facts: three glass cards, each with a tiny visual of its own */
+.facts{margin-top:72px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;width:100%;max-width:960px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:24px;text-align:left;backdrop-filter:blur(14px);
+  display:flex;flex-direction:column;gap:18px;min-width:0}
+.card b{display:block;font:600 40px/1 var(--f-d);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.card span.l{display:block;margin-top:8px;color:var(--body);font-size:14px}
+.viz{height:36px;display:flex;align-items:center}
+.tl{position:relative;flex:1;height:2px;background:rgb(255 255 255/.08);border-radius:2px}
+.tl::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--violet),var(--blue));border-radius:2px}
+.tl i{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;background:var(--bg);border:1.5px solid var(--blue);transform:translate(-50%,-50%)}
+.tl i:first-child{border-color:var(--violet)} .tl i:last-child{background:var(--blue);box-shadow:0 0 12px var(--blue)}
+.tl em{position:absolute;top:12px;font:500 11px var(--f-b);color:var(--body);font-style:normal;transform:translateX(-50%)}
+.av{display:flex}
+.av span{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 12px var(--f-b);color:#0b0e16;margin-left:-8px;border:2px solid #0c0f18}
+.av span:first-child{margin-left:0}
+.av .more{background:rgb(255 255 255/.08);color:var(--fg)}
+.logos{display:flex;flex-wrap:wrap;gap:6px}
+.logos span{font:500 12px var(--f-b);color:var(--body);border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+@media (max-width:760px){.facts{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.w,.chip,.arrow{transition:none}}
+</style>
+
+<div class="spacer">↓ скроль до секції</div>
+<section aria-labelledby="about-title">
+  <span class="eyebrow"><i></i>02 · Хто ми</span>
+  <h2 id="about-title">Ми пам'ятаємо, <span class="g-mind">щоб ти не мусив.</span></h2>
+
+  <p class="manifesto" id="m">
+    Ми дизайнери та інженери, які роками губили фінали в
+    <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 8.5 14 3l-2.5 10L8 10l-2 2.5V9.5L11 5"/></svg>Telegram</span>,
+    на <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="5" width="10" height="9" rx="1.5"/><path d="M6 5V2h4v3"/></svg>флешках</span>
+    і в <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><path d="m2.5 4.5 5.5 4 5.5-4"/></svg>пошті</span>.
+    Тому зробили хмару, що пам'ятає не лише файли, а й <span class="k">зв'язки між ними:</span>
+    з якого <span class="chip"><span class="tag t-psd">.psd</span>kv_master</span><span class="arrow"></span><span class="chip"><span class="tag t-png">.png</span>banner</span>
+    народився банер і яка версія фінальна. Усе шифрується ще на твоєму
+    <span class="chip lock"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>пристрої</span>,
+    тож навіть ми не бачимо твоїх файлів.
+  </p>
+
+  <div class="facts">
+    <div class="card">
+      <div class="viz"><div class="tl"><i style="left:0"></i><i style="left:50%"></i><i style="left:100%"></i><em style="left:0">2021</em><em style="left:50%">2023</em><em style="left:100%">зараз</em></div></div>
+      <div><b>2021</b><span class="l">почали у Львові з однієї втраченої правки</span></div>
+    </div>
+    <div class="card">
+      <div class="viz av"><span style="background:#a78bfa">ОК</span><span style="background:#5ee0ff">ТМ</span><span style="background:#4fe3c1">ІР</span><span style="background:#ff7ab6">АЛ</span><span style="background:#3d8bff">ДС</span><span class="more">+35</span></div>
+      <div><b>40 людей</b><span class="l">дизайнери та інженери у Львові й Варшаві</span></div>
+    </div>
+    <div class="card">
+      <div class="viz logos"><span>Пікселярня</span><span>VARTA</span><span>Кадр 24</span></div>
+      <div><b>12 400</b><span class="l">студій уже тримають роботу в Cloud Sphere</span></div>
+    </div>
+  </div>
+</section>
+<div class="spacer"></div>
+
+<script>
+(() => {
+  const m = document.getElementById('m');
+  // split plain text into word spans; chips, arrows and key phrases stay whole units
+  const units = [];
+  [...m.childNodes].forEach(n => {
+    if (n.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach(p => {
+        if (!p) return;
+        if (/^\s+$/.test(p)) { frag.append(p); return; }
+        const s = document.createElement('span'); s.className = 'w'; s.textContent = p; frag.append(s); units.push(s);
+      });
+      n.replaceWith(frag);
+    } else if (n.classList.contains('k')) {
+      n.classList.add('w'); units.push(n);
+    } else units.push(n);
+  });
+  // time-based: once the text is on screen, words brighten one after another (~4 s total), then stay lit
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STEP = 55;
+  units.forEach((u, i) => { u.style.transitionDelay = reduce ? '0ms' : (i * STEP) + 'ms'; });
+  const io = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting) return;
+    units.forEach(u => u.classList.add('on'));
+    io.disconnect();
+  }, { rootMargin: '0px 0px -15% 0px' });
+  io.observe(m);
+})();
+</script>
