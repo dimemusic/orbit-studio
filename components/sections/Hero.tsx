@@ -3,7 +3,7 @@ import { G } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { LogoStrip } from "./Logos";
 
-/** 01: the promise, one primary + one secondary CTA, availability + trust strip at the bottom of the screen. */
+/** 01: the promise, one primary + one secondary CTA, stats strip at the bottom of the screen. */
 export function Hero() {
   const [first, second, last] = HERO.title;
   return (

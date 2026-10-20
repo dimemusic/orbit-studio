@@ -252,6 +252,7 @@ function ContactForm() {
             <Button type="submit" disabled={busy} className="mt-1 w-full disabled:cursor-progress disabled:opacity-80 sm:w-auto sm:self-start">
               {busy ? CONTACT.sending : CONTACT.submit}
             </Button>
+            <p className="text-[14px] text-grey">{CONTACT.availability}</p>
           </form>
 
           <div

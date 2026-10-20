@@ -301,22 +301,31 @@ export function buildIvy({ visH, visW, pageScreens, small }: IvyParams): IvyData
   const top = new Float32Array(pBirth.length);
 
   // sparse dust: fixed count, not raised to the number of top particles
-  const FIELD = small ? 4000 : 7200;
+  const FIELD = small ? 2400 : 4300;
   // camera distance for this view (visH = 2 · tan(22.5°) · camZ)
   const camZ = visH / (2 * Math.tan((22.5 * Math.PI) / 180));
   const fPos = new Float32Array(FIELD * 3);
   const fStagger = new Float32Array(FIELD);
   // hero: scattered dust filling the whole first screen in depth (a bit denser towards the bottom and the sides)
-  for (let i = 0; i < FIELD; i++) {
+  // rejection sampling: small (low stagger) and dim (far) points are mostly dropped, bright ones stay;
+  // the middle of the screen around the CTA buttons is thinned further so no dense cluster sits behind them
+  for (let i = 0; i < FIELD; ) {
     const fz = rnd(-5, 2.5);
     const scale = (camZ - fz) / camZ; // spread wider further back so the screen stays covered
     let ux = Math.random() * 2 - 1;
     ux = Math.sign(ux) * Math.pow(Math.abs(ux), 0.8);
     const uy = Math.pow(Math.random(), 0.85) * 2 - 1; // y in [-1, 1], bias downwards
+    const stagger = Math.random();
+    const bright = 0.5 * stagger + 0.5 * ((fz + 5) / 7.5);
+    if (Math.random() > 0.15 + 0.85 * bright) continue;
+    const sx = (ux * (visW / 2 + 0.6)) / visW; // screen position at z = 0, fraction of the view
+    const sy = (-uy * (visH / 2 + 0.4)) / visH;
+    if (Math.abs(sx) < 0.2 && Math.abs(sy + 0.12) < 0.1 && Math.random() < 0.6) continue;
     fPos[i * 3] = ux * (visW / 2 + 0.6) * scale;
     fPos[i * 3 + 1] = -uy * (visH / 2 + 0.4) * scale;
     fPos[i * 3 + 2] = fz;
-    fStagger[i] = Math.random();
+    fStagger[i] = stagger;
+    i++;
   }
 
   const fTarget = new Float32Array(FIELD * 3);

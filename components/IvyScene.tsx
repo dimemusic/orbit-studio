@@ -44,6 +44,8 @@ type NodeUi = {
   markers: (HTMLDivElement | null)[];
   /** case shown right now (node under the cursor, or the hovered case card) */
   hot: number | null;
+  /** the glass preview is allowed (node hit by the cursor, not a hovered card) */
+  preview: boolean;
   /** set by the Work cards (CASE_HOVER) */
   forced: number | null;
 };
@@ -52,7 +54,7 @@ const NODE_HIT = 40;
 /** max snap distance from an anchor to an ivy particle (world units) */
 const NODE_SNAP = 1.1;
 
-type IvyProps = { setup: Setup; reduce: boolean; nodes: RefObject<NodeUi>; onHot: (i: number | null) => void };
+type IvyProps = { setup: Setup; reduce: boolean; nodes: RefObject<NodeUi>; onHot: (i: number | null, preview: boolean) => void };
 
 function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
   const { data, camZ, visH } = setup;
@@ -208,7 +210,7 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
   }, [camera, camZ]);
 
   // ---------- input: listeners on window, the canvas itself ignores pointer events ----------
-  const input = useRef({ client: null as [number, number] | null, onTarget: 0, tiltX: 0, tiltY: 0 });
+  const input = useRef({ client: null as [number, number] | null, onTarget: 0, overGrid: false, tiltX: 0, tiltY: 0 });
   useEffect(() => {
     const ray = new THREE.Raycaster();
     const ndc = new THREE.Vector2();
@@ -219,6 +221,7 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
     const onMove = (ev: PointerEvent) => {
       st.client = [ev.clientX, ev.clientY];
       st.onTarget = 1;
+      st.overGrid = !!(ev.target as Element | null)?.closest?.("[data-work-grid]");
       st.tiltX = -((ev.clientY / window.innerHeight) * 2 - 1) * 0.05;
       st.tiltY = ((ev.clientX / window.innerWidth) * 2 - 1) * 0.08;
     };
@@ -323,13 +326,14 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
       const H = window.innerHeight;
       let hit: number | null = null;
       let bd = NODE_HIT * NODE_HIT;
+      const overGrid = st.overGrid;
       for (const n of ui.world) {
         L.node.copy(n.p).applyMatrix4(grp.matrixWorld).project(camera);
         const sx = ((L.node.x + 1) / 2) * W;
         const sy = ((1 - L.node.y) / 2) * H;
         const el = ui.markers[n.i];
         if (el) el.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`;
-        if (st.client && st.onTarget) {
+        if (st.client && st.onTarget && !overGrid) {
           const d = (st.client[0] - sx) ** 2 + (st.client[1] - sy) ** 2;
           if (d < bd) {
             bd = d;
@@ -338,9 +342,12 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
         }
       }
       const show = hit ?? ui.forced;
-      if (show !== ui.hot) {
+      // glass preview only for a node hit in the margin, never while a case card is hovered (it would cover the cards)
+      const preview = hit !== null;
+      if (show !== ui.hot || preview !== ui.preview) {
         ui.hot = show;
-        onHot(show);
+        ui.preview = preview;
+        onHot(show, preview);
       }
     }
   });
@@ -366,8 +373,9 @@ export default function IvyScene() {
   );
   // case nodes only for hover-capable fine pointers (touch keeps the plain ivy)
   const fine = useMemo(() => typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches, []);
-  const nodes = useRef<NodeUi>({ enabled: fine, world: [], markers: [], hot: null, forced: null });
+  const nodes = useRef<NodeUi>({ enabled: fine, world: [], markers: [], hot: null, preview: false, forced: null });
   const [hot, setHot] = useState<number | null>(null);
+  const [preview, setPreview] = useState(false);
 
   // a Work card hover lights its node; the shown case marks its card (data-hot) so both light up together
   useEffect(() => {
@@ -458,16 +466,20 @@ export default function IvyScene() {
           style={{ pointerEvents: "none" }}
           fallback={<p className="fixed inset-x-4 bottom-20 text-center text-[13px] text-grey">Цей браузер не підтримує WebGL.</p>}
         >
-          {setup && <Ivy setup={setup} reduce={reduce} nodes={nodes} onHot={setHot} />}
+          {setup && <Ivy setup={setup} reduce={reduce} nodes={nodes} onHot={(i, p) => {
+              setHot(i);
+              setPreview(p);
+            }}
+          />}
         </Canvas>
       </div>
-      {fine && <CaseNodes nodes={nodes} hot={hot} />}
+      {fine && <CaseNodes nodes={nodes} hot={hot} preview={preview} />}
     </>
   );
 }
 
 /** DOM layer above the content: one marker per case (moved by the render loop) + a glass preview on hover. */
-function CaseNodes({ nodes, hot }: { nodes: RefObject<NodeUi>; hot: number | null }) {
+function CaseNodes({ nodes, hot, preview }: { nodes: RefObject<NodeUi>; hot: number | null; preview: boolean }) {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[3] overflow-hidden">
       {WORK.cases.map((c, i) => {
@@ -493,7 +505,7 @@ function CaseNodes({ nodes, hot }: { nodes: RefObject<NodeUi>; hot: number | nul
             <div
               className={`card absolute top-0 w-[248px] -translate-y-1/2 p-3 text-left transition-[translate,visibility] duration-500 ease-[var(--ease)] ${
                 right ? "right-7" : "left-7"
-              } ${on ? "visible translate-x-0" : `invisible ${right ? "translate-x-2" : "-translate-x-2"}`}`}
+              } ${on && preview ? "visible translate-x-0" : `invisible ${right ? "translate-x-2" : "-translate-x-2"}`}`}
             >
               <div
                 className="grid aspect-[16/10] place-items-center rounded-lg border border-white/[0.07]"

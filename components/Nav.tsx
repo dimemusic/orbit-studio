@@ -53,8 +53,8 @@ export function Nav() {
             <Logo />
           </Link>
 
-          {/* gap-6 = 24px minimum between every link */}
-          <ul className="hidden flex-1 items-center justify-center gap-6 lg:flex xl:gap-8">
+          {/* gap grows with width: 40px floor, 64px at 1280, 76px from 1440; below lg the links live in the mobile menu */}
+          <ul className="hidden flex-1 items-center justify-center gap-6 lg:flex lg:gap-[clamp(40px,calc(7.5vw_-_32px),76px)]">
             {LINKS.map((l) => {
               const on = isActive(l.href, pathname);
               return (
