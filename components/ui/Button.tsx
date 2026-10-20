@@ -6,13 +6,12 @@ type Size = "lg" | "nav";
 
 const base =
   "inline-flex items-center justify-center whitespace-nowrap rounded-full font-semibold tracking-[-0.01em] " +
-  "transition-[background-color,border-color,color,box-shadow,transform] duration-300 ease-[var(--ease)] " +
-  "hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]";
+  "transition-[background-color,border-color,color,box-shadow] duration-200 ease-out";
 
 const variants: Record<Variant, string> = {
   primary: "btn-primary",
   secondary: "btn-secondary",
-  text: "text-body hover:text-fg hover:translate-y-0",
+  text: "text-body hover:text-fg",
 };
 
 const sizes: Record<Size, string> = {

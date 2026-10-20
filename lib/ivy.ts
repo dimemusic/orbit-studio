@@ -301,7 +301,7 @@ export function buildIvy({ visH, visW, pageScreens, small }: IvyParams): IvyData
   const top = new Float32Array(pBirth.length);
 
   // sparse dust: fixed count, not raised to the number of top particles
-  const FIELD = small ? 5000 : 9000;
+  const FIELD = small ? 4000 : 7200;
   // camera distance for this view (visH = 2 · tan(22.5°) · camZ)
   const camZ = visH / (2 * Math.tan((22.5 * Math.PI) / 180));
   const fPos = new Float32Array(FIELD * 3);

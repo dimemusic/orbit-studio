@@ -28,7 +28,7 @@ const TIMELINE = [
   { at: "100%", t: "Запуск" },
 ];
 
-const CHIPS = ["Дизайн", "Код", "Адмінка"];
+const CHIPS = ["Дизайн", "Код", "Панель керування"];
 
 const [F_SITES, F_WEEKS, F_ONE, F_FREE] = ABOUT.facts;
 

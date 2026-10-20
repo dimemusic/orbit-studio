@@ -251,7 +251,7 @@ const PHOTO_B = "radial-gradient(circle at 60% 40%, #bbf7d0, #34d399 45%, #06281
 /** Window chrome + sidebar + editor + live site preview. Shared by all three steps. */
 function CmsWindow({ section, editor, site, saved }: { section: number; editor: ReactNode; site: ReactNode; saved: boolean }) {
   return (
-    <figure aria-label="Демо адмінки: клієнт змінює ціну, фото й товари сам" className="w-full">
+    <figure aria-label="Демо панелі керування: клієнт змінює ціну, фото й товари сам" className="w-full">
       <div className="flex h-11 items-center border-b border-hairline px-4">
         <span aria-hidden="true" className="flex gap-1.5">
           <i className="size-2.5 rounded-full bg-white/15" />
