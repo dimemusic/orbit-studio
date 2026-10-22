@@ -26,7 +26,6 @@ export const CTA = {
 export const NAV = [
   { href: "/#work", label: "Роботи" },
   { href: "/#services", label: "Послуги" },
-  { href: "/#admin", label: "Панель керування" },
   { href: "/#process", label: "Процес" },
   { href: "/#faq", label: "FAQ" },
 ];
@@ -50,7 +49,6 @@ export type Case = {
   kind: string;
   text: string;
   tags: string[];
-  result: string;
   /** media from assets/cases/; null = placeholder visual */
   media: string | null;
   /** live project link, null when there is none (yet) */
@@ -75,7 +73,6 @@ export const WORK = {
       kind: "Магазин напівфабрикатів",
       text: "Сайт магазину напівфабрикатів з панеллю керування: товари, ціни й фото клієнт змінює сам.",
       tags: ["Дизайн", "Next.js", "Sanity"],
-      result: "[РЕЗУЛЬТАТ]",
       media: "/cases/maina.webp",
       url: null,
       status: "Живий проєкт",
@@ -88,9 +85,8 @@ export const WORK = {
       kind: "Архітектурне бюро",
       text: "Сайт бюро, що проєктує футуристичні будинки.",
       tags: ["Дизайн", "Next.js"],
-      result: "[РЕЗУЛЬТАТ]",
       media: "/cases/biganskiy.webp",
-      url: null,
+      url: "https://biganskiy-site.vercel.app",
       status: "Концепт",
       color: "#a78bfa",
       accent: "violet",
@@ -101,7 +97,6 @@ export const WORK = {
       kind: "SaaS-лендинг",
       text: "Лендинг SaaS-продукту з інтерактивними 3D-частинками на фоні.",
       tags: ["Дизайн", "Next.js", "three.js"],
-      result: "[РЕЗУЛЬТАТ]",
       media: "/cases/cloudsphere.webp",
       url: null,
       status: "Концепт",
@@ -114,7 +109,6 @@ export const WORK = {
       kind: "Домашня пекарня",
       text: "Лендинг домашньої пекарні.",
       tags: ["Дизайн", "Лендинг"],
-      result: "[РЕЗУЛЬТАТ]",
       media: "/cases/krendel.webp",
       url: null,
       status: "Концепт",
@@ -128,25 +122,6 @@ export const WORK = {
   },
 };
 
-export const ABOUT = {
-  label: "Хто ми",
-  title: ["Одна команда.", "Від макета до панелі керування."],
-  /** manifesto: hl = phrase lit in colour */
-  manifesto: [
-    { text: "Ми студія з Львова. Робимо сайти, які продають, і ведемо їх" },
-    { text: "від першого ескізу до панелі керування", hl: "[[data-in]>&]:text-cyan" },
-    { text: ". Дизайн, код і система керування в одних руках, тож нічого не губиться між підрядниками, а ви" },
-    { text: "редагуєте сайт самі", hl: "[[data-in]>&]:text-[#4fe3c1]" },
-    { text: "без програміста." },
-  ],
-  facts: [
-    { value: "[X]+", label: "запущених сайтів" },
-    { value: "[X] тиж.", label: "від брифу до запуску" },
-    { value: "3 в 1", label: "дизайн, код і панель керування в одних руках" },
-    { value: "0 ₴", label: "консультація безкоштовна" },
-  ],
-};
-
 export type Service = {
   id: string;
   name: string;
@@ -154,42 +129,44 @@ export type Service = {
   price: string;
   color: Accent;
   hex: string;
+  icon: "design" | "code" | "cms";
   features: string[];
 };
 
 export const SERVICES = {
   label: "Послуги",
   title: ["Беріть частину", "або все під ключ."],
-  lead: "Позначте, що потрібно, і ми підкажемо пакет.",
-  pickLabel: "Що вам потрібно?",
-  recommend: "Вам підійде",
+  lead: "Кожну послугу можна взяти окремо. Разом виходить вигідніше.",
   pricePrefix: "від",
   items: [
     {
       id: "design",
       name: "Дизайн",
-      blurb: "Макет, що виглядає дорого й веде до заявки",
+      blurb: "Макет, що виглядає дорого й веде до заявки.",
       price: "[ЦІНА]",
       color: "violet",
       hex: "#a78bfa",
+      icon: "design",
       features: ["Прототип і структура", "Дизайн десктоп + мобайл", "Анімації й інтерактив", "UI-кіт для розробки"],
     },
     {
       id: "dev",
       name: "Розробка",
-      blurb: "Швидкий сайт на сучасному стеку",
+      blurb: "Швидкий сайт на сучасному стеку.",
       price: "[ЦІНА]",
       color: "blue",
       hex: "#3d8bff",
+      icon: "code",
       features: ["Next.js + TypeScript", "Адаптив і доступність", "Швидкість і SEO-основа", "Деплой на Vercel"],
     },
     {
       id: "cms",
       name: "Панель керування",
-      blurb: "Система керування сайтом (CMS): товари, ціни й фото редагуєте самі",
+      blurb: "Система керування сайтом (CMS): контент редагуєте самі.",
       price: "[ЦІНА]",
       color: "cyan",
       hex: "#22d3ee",
+      icon: "cms",
       features: ["Sanity CMS", "Схеми під ваш контент", "Ролі й доступи", "Навчання команди"],
     },
   ] satisfies Service[],
@@ -202,75 +179,29 @@ export const SERVICES = {
   },
 };
 
-export const ADMIN = {
-  label: "Панель керування",
-  title: ["Змінюйте сайт", "самі за хвилину."],
-  lead: "Ціни, фото й товари без програміста. Ось як це виглядає.",
-  window: "Панель керування · Sanity",
-  sidebar: ["Товари", "Категорії", "Сторінки", "Налаштування"],
-  /** demo data in the mock panel: names are illustrative, prices stay placeholders */
-  products: ["Вареники з картоплею", "Пельмені домашні", "Сирники"],
-  oldPrice: "[ЦІНА]",
-  newPrice: "[НОВА ЦІНА]",
-  newProduct: "Новий товар",
-  saved: "Опубліковано на сайті",
-  steps: [
-    { n: "01", title: "Ціна", text: "Клік по ціні, нове значення, «Опублікувати»." },
-    { n: "02", title: "Фото", text: "Перетягніть нове фото, і воно вже на сайті." },
-    { n: "03", title: "Товар", text: "Новий товар додається за кілька полів." },
-  ],
-  publish: "Опублікувати",
-  preview: "Сайт",
-};
-
 export const PROCESS = {
   label: "Процес",
-  title: ["Чотири кроки", "до запуску."],
+  title: ["Пʼять кроків", "до запуску."],
   lead: "Ви завжди знаєте, що відбувається і коли буде готово.",
   steps: [
-    { n: "01", title: "Бриф і оцінка", text: "Розбираємо задачу, фіксуємо обсяг і ціну.", days: "[X днів]" },
-    { n: "02", title: "Дизайн", text: "Структура, макети й анімації на погодження.", days: "[X днів]" },
-    { n: "03", title: "Розробка й панель керування", text: "Верстаємо й підключаємо панель керування. Прогрес видно на тестовому посиланні.", days: "[X днів]" },
-    { n: "04", title: "Запуск, навчання, підтримка", text: "Публікуємо сайт, вчимо команду, лишаємось на зв'язку.", days: "[X днів]" },
-  ],
-};
-
-export const TEAM = {
-  label: "Команда",
-  title: ["Люди, які", "роблять ваш сайт."],
-  lead: "Без менеджерів-посередників: ви говорите з тими, хто робить.",
-  people: [
-    { name: "Максим", role: "UI/UX-дизайн", initials: "М", color: "violet" as Accent },
-    { name: "[Ім'я]", role: "Розробка", initials: "[І]", color: "blue" as Accent },
-  ],
-  photo: "[Фото]",
-  quote: {
-    text: "[Відгук клієнта Maina by Rivka]",
-    name: "[Ім'я клієнта]",
-    role: "Maina by Rivka",
-    initials: "MR",
-  },
-};
-
-export const GUARANTEES = {
-  label: "Гарантії",
-  title: ["Без ризику", "для вас."],
-  lead: "Домовляємось на березі, щоб потім не сперечатись.",
-  items: [
-    { title: "[N] раундів правок", text: "Правки на кожному етапі входять у ціну.", color: "violet" as Accent },
-    { title: "Фіксована ціна", text: "Ціна не змінюється після брифу.", color: "green" as Accent },
-    { title: "Підтримка", text: "[умови підтримки]", color: "cyan" as Accent },
+    { n: "01", icon: "brief", title: "Бриф", text: "Знайомимось із бізнесом і цілями. Фіксуємо обсяг, ціну й терміни.", days: "[X днів]" },
+    { n: "02", icon: "design", title: "Дизайн", text: "Структура й макети для десктопа та мобільного. Правки до вашого «так».", days: "[X днів]" },
+    { n: "03", icon: "code", title: "Верстка", text: "Збираємо швидкий адаптивний сайт. Прогрес видно на тестовому посиланні.", days: "[X днів]" },
+    { n: "04", icon: "cms", title: "Панель керування", text: "Підключаємо CMS: тексти, ціни, фото й товари змінюєте самі.", days: "[X днів]" },
+    { n: "05", icon: "launch", title: "Запуск", text: "Домен, аналітика, навчання команди й підтримка після старту.", days: "[X днів]" },
   ],
 };
 
 export const FAQ = {
   label: "Питання",
   title: ["Часті", "питання."],
+  lead: "Коротко про ціну, терміни й те, що буде після запуску.",
   items: [
     { q: "Скільки коштує сайт?", a: "Від [ЦІНА] за окрему послугу, від [ЦІНА] під ключ. Точну ціну фіксуємо після брифу.", color: "green" as Accent },
     { q: "Скільки часу займає?", a: "Зазвичай [X] тижнів від брифу до запуску. Терміни кожного етапу узгоджуємо заздалегідь.", color: "cyan" as Accent },
     { q: "Чи зможу я сам редагувати сайт?", a: "Так. Ми підключаємо панель керування: тексти, ціни, фото й товари ви змінюєте самі, без програміста.", color: "violet" as Accent },
     { q: "Що буде після запуску?", a: "Навчимо вашу команду працювати з панеллю керування і лишимось на підтримці: [умови підтримки].", color: "green" as Accent },
+    { q: "Скільки правок входить у ціну?", a: "[N] раундів правок на кожному етапі. Ціну фіксуємо після брифу, і вона вже не змінюється.", color: "cyan" as Accent },
     { q: "Можна замовити тільки дизайн або тільки розробку?", a: "Так. Кожну послугу можна взяти окремо, а під ключ виходить вигідніше.", color: "violet" as Accent },
   ],
 };
@@ -312,12 +243,8 @@ export const PRIVACY = {
 export const HOME_SECTIONS = [
   { id: "top", label: "Головна" },
   { id: "work", label: WORK.label },
-  { id: "about", label: ABOUT.label },
   { id: "services", label: SERVICES.label },
-  { id: "admin", label: ADMIN.label },
   { id: "process", label: PROCESS.label },
-  { id: "team", label: TEAM.label },
-  { id: "guarantees", label: GUARANTEES.label },
   { id: "faq", label: FAQ.label },
   { id: "contact", label: CONTACT.label },
 ] as const;

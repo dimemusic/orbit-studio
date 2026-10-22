@@ -2,13 +2,14 @@
 
 import { useRef } from "react";
 import { PROCESS } from "@/lib/content";
-import { G, Tag } from "../ui/Bits";
+import { G, IconTile, Tag } from "../ui/Bits";
 import { HomeSection } from "../ui/HomeSection";
+import { Icon, type IconKey } from "../ui/icons";
 import { useInView } from "../ui/hooks";
 
 /**
- * 06 Process: four numbered step cards on one progress line. The line draws once on entering view
- * and each node lights up as it arrives (same markers and gradient as the admin stepper).
+ * Process: five steps on one progress line. Desktop: horizontal line through numbered markers,
+ * drawn once on entering view, each marker lights up as the line reaches it. Mobile: stacked cards.
  */
 export function Process() {
   const ref = useRef<HTMLOListElement>(null);
@@ -28,17 +29,16 @@ export function Process() {
       lead={PROCESS.lead}
     >
       <div className="relative w-full">
-        {/* progress line through the step markers (desktop: horizontal, under the numbers) */}
-        <span aria-hidden="true" className="absolute left-[12.5%] right-[12.5%] top-[22px] hidden h-px bg-white/10 lg:block">
+        <span aria-hidden="true" className="absolute left-[10%] right-[10%] top-[22px] hidden h-px bg-white/10 lg:block">
           <span
-            className={`block h-full origin-left bg-gradient-to-r from-[#5aa2ff] via-violet to-[#e83fa8] transition-transform duration-[2400ms] ease-[var(--ease)] motion-reduce:transition-none ${
+            className={`block h-full origin-left bg-gradient-to-r from-[#5aa2ff] to-violet transition-transform duration-[2400ms] ease-[var(--ease)] motion-reduce:transition-none ${
               seen ? "scale-x-100" : "scale-x-0"
             }`}
           />
         </span>
-        <ol ref={ref} className="relative grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+        <ol ref={ref} className="relative grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 lg:gap-4">
           {PROCESS.steps.map((s, i) => (
-            <li key={s.n} data-reveal style={{ ["--d" as string]: `${i * 100}ms` }} className="flex flex-col items-center">
+            <li key={s.n} data-reveal style={{ ["--d" as string]: `${i * 90}ms` }} className="flex flex-col items-center">
               <span
                 style={{ transitionDelay: seen ? `${(i / (n - 1)) * 2000}ms` : "0ms" }}
                 className={`relative hidden size-11 place-items-center rounded-full border bg-bg text-[14px] font-semibold tabular-nums transition-colors duration-500 lg:grid ${
@@ -47,13 +47,18 @@ export function Process() {
               >
                 {s.n}
               </span>
-              <div className="card mt-0 flex h-full w-full flex-col p-6 text-left lg:mt-6">
+              <div className="card flex h-full w-full flex-col p-5 text-left lg:mt-6">
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-[13px] font-semibold tabular-nums text-blue lg:hidden">{s.n}</span>
+                  <IconTile color="violet">
+                    <Icon name={s.icon as IconKey} size={20} />
+                  </IconTile>
+                  <span className="text-[13px] font-semibold tabular-nums text-violet-soft lg:hidden">{s.n}</span>
+                </div>
+                <h3 className="mt-4 text-[19px] font-semibold leading-tight tracking-[-0.02em]">{s.title}</h3>
+                <p className="mt-1.5 text-[14px] leading-snug text-body">{s.text}</p>
+                <div className="mt-auto pt-4">
                   <Tag color="cyan">{s.days}</Tag>
                 </div>
-                <h3 className="mt-4 text-title font-semibold">{s.title}</h3>
-                <p className="mt-1.5 text-[15px] text-body">{s.text}</p>
               </div>
             </li>
           ))}

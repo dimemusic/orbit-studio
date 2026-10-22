@@ -102,13 +102,7 @@ function CaseCard({ c, i }: { c: Case; i: number }) {
             ))}
           </ul>
           <div className="mt-auto pt-4" />
-          <div className="flex items-end justify-between gap-4 border-t border-white/[0.07] pt-3">
-            {featured && (
-              <p>
-                <span className="block text-[12px] text-grey">Результат</span>
-                <span className="mt-0.5 block text-[18px] font-semibold tracking-[-0.02em] text-fg">{c.result}</span>
-              </p>
-            )}
+          <div className="flex items-center justify-between gap-4 border-t border-white/[0.07] pt-3">
             {c.url ? (
               <a
                 href={c.url}

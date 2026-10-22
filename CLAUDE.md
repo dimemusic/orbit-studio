@@ -53,6 +53,9 @@ Scene code: `components/IvyScene.tsx`, `lib/ivy.ts` (generator), `lib/ivyShaders
 - Ivy look = 1px quiet lines, brightness carried by the particles. Don't brighten or thicken the lines.
 - **Case nodes** (fine pointers only): `Work` places 4 `[data-case-node]` anchors in its side margins; IvyScene snaps each to the nearest ivy particle (branch depth ≤ 2), projects it to the screen every frame and moves a DOM marker (`CaseNodes`, fixed overlay `z-[3]`, `aria-hidden`). Cursor within 40px → glass preview of that case; click → scrolls to its card. Hovering a case card dispatches `CASE_HOVER` (`components/home.ts`) and lights its node; the shown case gets `data-hot` on its card. Nodes appear only where the side margin is ≥ ~70px (≈ ≥1264px wide); the Work cards carry the same info accessibly.
 
+## Structure decision (Oct 2026)
+About, the admin-panel demo, Team and Guarantees were removed on purpose: too much decoration, too little information. Do not bring them back unless asked. Icons: one glyph per idea via `components/ui/icons.tsx` (`Icon name="brief|design|code|cms|launch"`) inside `IconTile`.
+
 ## App structure
 - `app/layout.tsx`: `Scene`, `Nav`, `<main id="main">`, `Footer`, `RevealRoot`, `CardFx`. Pages render only their sections.
 - Routes: `/` (one-page site) and `/privacy` (`PageHero` with placeholder text).
@@ -62,14 +65,10 @@ Scene code: `components/IvyScene.tsx`, `lib/ivy.ts` (generator), `lib/ivyShaders
 |---|---|---|---|
 | 01 | Hero (`Hero.tsx` + `Logos.tsx`) | `top` | promise in mega type, lead, «Обговорити проєкт» + «Наші роботи», availability pill + 4 trust points |
 | 02 | Work (`Work.tsx`) | `work` | 4 case cards (preview, status, tags, `[РЕЗУЛЬТАТ]`, «Хочу схожий»), closing tile «Тут може бути ваш сайт»; case-node anchors |
-| 03 | About (`About.tsx`) | `about` | word-by-word manifesto + 4 trust-number fact cards |
-| 04 | Services (`Pricing.tsx`) | `services` | chips «Що вам потрібно?» move the highlight; 3 service cards «від [ЦІНА]»; turnkey `.card-pro` «Під ключ — від [ЦІНА]» |
-| 05 | Admin demo (`AdminDemo.tsx`) | `admin` | stepper Ціна / Фото / Товар over ONE mock CMS card; each pane animates the edit → «Опублікувати» → live site preview updates |
-| 06 | Process (`Process.tsx`) | `process` | 4 step cards with `[X днів]` on a drawn progress line |
-| 07 | Team (`Testimonials.tsx` → `Team`) | `team` | Максим + [Ім'я] with photo placeholders, ONE quote card |
-| 08 | Guarantees (`Guarantees.tsx`) | `guarantees` | 3 cards: [N] раундів правок, фіксована ціна, [умови підтримки] |
-| 09 | FAQ (`Faq.tsx`) | `faq` | 5 questions in one card, smooth accordion |
-| 10 | Contact (`FinalCta.tsx`) | `contact` | «Є ідея? Поговорімо.», Telegram / email panel + form (name, Telegram/email, multi-select chips), validation + thanks state, no backend |
+| 03 | Services (`Pricing.tsx`) | `services` | 3 service cards (icon, name, one line, what's included, «від [ЦІНА]», «Замовити →»); turnkey `.card-pro` «Під ключ — від [ЦІНА]» |
+| 04 | Process (`Process.tsx`) | `process` | 5 steps with icons + `[X днів]` on a drawn progress line: Бриф, Дизайн, Верстка, Панель керування, Запуск |
+| 05 | FAQ (`Faq.tsx`) | `faq` | 6 questions in one card, smooth accordion (guarantees live here as answers) |
+| 06 | Contact (`FinalCta.tsx`) | `contact` | «Є ідея? Поговорімо.», Telegram / email panel + form (name, Telegram/email, multi-select chips), validation + thanks state, no backend |
 
 ## Content that sells (brief)
 - **Hero:** one concrete promise. Direction: «Сайти, які продають. Від дизайну до адмінки.» Primary CTA «Обговорити проєкт».

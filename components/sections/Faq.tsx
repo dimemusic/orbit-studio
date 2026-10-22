@@ -30,6 +30,7 @@ export function Faq() {
           {FAQ.title[0]} <G tone="soft">{FAQ.title[1]}</G>
         </>
       }
+      lead={FAQ.lead}
     >
       {/* ONE card, one column; hairlines between the questions */}
       <div data-reveal className="w-full">
