@@ -17,7 +17,7 @@ import { along, Caret, ease, Pointer, seg, typed } from "../process/util";
 const STAGE_LEN = 3;
 const TOTAL = STAGE_LEN * BUILD.stages.length;
 /** real playing time of the whole film (the timeline above is in "beats" and is stretched to this) */
-const PLAY_SECONDS = 22;
+const PLAY_SECONDS = 14;
 const SW = 1200;
 const SH = 620;
 
@@ -69,7 +69,7 @@ export function Build() {
   const gridV = ease(seg(t, 0.15, 0.85));
 
   return (
-    <section ref={ref} id="process" aria-labelledby="build-title" className="relative flex min-h-[100dvh] w-full flex-col overflow-hidden">
+    <section ref={ref} id="process" aria-labelledby="build-title" className="snap-section relative flex min-h-[100dvh] w-full flex-col overflow-hidden md:h-[100dvh]">
       {/* grid drawn on the page background */}
       <div
         aria-hidden="true"
