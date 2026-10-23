@@ -21,7 +21,7 @@ type Props = {
 /**
  * The one layout for every home section after the hero:
  * centered header (NN · label pill → heading, max 2 lines → one line of subtext → optional small link),
- * 48px, then ONE content block, max 1120px, centered. Same vertical padding everywhere.
+ * 48px, then ONE content block at full width (inside the side gutter). Same vertical padding everywhere.
  */
 export function HomeSection({ id, label, color, title, lead, more, tall, children }: Props) {
   const titleId = `${id}-title`;
@@ -63,7 +63,7 @@ export function HomeSection({ id, label, color, title, lead, more, tall, childre
           </Link>
         )}
       </header>
-      <div className="mt-12 flex w-full max-w-[1120px] flex-col items-center">{children}</div>
+      <div className="mt-12 flex w-full flex-col items-center">{children}</div>
     </section>
   );
 }

@@ -22,7 +22,8 @@ The visual language is the Cloud Sphere one and does not change: layout, the 3D 
 ### Hard rules
 - **Never use the Unbounded font.** Font: **Geologica** (next/font, Latin + Cyrillic). Display weight 600 with negative tracking.
 - **Never use arbitrary px breakpoints** (`min-[1100px]:`): Tailwind v4 sorts them before `md:`/`lg:`. Add a rem breakpoint to `@theme` (`nav:` = 1100px, `wide:` = 1440px).
-- **No max-width container.** Every section is full-bleed with side padding `--gutter` = clamp(24px, 5.5vw, 80px) (`px-gutter`). Content is centered; only text measures and the home content block (max 1120px) are limited.
+- **No max-width container.** Every section is full-bleed with side padding `--gutter` = clamp(24px, 5.5vw, 80px) (`px-gutter`). Since Oct 2026 the home content block below the hero is full width too (no 1120px cap); only text measures are limited.
+- Case previews are never flat screenshots: use `components/ui/DeviceShot.tsx` (screenshot on a monitor / laptop in perspective, glare, screen light spill; follows the pointer via `data-tilt-inner` on the card).
 - The 3D canvas always covers the whole viewport (`fixed left-0 top-0 h-lvh w-screen`). **No vignette, overlay, frame or opaque section background** on top of it.
 - Dark only.
 

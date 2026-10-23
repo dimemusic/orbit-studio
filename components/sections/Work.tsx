@@ -1,11 +1,11 @@
 "use client";
 
 import { ArrowUpRight, CheckCircle, X } from "@phosphor-icons/react/dist/ssr";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { WORK, type Case } from "@/lib/content";
 import { G, Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
+import { DeviceShot } from "../ui/DeviceShot";
 import { HomeSection } from "../ui/HomeSection";
 
 /** Work: Maina featured on top, three cases below. A click opens the case window (native <dialog>). */
@@ -59,8 +59,8 @@ export function Work() {
       >
         {c && (
           <div className="case-panel card overflow-hidden text-left">
-            <div className="relative aspect-[16/7] max-h-[38vh] w-full border-b border-white/[0.07] bg-bg">
-              <Image src={c.media} alt={`${c.name}: превʼю сайту`} fill sizes="960px" className="object-cover object-top" />
+            <div className="relative aspect-[16/8] max-h-[42vh] w-full border-b border-white/[0.07] bg-bg">
+              <DeviceShot src={c.media} color={c.color} variant="monitor" sizes="620px" />
               <button
                 type="button"
                 onClick={hide}
@@ -140,6 +140,7 @@ function CaseCard({ c, i, onOpen }: { c: Case; i: number; onOpen: (i: number, el
         type="button"
         onClick={(e) => onOpen(i, e.currentTarget)}
         aria-haspopup="dialog"
+        data-tilt-inner
         aria-label={`${WORK.open}: ${c.name}`}
         style={{ ["--c" as string]: c.color }}
         className={`card group flex h-full w-full flex-col overflow-hidden text-left transition-[border-color] duration-500 hover:border-[color:color-mix(in_srgb,var(--c)_50%,transparent)] ${
@@ -148,15 +149,14 @@ function CaseCard({ c, i, onOpen }: { c: Case; i: number; onOpen: (i: number, el
       >
         <span
           className={`relative block overflow-hidden border-white/[0.07] ${
-            featured ? "aspect-[16/8] border-b md:aspect-auto md:min-h-[320px] md:border-b-0 md:border-r" : "aspect-[16/10] border-b"
+            featured ? "aspect-[16/10] border-b md:aspect-auto md:min-h-[440px] md:border-b-0 md:border-r" : "aspect-[16/11] border-b"
           }`}
         >
-          <Image
+          <DeviceShot
             src={c.media}
-            alt=""
-            fill
-            sizes={featured ? "(min-width: 768px) 653px, 100vw" : "(min-width: 768px) 370px, 100vw"}
-            className="object-cover object-top transition-transform duration-700 ease-[var(--ease)] group-hover:scale-[1.04]"
+            color={c.color}
+            variant={featured ? "monitor" : "laptop"}
+            sizes={featured ? "(min-width: 768px) 560px, 90vw" : "(min-width: 768px) 360px, 90vw"}
           />
           <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-[rgb(6_8_14/0.75)] px-3 py-1.5 text-[12px] font-semibold leading-none text-fg/90">
             <span aria-hidden="true" className="size-1.5 rounded-full" style={{ background: c.color }} />

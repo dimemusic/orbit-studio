@@ -24,7 +24,7 @@ export function CardFx() {
 
     const release = (el: HTMLElement) => {
       el.style.setProperty("--spot", "0");
-      if (el.hasAttribute("data-tilt")) {
+      if (el.hasAttribute("data-tilt") || el.hasAttribute("data-tilt-inner")) {
         el.style.setProperty("--rx", "0deg");
         el.style.setProperty("--ry", "0deg");
       }
@@ -48,7 +48,7 @@ export function CardFx() {
       card.style.setProperty("--mx", `${x}px`);
       card.style.setProperty("--my", `${y}px`);
       card.style.setProperty("--spot", "1");
-      if (card.hasAttribute("data-tilt") && !reduced.matches) {
+      if ((card.hasAttribute("data-tilt") || card.hasAttribute("data-tilt-inner")) && !reduced.matches) {
         const nx = x / r.width - 0.5;
         const ny = y / r.height - 0.5;
         card.style.setProperty("--rx", `${(-ny * 8).toFixed(2)}deg`);
