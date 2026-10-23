@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, Cursor, FrameCorners, Hand, Image as ImageIcon, Lock, PenNib, Square, TextT, UploadSimple } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, CheckCircle, Cursor, FrameCorners, Hand, Image as ImageIcon, Lock, MapPin, PenNib, Square, TextT, UploadSimple } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { BUILD } from "@/lib/content";
 import { homeNum } from "../home";
@@ -246,6 +246,35 @@ function BlurPointer({ s, path, down, pin }: { s: number; path: [number, number,
 
 const box = (x: number, y: number, w?: number, h?: number): CSSProperties => ({ position: "absolute", left: x, top: y, width: w, height: h });
 
+/** illustrated mountain "photo" for the mock site (no image files); v picks a sky */
+const SKIES = [
+  ["#f7dfb8", "#eba67a"],
+  ["#e3eaec", "#b5c8cf"],
+  ["#f3d2bd", "#c98d7c"],
+];
+const TREES = Array.from({ length: 32 }, (_, i) => `M${i * 14} 180L${i * 14 + 7} ${150 + ((i * 7) % 11)}L${i * 14 + 14} 180Z`).join("");
+function Mountains({ v = 0 }: { v?: number }) {
+  const [a, b] = SKIES[v % SKIES.length];
+  const id = `sky${v % SKIES.length}`;
+  return (
+    <svg viewBox="0 0 432 180" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" aria-hidden="true">
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={a} />
+          <stop offset="1" stopColor={b} />
+        </linearGradient>
+      </defs>
+      <rect width="432" height="180" fill={`url(#${id})`} />
+      <circle cx="312" cy="66" r="20" fill="#fff7e8" opacity="0.85" />
+      <path d="M0 118L58 76L104 102L168 54L226 98L288 66L348 94L432 60V180H0Z" fill="#a8b5af" />
+      <path d="M168 54L182 64.5L175 63L177 69L168 64L161 68L154 64.5Z" fill="#f4f1ea" opacity="0.9" />
+      <path d="M0 140L48 112L98 130L160 96L222 128L282 104L340 132L398 108L432 118V180H0Z" fill="#6d8879" />
+      <path d="M0 160L42 142L92 156L152 134L212 158L272 140L332 160L392 144L432 156V180H0Z" fill="#3d5848" />
+      <path d={TREES} fill="#23372c" />
+    </svg>
+  );
+}
+
 /* ---------------- 1 · Design ---------------- */
 const D = BUILD.design;
 const AB = { x: 360, y: 20, w: 480, h: 560 };
@@ -371,24 +400,44 @@ function DesignStage({ s }: { s: number }) {
       <div className="overflow-hidden rounded-md bg-[#f4f0e8] text-[#1a1714]" style={{ ...box(AB.x, AB.y, AB.w, AB.h), clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)` }}>
         <div className="absolute inset-x-6 top-5 flex items-center justify-between">
           <span className="text-[17px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
-          <span className="flex gap-3">
-            <i className="h-2 w-10 rounded-full bg-black/20" />
-            <i className="h-2 w-10 rounded-full bg-black/20" />
-            <i className="h-2 w-10 rounded-full bg-black/20" />
+          <span className="flex items-center gap-4 text-[12px] font-medium text-[#5c564c]">
+            {D.nav.map((n) => (
+              <span key={n}>{n}</span>
+            ))}
           </span>
         </div>
         {s > 1.2 && (
-          <div className="absolute grid place-items-center overflow-hidden rounded-xl" style={{ ...box(R.img.x, R.img.y, R.img.w * imgK, R.img.h * imgK), background: "linear-gradient(120deg,#d9c6a5,#b98a5e 55%,#7a4e32)" }}>
-            <ImageIcon size={36} className="text-white/70" style={{ opacity: smooth(seg(s, 1.4, 1.52)) }} />
+          <div className="absolute overflow-hidden rounded-xl bg-[#e3d8c6]" style={box(R.img.x, R.img.y, R.img.w * imgK, R.img.h * imgK)}>
+            <div className="absolute left-0 top-0" style={{ width: R.img.w, height: R.img.h, opacity: smooth(seg(s, 1.3, 1.5)) }}>
+              <Mountains />
+              <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-[#1a1714]" style={{ opacity: smooth(seg(s, 1.45, 1.56)) }}>
+                <MapPin size={12} weight="fill" /> {D.place}
+              </span>
+            </div>
           </div>
         )}
-        <p className="absolute flex items-center whitespace-nowrap text-[44px] font-semibold leading-none tracking-[-0.045em]" style={box(R.title.x, R.title.y, R.title.w, R.title.h)}>
+        <p className="absolute flex items-center whitespace-nowrap text-[40px] font-semibold leading-none tracking-[-0.045em]" style={box(R.title.x, R.title.y, R.title.w, R.title.h)}>
           {typed(D.title, title)}
           <Caret on={s > 1.62 && s < 2.04} color="#1a1714" />
         </p>
-        <div className="absolute flex flex-col gap-2" style={{ ...box(R.title.x, R.title.y + R.title.h + 14), opacity: lines }}>
-          <i className="h-2.5 w-80 rounded-full bg-black/20" />
-          <i className="h-2.5 w-56 rounded-full bg-black/20" />
+        <p className="absolute text-[15px] text-[#5c564c]" style={{ ...box(R.title.x, R.title.y + R.title.h + 8, R.title.w), ...fly(lines, 0, 8, 6) }}>
+          {D.sub}
+        </p>
+        <span className="absolute flex items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold text-[#1a1714]" style={{ ...box(R.btn.x + R.btn.w + 22, R.btn.y, undefined, R.btn.h), opacity: smooth(seg(s, 2.2, 2.32)) }}>
+          {D.more} <ArrowRight size={14} />
+        </span>
+        <div className="absolute grid grid-cols-3 gap-2.5" style={box(R.img.x, 474, R.img.w)}>
+          {D.houses.map((h, k) => (
+            <div key={h.name} className="flex items-center gap-2.5 rounded-xl bg-white p-2 shadow-[0_1px_2px_rgb(0_0_0/0.06)]" style={fly(smooth(seg(s, 2.0 + k * 0.06, 2.16 + k * 0.06)), 0, 14, 6)}>
+              <span className="relative size-11 shrink-0 overflow-hidden rounded-lg">
+                <Mountains v={k} />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-[12px] font-semibold leading-tight">{h.name}</span>
+                <span className="mt-0.5 block text-[11px] text-[#7a7368]">{h.price}</span>
+              </span>
+            </div>
+          ))}
         </div>
         {s > 2.1 && (
           <span
@@ -438,7 +487,7 @@ const LINES: Tok[][] = [
   [["      <", PU], ["p", TG], [">", PU], [C.p, TX], ["</", PU], ["p", TG], [">", PU]],
   [["      <", PU], ["Button", TG], [">", PU], [C.btn, TX], ["</", PU], ["Button", TG], [">", PU]],
   [["    </", PU], ["Hero", TG], [">", PU]],
-  [["    <", PU], ["Products", TG], [" items", AT], ["=", PU], ["{", PU], ["menu", TX], ["}", PU], [" />", PU]],
+  [["    <", PU], ["Houses", TG], [" items", AT], ["=", PU], ["{", PU], ["houses", TX], ["}", PU], [" />", PU]],
   [["  );", PU]],
   [["}", PU]],
 ];
@@ -506,8 +555,11 @@ function CodeStage({ s }: { s: number }) {
               <i className="h-1.5 w-9 rounded-full bg-black/20" />
             </span>
           </div>
-          <div className="mt-5 rounded-xl p-5" style={{ background: lineK(3) > 0.6 ? "#e9dfcd" : "transparent", transition: "background .4s" }}>
-            <p className="min-h-[36px] text-[32px] font-semibold leading-none tracking-[-0.045em]">{textOf(4, 3)}</p>
+          <div className="relative mt-5 h-[76px] overflow-hidden rounded-xl" style={fly(ease(lineK(3)), 0, 16, 10)}>
+            <Mountains />
+          </div>
+          <div className="pt-4">
+            <p className="min-h-[30px] text-[28px] font-semibold leading-none tracking-[-0.045em]">{textOf(4, 3)}</p>
             <p className="mt-2 min-h-[20px] text-[14px] text-[#5c564c]">{textOf(5, 3)}</p>
             <span className="mt-4 inline-grid h-10 min-w-[110px] place-items-center rounded-full bg-[#3d5a3a] px-5 text-[13px] font-semibold text-white" style={fly(ease(Math.min(1, lineK(6) * 2.5)), 0, 12, 8)}>
               {textOf(6, 3) || " "}
@@ -516,9 +568,11 @@ function CodeStage({ s }: { s: number }) {
           <div className="mt-5 grid grid-cols-3 gap-2.5">
             {[0, 1, 2].map((k) => (
               <div key={k} className="rounded-lg bg-white p-2" style={fly(ease(seg(lineK(8), k * 0.25, k * 0.25 + 0.5)), 0, 40, 12)}>
-                <div className="h-20 rounded-md" style={{ background: ["#d9c6a5", "#c7b08a", "#b98a5e"][k] }} />
-                <i className="mt-2 block h-1.5 w-3/4 rounded-full bg-black/20" />
-                <i className="mt-1.5 block h-1.5 w-1/2 rounded-full bg-black/10" />
+                <div className="relative h-16 overflow-hidden rounded-md">
+                  <Mountains v={k} />
+                </div>
+                <p className="mt-2 truncate text-[11px] font-semibold">{BUILD.design.houses[k].name}</p>
+                <p className="text-[10px] text-[#7a7368]">{BUILD.design.houses[k].price}</p>
               </div>
             ))}
           </div>
@@ -530,7 +584,6 @@ function CodeStage({ s }: { s: number }) {
 
 /* ---------------- 3 · CMS ---------------- */
 const M = BUILD.cms;
-const PHOTO = "linear-gradient(135deg,#f1e3c8,#d8b98c 50%,#a9784f)";
 
 function CmsStage({ s }: { s: number }) {
   const name = typed(M.nameVal, seg(s, 0.45, 1.05));
@@ -574,13 +627,13 @@ function CmsStage({ s }: { s: number }) {
         </p>
       </div>
       <div className="tool flex items-center gap-4 p-5" style={{ ...box(60, 270, 480, 104), ...card(2) }}>
-        <span className="grid size-16 shrink-0 place-items-center rounded-xl bg-white/[0.06]" style={photo ? { background: PHOTO } : undefined}>
-          {!photo && <ImageIcon size={24} className="text-grey" />}
+        <span className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/[0.06]">
+          {photo ? <Mountains /> : <ImageIcon size={24} className="text-grey" />}
         </span>
         <div className="flex-1">
           <p className="flex items-center gap-2 text-[15px] text-body">
             {photo ? <CheckCircle size={16} weight="fill" className="text-green" /> : <UploadSimple size={16} />}
-            {photo ? "varenyky.jpg" : `${M.photo} · ${Math.round(up * 100)}%`}
+            {photo ? M.file : `${M.photo} · ${Math.round(up * 100)}%`}
           </p>
           <span className="mt-3 block h-2 overflow-hidden rounded-full bg-white/[0.08]">
             <span className="block h-full rounded-full bg-cyan" style={{ width: `${up * 100}%` }} />
@@ -614,8 +667,11 @@ function CmsStage({ s }: { s: number }) {
           </span>
         </div>
         <div className="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <div className="grid h-40 place-items-center" style={{ background: photo ? PHOTO : "#ebe5da", transition: "background .5s" }}>
-            {!photo && <ImageIcon size={30} className="text-black/20" />}
+          <div className="relative grid h-40 place-items-center bg-[#ebe5da]">
+            <ImageIcon size={30} className="text-black/20" />
+            <div className="absolute inset-0 transition-opacity duration-500" style={{ opacity: photo ? 1 : 0 }}>
+              <Mountains />
+            </div>
           </div>
           <div className="p-4">
             <p className="min-h-[44px] text-[17px] font-semibold leading-tight">{name || " "}</p>
@@ -628,8 +684,12 @@ function CmsStage({ s }: { s: number }) {
           </div>
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2.5 opacity-60">
-          <div className="h-24 rounded-xl bg-[#e6dfd2]" />
-          <div className="h-24 rounded-xl bg-[#e6dfd2]" />
+          <div className="relative h-24 overflow-hidden rounded-xl">
+            <Mountains v={1} />
+          </div>
+          <div className="relative h-24 overflow-hidden rounded-xl">
+            <Mountains v={2} />
+          </div>
         </div>
       </IPhone>
       <BlurPointer s={s} path={path} down={down} />
@@ -680,7 +740,7 @@ const L = BUILD.launch;
 const BR = { x: 300, y: 10, w: 600, h: 430 };
 const PIECES = [
   { x: 0, y: 40, w: 600, h: 50, dx: -420, dy: -120, c: "#e6e0d4" },
-  { x: 24, y: 110, w: 552, h: 160, dx: 460, dy: -80, c: "#d9c6a5" },
+  { x: 24, y: 110, w: 552, h: 160, dx: 460, dy: -80, c: "#efe9de" },
   { x: 24, y: 290, w: 170, h: 116, dx: -480, dy: 160, c: "#efe9de" },
   { x: 215, y: 290, w: 170, h: 116, dx: 0, dy: 320, c: "#efe9de" },
   { x: 406, y: 290, w: 170, h: 116, dx: 480, dy: 160, c: "#efe9de" },
@@ -735,20 +795,32 @@ function LaunchStage({ s }: { s: number }) {
               {i === 0 && (
                 <div className="flex h-full items-center justify-between px-6 text-[#1a1714]">
                   <span className="text-[18px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
-                  <span className="flex gap-3">
-                    <i className="h-2 w-10 rounded-full bg-black/20" />
-                    <i className="h-2 w-10 rounded-full bg-black/20" />
+                  <span className="flex gap-4 text-[12px] font-medium text-[#5c564c]">
+                    {BUILD.design.nav.map((n) => (
+                      <span key={n}>{n}</span>
+                    ))}
                   </span>
                 </div>
               )}
               {i === 1 && (
-                <div className="p-6 text-[#1a1714]">
-                  <p className="text-[34px] font-semibold leading-none tracking-[-0.045em]">{BUILD.design.title}</p>
-                  <i className="mt-3 block h-2.5 w-72 rounded-full bg-black/20" />
-                  <span className="mt-5 inline-grid h-10 place-items-center rounded-full bg-[#3d5a3a] px-5 text-[13px] font-semibold text-white">{BUILD.design.button}</span>
+                <div className="relative h-full overflow-hidden rounded-xl p-6 text-[#1a1714]">
+                  <div className="absolute inset-y-3 right-3 w-[250px] overflow-hidden rounded-lg">
+                    <Mountains />
+                  </div>
+                  <p className="relative text-[30px] font-semibold leading-none tracking-[-0.045em]">{BUILD.design.title}</p>
+                  <p className="relative mt-2.5 text-[13px] text-[#5c564c]">{BUILD.design.sub}</p>
+                  <span className="relative mt-5 inline-grid h-10 place-items-center rounded-full bg-[#3d5a3a] px-5 text-[13px] font-semibold text-white">{BUILD.design.button}</span>
                 </div>
               )}
-              {i >= 2 && <div className="m-2.5 h-16 rounded-lg bg-[#d9c6a5]" />}
+              {i >= 2 && (
+                <div className="p-2.5">
+                  <div className="relative h-16 overflow-hidden rounded-lg">
+                    <Mountains v={i - 2} />
+                  </div>
+                  <p className="mt-2 truncate text-[12px] font-semibold text-[#1a1714]">{BUILD.design.houses[i - 2].name}</p>
+                  <p className="text-[11px] text-[#7a7368]">{BUILD.design.houses[i - 2].price}</p>
+                </div>
+              )}
             </div>
           );
         })}

@@ -343,9 +343,26 @@ export const BUILD = {
     { id: "launch", title: ["Запускаємо", "сайт."], step: "Запуск", days: "1 день", color: "#34d399" }, // DRAFT: days
   ],
   replayNote: "Разом: від 2 тижнів", // DRAFT
-  design: { layers: ["Desktop", "Фото", "Заголовок", "Кнопка"], layersLabel: "Шари", props: "Властивості", fill: "Заливка", title: "Домашня кухня", button: "Замовити" },
-  code: { cmd: "npm run build", ok: "Ready · 0.9s", h1: "Домашня кухня", p: "Заморожені напівфабрикати", btn: "Замовити" },
-  cms: { name: "Назва", nameVal: "Вареники з картоплею", price: "Ціна", priceVal: "149 ₴", photo: "Фото", stock: "В наявності", publish: "Опублікувати", published: "Опубліковано", toast: "Зміни вже на сайті", live: "Наживо" },
+  // demo theme of the mock site: a boutique chalet rental in the mountains (made up, not a client)
+  design: {
+    layers: ["Desktop", "Фото", "Заголовок", "Кнопка"],
+    layersLabel: "Шари",
+    props: "Властивості",
+    fill: "Заливка",
+    nav: ["Будиночки", "Ціни", "Контакти"],
+    place: "Карпати",
+    title: "Будиночки в горах",
+    sub: "Тиша, ліс і чан з видом на хребет.",
+    button: "Забронювати",
+    more: "Усі будиночки",
+    houses: [
+      { name: "Смерека", price: "від 2 800 ₴" },
+      { name: "Хмара", price: "від 3 200 ₴" },
+      { name: "Ватра", price: "від 2 100 ₴" },
+    ],
+  },
+  code: { cmd: "npm run build", ok: "Ready · 0.9s", h1: "Будиночки в горах", p: "Тиша, ліс і чан з видом на хребет.", btn: "Забронювати" },
+  cms: { name: "Назва", nameVal: "Шале з панорамою", price: "Ціна за ніч", priceVal: "3 400 ₴", photo: "Фото", file: "chalet.jpg", stock: "Вільно", publish: "Опублікувати", published: "Опубліковано", toast: "Зміни вже на сайті", live: "Наживо" },
   launch: { url: "your-site.com", online: "Онлайн", checks: ["Домен і SSL", "Аналітика", "Навчання", "Підтримка"] },
 };
 
