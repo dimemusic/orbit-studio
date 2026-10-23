@@ -145,16 +145,74 @@ export function Build() {
                 opacity: Math.min(1, enter * 1.4) * (1 - exit),
               }}
             >
-              {i === 0 && <DesignStage s={s0} />}
-              {i === 1 && <CodeStage s={s0} />}
-              {i === 2 && <CmsStage s={s0} />}
-              {i === 3 && <LaunchStage s={s0} />}
+              <div className="absolute inset-0" style={camera(i, s0)}>
+                {i === 0 && <DesignStage s={s0} />}
+                {i === 1 && <CodeStage s={s0} />}
+                {i === 2 && <CmsStage s={s0} />}
+                {i === 3 && <LaunchStage s={s0} />}
+              </div>
             </div>
           );
         })}
       </StageBox>
     </section>
   );
+}
+
+/**
+ * Camera per stage: keyframes [beat, zoom, focusX, focusY] in stage px, eased in and out (smootherstep),
+ * plus a short punch-in on the key moment (colour applied, build ready, published, online).
+ * Zoom/pan speed adds a light blur so camera moves read as motion, not a jump.
+ */
+type Key = [number, number, number, number];
+const C0 = SW / 2;
+const C1 = SH / 2;
+const CAMS: Key[][] = [
+  // design: settle on the artboard while the frame is drawn, close in on the title, swing to the palette
+  [[0, 1, C0, C1], [0.45, 1, C0, C1], [1.05, 1.06, 600, 320], [1.58, 1.11, 600, 300], [2.0, 1.11, 600, 300], [2.3, 1.08, 820, 380], [2.55, 1.1, 900, 380], [3, 1.1, 900, 380]],
+  // code: lean into the lines as they are typed, pull back for the build
+  [[0, 1.02, C0, C1], [0.3, 1.1, 400, 200], [1.75, 1.1, 400, 360], [2.1, 1.03, C0, 340], [3, 1.05, C0, 350]],
+  // cms: the form while it is filled, then the phone at publish
+  [[0, 1.02, C0, C1], [0.4, 1.1, 360, 200], [1.45, 1.1, 360, 320], [2.0, 1.08, 480, 400], [2.4, 1.1, 860, 330], [3, 1.12, 900, 320]],
+  // launch: wide while the site assembles, push in on «Онлайн»
+  [[0, 1.05, C0, 240], [1.5, 1, C0, C1], [2.15, 1.08, C0, 400], [3, 1.06, C0, 400]],
+];
+const PUNCH = [2.56, 2.26, 2.35, 2.02];
+
+function camAt(i: number, s: number) {
+  const keys = CAMS[i];
+  if (s <= keys[0][0]) return keys[0].slice(1) as [number, number, number];
+  for (let j = 1; j < keys.length; j++) {
+    const [b1, ...v1] = keys[j];
+    const [b0, ...v0] = keys[j - 1];
+    if (s <= b1) {
+      const k = smooth((s - b0) / Math.max(1e-6, b1 - b0));
+      return v0.map((a, n) => a + (v1[n] - a) * k) as [number, number, number];
+    }
+  }
+  return keys[keys.length - 1].slice(1) as [number, number, number];
+}
+
+/** keep the zoomed stage inside its headroom (m stage px each side), so it never runs under the header */
+const clampT = (v: number, size: number, z: number, m: number) => {
+  const lo = size + m - size * z;
+  const hi = m;
+  return lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v));
+};
+
+function camera(i: number, s: number): CSSProperties {
+  const [z0, fx, fy] = camAt(i, s);
+  const p = seg(s, PUNCH[i], PUNCH[i] + 0.3);
+  const z = z0 * (1 + 0.035 * Math.sin(Math.PI * p) * (1 - p * 0.4));
+  // speed of the camera (zoom + pan per beat) → blur
+  const [za, xa, ya] = camAt(i, s + 0.03);
+  const rate = (Math.abs(za - z0) * 6 + Math.hypot(xa - fx, ya - fy) / 300) / 0.03;
+  const blur = Math.min(1.1, Math.max(0, rate - 1.6) * 0.6);
+  return {
+    transformOrigin: "0 0",
+    transform: `translate3d(${clampT(C0 - fx * z, SW, z, 70).toFixed(2)}px, ${clampT(C1 - fy * z, SH, z, 34).toFixed(2)}px, 0) scale(${z.toFixed(4)})`,
+    filter: blur > 0.15 ? `blur(${blur.toFixed(2)}px)` : undefined,
+  };
 }
 
 /** stage title, letter by letter with blur in and blur out */
@@ -203,7 +261,7 @@ function StageBox({ children }: { children: ReactNode }) {
     if (!el) return;
     const fit = () => {
       const r = el.getBoundingClientRect();
-      setK(Math.min(r.width / SW, r.height / SH));
+      setK(Math.min(r.width / SW, r.height / SH) * 0.9); // 10% headroom for the camera zooms
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -263,46 +321,55 @@ function DesignStage({ s }: { s: number }) {
   const tb = smooth(seg(s, 0.1, 0.45));
   const ly = smooth(seg(s, 0.2, 0.55));
   const pr = smooth(seg(s, 0.15, 0.5));
-  const frame = smooth(seg(s, 0.55, 1.15));
-  const img = smooth(seg(s, 1.35, 1.7));
-  const title = seg(s, 1.85, 2.3);
-  const lines = smooth(seg(s, 2.3, 2.42));
-  const btn = smooth(seg(s, 2.42, 2.6));
-  const pick = seg(s, 2.66, 2.92);
+  const frame = smooth(seg(s, 0.5, 1.05));
+  const img = smooth(seg(s, 1.2, 1.5));
+  const title = seg(s, 1.62, 2.0);
+  const lines = smooth(seg(s, 2.0, 2.1));
+  const btn = smooth(seg(s, 2.1, 2.26));
+  const pick = seg(s, 2.36, 2.56);
   const hover = Math.min(3, Math.floor(pick * 4));
-  const btnColor = s >= 2.92 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
-  const tool = s < 1.2 ? 1 : s < 1.75 ? 2 : s < 2.36 ? 3 : 0;
-  const sel = s < 1.2 ? 0 : s < 1.75 ? 1 : s < 2.36 ? 2 : 3;
-  const at = (r: { x: number; y: number; w: number; h: number }, kw = 1) => ({ x: AB.x + r.x, y: AB.y + r.y, w: r.w * kw, h: r.h });
-  const selBox = [{ x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame }, at(R.img, 0.4 + smooth(seg(s, 1.35, 1.7)) * 0.6), at(R.title), at(R.btn, 0.6 + smooth(seg(s, 2.42, 2.6)) * 0.4)][sel];
-  const imgW = 0.4 + img * 0.6;
-  const btnW = 0.6 + btn * 0.4;
+  const btnColor = s >= 2.56 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
+  // the tool is picked just before each action; the selection moves to an element the moment it starts
+  const tool = s < 1.12 ? 1 : s < 1.56 ? 2 : s < 2.04 ? 3 : s < 2.3 ? 2 : 0;
+  const SEL_AT = [0.5, 1.2, 1.62, 2.1];
+  const sel = s < 1.2 ? 0 : s < 1.62 ? 1 : s < 2.1 ? 2 : 3;
+  type Rc = { x: number; y: number; w: number; h: number };
+  const at = (r: Rc, k = 1): Rc => ({ x: AB.x + r.x, y: AB.y + r.y, w: r.w * k, h: r.h * k });
+  const imgK = 0.04 + img * 0.96;
+  const btnK = 0.08 + btn * 0.92;
+  const rects: Rc[] = [{ x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame }, at(R.img, imgK), at(R.title), at(R.btn, btnK)];
+  const finals: Rc[] = [{ ...AB }, at(R.img), at(R.title), at(R.btn)];
+  // glide from the previous element's box to the new one (no jump)
+  const g = sel ? smooth(seg(s, SEL_AT[sel], SEL_AT[sel] + 0.12)) : 1;
+  const from = finals[Math.max(0, sel - 1)];
+  const to = rects[sel];
+  const selBox: Rc = { x: from.x + (to.x - from.x) * g, y: from.y + (to.y - from.y) * g, w: from.w + (to.w - from.w) * g, h: from.h + (to.h - from.h) * g };
   // between actions the pointer glides (ease in-out); while dragging it is pinned to the corner being drawn
   const path: [number, number, number][] = [
-    [0, 640, 600],
-    [0.5, AB.x + 2, AB.y + 2],
-    [1.15, AB.x + AB.w, AB.y + AB.h],
-    [1.35, AB.x + R.img.x + 2, AB.y + R.img.y + 2],
-    [1.7, AB.x + R.img.x + R.img.w, AB.y + R.img.y + R.img.h],
-    [1.85, AB.x + R.title.x + 6, AB.y + R.title.y + 28],
-    [2.3, AB.x + R.title.x + 60, AB.y + R.title.y + 70],
-    [2.42, AB.x + R.btn.x + 2, AB.y + R.btn.y + 2],
-    [2.6, AB.x + R.btn.x + R.btn.w, AB.y + R.btn.y + R.btn.h],
-    [2.66, 940, 418],
-    [2.92, 940 + 3 * 48, 418],
-    [3, 940 + 3 * 48, 418],
+    [0.0, 640, 600],
+    [0.455, AB.x + 2, AB.y + 2],
+    [1.05, AB.x + AB.w, AB.y + AB.h],
+    [1.2, AB.x + R.img.x + 2, AB.y + R.img.y + 2],
+    [1.5, AB.x + R.img.x + R.img.w, AB.y + R.img.y + R.img.h],
+    [1.62, AB.x + R.title.x + 6, AB.y + R.title.y + 28],
+    [2.0, AB.x + R.title.x + 60, AB.y + R.title.y + 70],
+    [2.1, AB.x + R.btn.x + 2, AB.y + R.btn.y + 2],
+    [2.26, AB.x + R.btn.x + R.btn.w, AB.y + R.btn.y + R.btn.h],
+    [2.36, 930, 444],
+    [2.56, 930 + 3 * 48, 444],
+    [3.0, 930 + 3 * 48, 444],
   ];
   const pin =
-    s > 0.55 && s < 1.15
+    s > 0.5 && s < 1.05
       ? { x: AB.x + AB.w * frame, y: AB.y + AB.h * frame }
-      : s > 1.35 && s < 1.7
-        ? { x: AB.x + R.img.x + R.img.w * imgW, y: AB.y + R.img.y + R.img.h }
-        : s > 2.42 && s < 2.6
-          ? { x: AB.x + R.btn.x + R.btn.w * btnW, y: AB.y + R.btn.y + R.btn.h }
-          : s > 2.66 && s < 2.92
-            ? { x: 940 + Math.min(3, pick * 4) * 48, y: 418 }
+      : s > 1.2 && s < 1.5
+        ? { x: AB.x + R.img.x + R.img.w * imgK, y: AB.y + R.img.y + R.img.h * imgK }
+        : s > 2.1 && s < 2.26
+          ? { x: AB.x + R.btn.x + R.btn.w * btnK, y: AB.y + R.btn.y + R.btn.h * btnK }
+          : s > 2.36 && s < 2.56
+            ? { x: 930 + Math.min(3, pick * 4) * 48, y: 444 }
             : null;
-  const down = (s > 0.55 && s < 1.15) || (s > 1.35 && s < 1.7) || (s > 2.42 && s < 2.6) || (s > 2.88 && s < 2.96);
+  const down = (s > 0.5 && s < 1.05) || (s > 1.2 && s < 1.5) || (s > 2.1 && s < 2.26) || (s > 2.53 && s < 2.62);
 
   return (
     <>
@@ -319,7 +386,7 @@ function DesignStage({ s }: { s: number }) {
         <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">{D.layersLabel}</p>
         <ul className="mt-3 flex flex-col gap-1">
           {D.layers.map((l, i) => {
-            const on = [s > 0.55, s > 1.35, s > 1.85, s > 2.42][i];
+            const on = [s > 0.5, s > 1.2, s > 1.62, s > 2.1][i];
             return (
               <li
                 key={l}
@@ -345,14 +412,14 @@ function DesignStage({ s }: { s: number }) {
           <span className="size-4 rounded" style={{ background: sel === 3 ? btnColor : sel === 2 ? "#1a1714" : "#efe9de" }} />
           {sel === 3 ? btnColor : sel === 2 ? "#1a1714" : "#efe9de"}
         </div>
-        <div className="mt-4" style={fly(smooth(seg(s, 2.5, 2.68)), 0, 14, 8)}>
+        <div className="mt-4" style={fly(smooth(seg(s, 2.16, 2.34)), 0, 14, 8)}>
           <div className="h-20 rounded-lg" style={{ background: `linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,${btnColor})` }} />
           <div className="mt-3 flex gap-3">
             {SWATCHES.map((c, i) => (
               <span
                 key={c}
                 className="size-9 rounded-full"
-                style={{ background: c, boxShadow: pick > 0 && i === (s >= 2.92 ? 3 : hover) ? `0 0 0 2px #0a0d15, 0 0 0 4px ${c}` : "none" }}
+                style={{ background: c, boxShadow: pick > 0 && i === (s >= 2.56 ? 3 : hover) ? `0 0 0 2px #0a0d15, 0 0 0 4px ${c}` : "none" }}
               />
             ))}
           </div>
@@ -368,23 +435,30 @@ function DesignStage({ s }: { s: number }) {
             <i className="h-2 w-10 rounded-full bg-black/20" />
           </span>
         </div>
-        <div className="absolute grid origin-left place-items-center rounded-xl" style={{ ...box(R.img.x, R.img.y, R.img.w, R.img.h), background: "linear-gradient(120deg,#d9c6a5,#b98a5e 55%,#7a4e32)", ...fly(img, -60, 0, 16, `scaleX(${0.4 + img * 0.6})`) }}>
-          <ImageIcon size={36} className="text-white/70" />
-        </div>
+        {s > 1.2 && (
+          <div className="absolute grid place-items-center overflow-hidden rounded-xl" style={{ ...box(R.img.x, R.img.y, R.img.w * imgK, R.img.h * imgK), background: "linear-gradient(120deg,#d9c6a5,#b98a5e 55%,#7a4e32)" }}>
+            <ImageIcon size={36} className="text-white/70" style={{ opacity: smooth(seg(s, 1.4, 1.52)) }} />
+          </div>
+        )}
         <p className="absolute flex items-center whitespace-nowrap text-[44px] font-semibold leading-none tracking-[-0.045em]" style={box(R.title.x, R.title.y, R.title.w, R.title.h)}>
           {typed(D.title, title)}
-          <Caret on={s > 1.85 && s < 2.36} color="#1a1714" />
+          <Caret on={s > 1.62 && s < 2.04} color="#1a1714" />
         </p>
         <div className="absolute flex flex-col gap-2" style={{ ...box(R.title.x, R.title.y + R.title.h + 14), opacity: lines }}>
           <i className="h-2.5 w-80 rounded-full bg-black/20" />
           <i className="h-2.5 w-56 rounded-full bg-black/20" />
         </div>
-        <span className="absolute grid origin-left place-items-center rounded-full text-[15px] font-semibold text-white" style={{ ...box(R.btn.x, R.btn.y, R.btn.w, R.btn.h), background: btnColor, ...fly(btn, 0, 10, 10, `scale(${0.6 + btn * 0.4})`) }}>
-          {D.button}
-        </span>
+        {s > 2.1 && (
+          <span
+            className="absolute grid place-items-center overflow-hidden whitespace-nowrap rounded-full text-[15px] font-semibold text-white"
+            style={{ ...box(R.btn.x, R.btn.y, R.btn.w * btnK, R.btn.h * btnK), background: btnColor, transition: "background-color .18s" }}
+          >
+            <span style={{ opacity: smooth(seg(s, 2.2, 2.3)) }}>{D.button}</span>
+          </span>
+        )}
       </div>
       {/* selection + size label */}
-      {s > 0.55 && (
+      {s > 0.5 && (
         <div className="pointer-events-none border-[1.5px] border-violet" style={box(selBox.x - 2, selBox.y - 2, selBox.w + 4, selBox.h + 4)}>
           {[
             [-5, -5],
@@ -431,14 +505,14 @@ const START = LEN.map((_, i) => LEN.slice(0, i).reduce((a, b) => a + b, 0));
 const CHARS = LEN.reduce((a, b) => a + b, 0);
 
 function CodeStage({ s }: { s: number }) {
-  const chars = Math.round(seg(s, 0.35, 2.25) * CHARS);
+  const chars = Math.round(seg(s, 0.3, 1.95) * CHARS);
   const lineK = (i: number) => Math.min(1, Math.max(0, (chars - START[i]) / LEN[i]));
   const cur = LINES.findIndex((_, i) => chars < START[i] + LEN[i]);
   const textOf = (line: number, tok: number) => {
     const before = LINES[line].slice(0, tok).reduce((a, [x]) => a + x.length, 0);
     return typed(LINES[line][tok][0], (chars - START[line] - before) / LINES[line][tok][0].length);
   };
-  const term = ease(seg(s, 2.2, 2.4));
+  const term = ease(seg(s, 1.92, 2.1));
 
   return (
     <>
@@ -469,8 +543,8 @@ function CodeStage({ s }: { s: number }) {
       {/* terminal */}
       <div className="tool flex items-center gap-4 px-5 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[15px]" style={{ ...box(40, 456, 640, 60), ...fly(term, 0, 40, 12) }}>
         <span className="text-green">~/your-site $</span>
-        <span className="text-body">{typed(C.cmd, seg(s, 2.3, 2.55))}</span>
-        <span className="ml-auto flex items-center gap-2 text-green" style={fly(ease(seg(s, 2.6, 2.75)), 20, 0, 8)}>
+        <span className="text-body">{typed(C.cmd, seg(s, 2.02, 2.2))}</span>
+        <span className="ml-auto flex items-center gap-2 text-green" style={fly(ease(seg(s, 2.24, 2.36)), 20, 0, 8)}>
           <CheckCircle size={17} weight="fill" /> {C.ok}
         </span>
       </div>

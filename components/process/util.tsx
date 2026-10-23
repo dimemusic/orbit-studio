@@ -39,17 +39,25 @@ export function Abs({ x, y, w, h, style, className = "", children }: { x: number
   );
 }
 
-/** fake mouse pointer */
-export function Pointer({ x, y, down = false, color = "#f5f7fa" }: { x: number; y: number; down?: boolean; color?: string }) {
+/** fake mouse pointer: macOS-style arrow (black, white outline, soft shadow); (x, y) is the tip */
+const PS = 30; // rendered size in stage px
+const TIP = { x: (4 / 24) * PS, y: (2 / 24) * PS };
+export function Pointer({ x, y, down = false }: { x: number; y: number; down?: boolean }) {
   return (
     <svg
-      width="22"
-      height="22"
+      width={PS}
+      height={PS}
       viewBox="0 0 24 24"
-      className="pointer-events-none absolute z-20 drop-shadow-[0_4px_8px_rgb(0_0_0/0.5)]"
-      style={{ left: x, top: y, transform: `scale(${down ? 0.86 : 1})`, transition: "transform .15s" }}
+      className="pointer-events-none absolute z-20 [filter:drop-shadow(0_1px_1.5px_rgb(0_0_0/0.45))_drop-shadow(0_6px_10px_rgb(0_0_0/0.35))]"
+      style={{
+        left: x - TIP.x,
+        top: y - TIP.y,
+        transformOrigin: `${TIP.x}px ${TIP.y}px`,
+        transform: `scale(${down ? 0.88 : 1})`,
+        transition: "transform .12s cubic-bezier(.3,.7,.4,1)",
+      }}
     >
-      <path d="M4 2l15 9.5-6.6 1.4L16 21l-3 1.4-3.7-8-5.3 4.6z" fill={color} stroke="#05070d" strokeWidth="1.4" strokeLinejoin="round" />
+      <path d="M4 2v17.2l4.1-3.9 2.9 6.6 2.9-1.25-2.85-6.45h5.9z" fill="#0b0b0d" stroke="#fff" strokeWidth="2.4" strokeLinejoin="round" paintOrder="stroke" />
     </svg>
   );
 }
