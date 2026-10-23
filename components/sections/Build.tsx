@@ -1385,14 +1385,15 @@ function CmsStage({ s }: { s: number }) {
           >
             <span className="relative grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/[0.06]">
               <UploadSimple size={18} className="text-grey" />
+              {/* a clean "photo" thumbnail: soft gradient + picture glyph (a cropped render looked chopped at this size) */}
               <span
-                className="absolute inset-0"
+                className="absolute inset-0 grid place-items-center bg-gradient-to-br from-[#f1eee8] to-[#cdc6ba] text-[#1a1714]"
                 style={{
                   opacity: Math.max(up > 0 ? 0.35 : 0, photoK),
                   transform: `scale(${(1.15 - photoK * 0.15).toFixed(4)})`,
                 }}
               >
-                <Visual />
+                <ImageIcon size={22} weight="duotone" />
               </span>
             </span>
             <div className="min-w-0 flex-1">
