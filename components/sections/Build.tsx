@@ -1,11 +1,43 @@
 "use client";
 
-import { ArrowRight, CalendarBlank, CheckCircle, Cursor, FrameCorners, Hand, Image as ImageIcon, Lock, MagnifyingGlass, MapPin, PenNib, Square, TextT, UploadSimple, Users } from "@phosphor-icons/react/dist/ssr";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowsOut,
+  ArrowsOutLineVertical,
+  CaretDown,
+  CheckCircle,
+  Cursor,
+  EnvelopeSimple,
+  FrameCorners,
+  Hand,
+  Image as ImageIcon,
+  LinkSimple,
+  ListBullets,
+  Lock,
+  PenNib,
+  Rows,
+  Square,
+  SquaresFour,
+  TextAa,
+  TextAlignLeft,
+  TextB,
+  TextItalic,
+  TextT,
+  UploadSimple,
+} from "@phosphor-icons/react/dist/ssr";
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { BUILD } from "@/lib/content";
 import { homeNum } from "../home";
 import { Eyebrow } from "../ui/Bits";
-import { along, Caret, ease, expo, Pointer, seg, smooth, Typed, typed } from "../process/util";
+import { Caret, ease, expo, seg, smooth, Typed, typed } from "../process/util";
 
 /**
  * «Як ми працюємо»: a ~12s film that plays once by itself when the section comes into view.
@@ -18,7 +50,9 @@ import { along, Caret, ease, expo, Pointer, seg, smooth, Typed, typed } from "..
  *  Design (the craft) and the panel (the client's benefit) get more time, code and launch read at a glance. */
 const BEATS = 3;
 const STAGE_SEC = [5.0, 3.2, 4.0, 3.4];
-const STAGE_START = STAGE_SEC.map((_, i) => STAGE_SEC.slice(0, i).reduce((a, b) => a + b, 0));
+const STAGE_START = STAGE_SEC.map((_, i) =>
+  STAGE_SEC.slice(0, i).reduce((a, b) => a + b, 0),
+);
 const TOTAL = STAGE_SEC.reduce((a, b) => a + b, 0);
 const stageAt = (t: number) => {
   let i = 0;
@@ -29,7 +63,13 @@ const SW = 1200;
 const SH = 620;
 
 /** motion-blur style for an element that flies in: k = 0 (start) → 1 (settled) */
-const fly = (k: number, dx = 0, dy = 0, px = 14, extra = ""): CSSProperties => ({
+const fly = (
+  k: number,
+  dx = 0,
+  dy = 0,
+  px = 14,
+  extra = "",
+): CSSProperties => ({
   transform: `translate3d(${((1 - k) * dx).toFixed(1)}px, ${((1 - k) * dy).toFixed(1)}px, 0) ${extra}`,
   filter: k < 1 ? `blur(${((1 - k) * px).toFixed(2)}px)` : undefined,
   opacity: Math.min(1, k * 1.6),
@@ -77,14 +117,21 @@ export function Build() {
   const gridV = ease(seg(t, 0.15, 0.85));
 
   return (
-    <section ref={ref} id="process" aria-labelledby="build-title" className="snap-section relative flex min-h-[100dvh] w-full flex-col overflow-hidden md:h-[100dvh]">
+    <section
+      ref={ref}
+      id="process"
+      aria-labelledby="build-title"
+      className="snap-section relative flex min-h-[100dvh] w-full flex-col overflow-hidden md:h-[100dvh]"
+    >
       {/* grid drawn on the page background */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
         style={{
-          maskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 80%, transparent), linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 80%, transparent), linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
+          maskImage:
+            "linear-gradient(to bottom, transparent, #000 22%, #000 80%, transparent), linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, transparent, #000 22%, #000 80%, transparent), linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
           maskComposite: "intersect",
           WebkitMaskComposite: "source-in",
         }}
@@ -108,14 +155,24 @@ export function Build() {
           {BUILD.label}: {BUILD.stages.map((s) => s.title.join(" ")).join(" ")}
         </h2>
         <Title t={t} />
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3" aria-hidden="true">
+        <div
+          className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
+          aria-hidden="true"
+        >
           {BUILD.stages.map((s, i) => (
             <span key={s.id} className="flex items-center gap-2.5">
-              <span className={`text-[13px] font-semibold transition-colors duration-300 ${i === cur ? "text-fg" : "text-faint"}`}>{s.step}</span>
+              <span
+                className={`text-[13px] font-semibold transition-colors duration-300 ${i === cur ? "text-fg" : "text-faint"}`}
+              >
+                {s.step}
+              </span>
               <span className="block h-[3px] w-[clamp(40px,5vw,72px)] overflow-hidden rounded-full bg-white/10">
                 <span
                   className="block h-full origin-left rounded-full"
-                  style={{ background: s.color, transform: `scaleX(${seg(t, STAGE_START[i], STAGE_START[i] + STAGE_SEC[i])})` }}
+                  style={{
+                    background: s.color,
+                    transform: `scaleX(${seg(t, STAGE_START[i], STAGE_START[i] + STAGE_SEC[i])})`,
+                  }}
                 />
               </span>
             </span>
@@ -123,7 +180,9 @@ export function Build() {
         </div>
         <p className="mt-3 text-[14px] text-body" aria-live="polite">
           {st.step} · {st.days}
-          {t >= TOTAL - 0.4 && <span className="text-grey"> · {BUILD.replayNote}</span>}
+          {t >= TOTAL - 0.4 && (
+            <span className="text-grey"> · {BUILD.replayNote}</span>
+          )}
         </p>
       </header>
 
@@ -131,9 +190,16 @@ export function Build() {
         {BUILD.stages.map((s, i) => {
           const start = STAGE_START[i];
           const len = STAGE_SEC[i];
-          if (t < start - 0.15 || (i < BUILD.stages.length - 1 && t > start + len + 0.05)) return null;
+          if (
+            t < start - 0.15 ||
+            (i < BUILD.stages.length - 1 && t > start + len + 0.05)
+          )
+            return null;
           const enter = i === 0 ? 1 : expo(seg(t, start - 0.08, start + 0.7));
-          const exitK = i === BUILD.stages.length - 1 ? 0 : seg(t, start + len - 0.32, start + len);
+          const exitK =
+            i === BUILD.stages.length - 1
+              ? 0
+              : seg(t, start + len - 0.32, start + len);
           const exit = exitK * exitK * exitK;
           const s0 = (Math.max(0, t - start) / len) * BEATS;
           return (
@@ -142,7 +208,10 @@ export function Build() {
               className="absolute inset-0"
               style={{
                 transform: `translate3d(${((1 - enter) * 200 - exit * 220).toFixed(1)}px, 0, 0) scale(${(1 - (1 - enter) * 0.03 - exit * 0.03).toFixed(4)})`,
-                filter: enter < 0.995 || exit > 0 ? `blur(${((1 - enter) * 12 + exit * 14).toFixed(1)}px)` : undefined,
+                filter:
+                  enter < 0.995 || exit > 0
+                    ? `blur(${((1 - enter) * 12 + exit * 14).toFixed(1)}px)`
+                    : undefined,
                 opacity: Math.min(1, enter * 1.25) * (1 - exit),
                 willChange: "transform, filter, opacity",
               }}
@@ -169,9 +238,16 @@ function Title({ t }: { t: number }) {
   const words = st.title;
   let n = 0;
   return (
-    <p aria-hidden="true" className="mt-5 min-h-[1.1em] text-[clamp(44px,7.4vw,116px)] font-semibold leading-[1] tracking-[-0.05em]">
+    <p
+      aria-hidden="true"
+      className="mt-5 min-h-[1.1em] text-[clamp(44px,7.4vw,116px)] font-semibold leading-[1] tracking-[-0.05em]"
+    >
       {words.map((w, wi) => (
-        <span key={wi} className="inline-block whitespace-nowrap" style={{ color: wi === words.length - 1 ? st.color : undefined }}>
+        <span
+          key={wi}
+          className="inline-block whitespace-nowrap"
+          style={{ color: wi === words.length - 1 ? st.color : undefined }}
+        >
           {Array.from(w).map((ch, ci) => {
             const k = expo(seg(t, start + n * 0.022, start + 0.62 + n * 0.022));
             n++;
@@ -181,7 +257,10 @@ function Title({ t }: { t: number }) {
                 className="inline-block"
                 style={{
                   transform: `translate3d(${(-out * 40).toFixed(1)}px, ${((1 - k) * 0.35).toFixed(3)}em, 0)`,
-                  filter: k < 1 || out > 0 ? `blur(${((1 - k) * 12 + out * 14).toFixed(1)}px)` : undefined,
+                  filter:
+                    k < 1 || out > 0
+                      ? `blur(${((1 - k) * 12 + out * 14).toFixed(1)}px)`
+                      : undefined,
                   opacity: Math.min(1, k * 1.5) * (1 - out),
                 }}
               >
@@ -189,7 +268,9 @@ function Title({ t }: { t: number }) {
               </span>
             );
           })}
-          {wi < words.length - 1 && <span className="inline-block w-[0.26em]" />}
+          {wi < words.length - 1 && (
+            <span className="inline-block w-[0.26em]" />
+          )}
         </span>
       ))}
     </p>
@@ -213,66 +294,88 @@ function StageBox({ children }: { children: ReactNode }) {
     return () => ro.disconnect();
   }, []);
   return (
-    <div ref={box} aria-hidden="true" className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1">
-      <div className="absolute left-1/2 top-1/2" style={{ width: SW, height: SH, transform: `translate(-50%, -50%) scale(${k})`, visibility: k ? "visible" : "hidden" }}>
+    <div
+      ref={box}
+      aria-hidden="true"
+      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1"
+    >
+      <div
+        className="absolute left-1/2 top-1/2"
+        style={{
+          width: SW,
+          height: SH,
+          transform: `translate(-50%, -50%) scale(${k})`,
+          visibility: k ? "visible" : "hidden",
+        }}
+      >
         {children}
       </div>
     </div>
   );
 }
 
-/** pointer: follows its path (or a pinned point, e.g. the corner being dragged) through a soft spring,
- *  so it never jumps; it blurs with its real on-screen speed */
-function BlurPointer({ s, path, down, pin }: { s: number; path: [number, number, number][]; down?: boolean; pin?: { x: number; y: number } | null }) {
-  const target = pin ?? along(s, path);
-  const st = useRef<{ x: number; y: number; at: number; v: number } | null>(null);
-  const now = typeof performance !== "undefined" ? performance.now() : 0;
-  if (!st.current) st.current = { x: target.x, y: target.y, at: now, v: 0 };
-  const cur = st.current;
-  const dt = Math.min(0.1, Math.max(0, (now - cur.at) / 1000));
-  const k = pin ? 1 - Math.exp(-dt / 0.03) : 1 - Math.exp(-dt / 0.07);
-  const nx = cur.x + (target.x - cur.x) * k;
-  const ny = cur.y + (target.y - cur.y) * k;
-  const v = dt > 0 ? Math.hypot(nx - cur.x, ny - cur.y) / dt : cur.v; // px per second
-  cur.x = nx;
-  cur.y = ny;
-  cur.at = now;
-  cur.v = cur.v + (v - cur.v) * 0.35;
-  const blur = Math.min(4, Math.max(0, (cur.v - 250) / 450));
-  return (
-    <div className="absolute inset-0" style={{ filter: blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : undefined }}>
-      <Pointer x={cur.x} y={cur.y} down={down} />
-    </div>
-  );
-}
+const box = (x: number, y: number, w?: number, h?: number): CSSProperties => ({
+  position: "absolute",
+  left: x,
+  top: y,
+  width: w,
+  height: h,
+});
+const INK = "#1a1714";
 
-const box = (x: number, y: number, w?: number, h?: number): CSSProperties => ({ position: "absolute", left: x, top: y, width: w, height: h });
-
-/** illustrated mountain "photo" for the mock site (no image files); v picks a sky */
-const SKIES = [
-  ["#f7dfb8", "#eba67a"],
-  ["#e3eaec", "#b5c8cf"],
-  ["#f3d2bd", "#c98d7c"],
+/** neutral abstract "product shot" for the mock site (no image files); v picks the palette */
+const VIS = [
+  ["#efede9", "#d6d2ca"],
+  ["#e9ecf0", "#c8ced7"],
+  ["#f1ebe5", "#d9cbbf"],
 ];
-const TREES = Array.from({ length: 32 }, (_, i) => `M${i * 14} 180L${i * 14 + 7} ${150 + ((i * 7) % 11)}L${i * 14 + 14} 180Z`).join("");
-function Mountains({ v = 0 }: { v?: number }) {
-  const [a, b] = SKIES[v % SKIES.length];
-  const id = `sky${v % SKIES.length}`;
+function Visual({ v = 0 }: { v?: number }) {
+  const [a, b] = VIS[v % VIS.length];
+  const id = `vis${v % VIS.length}`;
   return (
-    <svg viewBox="0 0 432 180" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" aria-hidden="true">
+    <svg
+      viewBox="0 0 432 180"
+      preserveAspectRatio="xMidYMid slice"
+      className="absolute inset-0 h-full w-full"
+      aria-hidden="true"
+    >
       <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`${id}bg`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor={a} />
           <stop offset="1" stopColor={b} />
         </linearGradient>
+        <linearGradient id={`${id}obj`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#3a3a3f" />
+          <stop offset="1" stopColor="#0f0f12" />
+        </linearGradient>
+        <radialGradient id={`${id}ball`} cx="0.35" cy="0.3" r="0.75">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#a9a39a" />
+        </radialGradient>
       </defs>
-      <rect width="432" height="180" fill={`url(#${id})`} />
-      <circle cx="312" cy="66" r="20" fill="#fff7e8" opacity="0.85" />
-      <path d="M0 118L58 76L104 102L168 54L226 98L288 66L348 94L432 60V180H0Z" fill="#a8b5af" />
-      <path d="M168 54L182 64.5L175 63L177 69L168 64L161 68L154 64.5Z" fill="#f4f1ea" opacity="0.9" />
-      <path d="M0 140L48 112L98 130L160 96L222 128L282 104L340 132L398 108L432 118V180H0Z" fill="#6d8879" />
-      <path d="M0 160L42 142L92 156L152 134L212 158L272 140L332 160L392 144L432 156V180H0Z" fill="#3d5848" />
-      <path d={TREES} fill="#23372c" />
+      <rect width="432" height="180" fill={`url(#${id}bg)`} />
+      <circle cx="110" cy="40" r="90" fill="#fff" opacity="0.35" />
+      <ellipse cx="292" cy="156" rx="110" ry="14" fill="#000" opacity="0.1" />
+      <g transform="rotate(-9 290 90)">
+        <rect
+          x="226"
+          y="34"
+          width="128"
+          height="104"
+          rx="24"
+          fill={`url(#${id}obj)`}
+        />
+        <rect
+          x="240"
+          y="46"
+          width="100"
+          height="7"
+          rx="3.5"
+          fill="#fff"
+          opacity="0.14"
+        />
+      </g>
+      <circle cx="368" cy="126" r="24" fill={`url(#${id}ball)`} />
     </svg>
   );
 }
@@ -280,213 +383,495 @@ function Mountains({ v = 0 }: { v?: number }) {
 /* ---------------- 1 · Design ---------------- */
 const D = BUILD.design;
 const AB = { x: 360, y: 20, w: 480, h: 560 };
-/** element rects inside the artboard: drawn AND selected from the same numbers, so the selection always fits */
+/** element rects inside the artboard: assembled AND selected from the same numbers, so the selection always fits */
+type Rc = { x: number; y: number; w: number; h: number };
 const R = {
-  img: { x: 24, y: 64, w: 432, h: 168 },
-  title: { x: 24, y: 286, w: 420, h: 50 },
-  btn: { x: 24, y: 394, w: 150, h: 46 },
+  img: { x: 24, y: 60, w: 432, h: 170 },
+  title: { x: 24, y: 282, w: 420, h: 48 },
+  btn: { x: 24, y: 386, w: 150, h: 46 },
+  plans: { x: 24, y: 462, w: 432, h: 74 },
 };
-const SWATCHES = ["#e8492a", "#a78bfa", "#22d3ee", "#3d5a3a"];
+const PLAN_W = (R.plans.w - 20) / 3;
+const SWATCHES = ["#e8492a", "#a78bfa", "#22d3ee", INK];
 const TOOLS = [Cursor, FrameCorners, Square, TextT, PenNib, Hand];
+/** components panel (left, bottom): tiles are the sources the button and cards fly out of */
+const CP = { x: 112, y: 452, w: 220 };
+const tile = (i: number) => ({
+  x: CP.x + 16 + (i % 2) * 98,
+  y: CP.y + 40 + Math.floor(i / 2) * 58,
+  w: 90,
+  h: 50,
+});
+const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
+const label = "text-[11px] font-semibold uppercase tracking-[0.1em] text-grey";
+const cell =
+  "flex items-center gap-2 rounded-lg bg-white/[0.05] px-2.5 py-2 text-[13px] tabular-nums text-body";
 
 function DesignStage({ s }: { s: number }) {
-  // panels arrive quickly, the drawing itself takes its time
-  const tb = expo(seg(s, 0.06, 0.6));
-  const ly = expo(seg(s, 0.14, 0.68));
-  const pr = expo(seg(s, 0.1, 0.64));
-  const frame = smooth(seg(s, 0.5, 1.05));
-  const img = smooth(seg(s, 1.2, 1.5));
-  const title = seg(s, 1.62, 2.0);
-  const lines = expo(seg(s, 1.96, 2.22));
-  const btn = smooth(seg(s, 2.1, 2.26));
-  const pick = seg(s, 2.36, 2.56);
+  // panels arrive first, then the page assembles itself piece by piece (no pointer)
+  const pan = (i: number) => expo(seg(s, 0.02 + i * 0.04, 0.55 + i * 0.04));
+  const frame = smooth(seg(s, 0.4, 0.95));
+  const nav = expo(seg(s, 0.9, 1.2));
+  const img = expo(seg(s, 1.0, 1.38));
+  const badge = expo(seg(s, 1.25, 1.5));
+  const signup = expo(seg(s, 1.3, 1.62));
+  const title = seg(s, 1.42, 1.8);
+  const sub = expo(seg(s, 1.74, 2.0));
+  const btnFly = smooth(seg(s, 1.85, 2.12));
+  const more = expo(seg(s, 2.0, 2.25));
+  const pick = seg(s, 2.15, 2.42);
+  const planFly = (k: number) =>
+    smooth(seg(s, 2.22 + k * 0.06, 2.5 + k * 0.06));
   const hover = Math.min(3, Math.floor(pick * 4));
-  const btnColor = s >= 2.56 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
-  // the tool is picked just before each action; the selection moves to an element the moment it starts
-  const tool = s < 1.12 ? 1 : s < 1.56 ? 2 : s < 2.04 ? 3 : s < 2.3 ? 2 : 0;
-  const SEL_AT = [0.5, 1.2, 1.62, 2.1];
-  const sel = s < 1.2 ? 0 : s < 1.62 ? 1 : s < 2.1 ? 2 : 3;
-  type Rc = { x: number; y: number; w: number; h: number };
-  const at = (r: Rc, k = 1): Rc => ({ x: AB.x + r.x, y: AB.y + r.y, w: r.w * k, h: r.h * k });
-  const imgK = 0.04 + img * 0.96;
-  const btnK = 0.08 + btn * 0.92;
-  const rects: Rc[] = [{ x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame }, at(R.img, imgK), at(R.title), at(R.btn, btnK)];
-  const finals: Rc[] = [{ ...AB }, at(R.img), at(R.title), at(R.btn)];
+  const btnColor =
+    s >= 2.42 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
+
+  const SEL_AT = [0.4, 1.0, 1.42, 2.0, 2.5];
+  const sel = s < 1.0 ? 0 : s < 1.42 ? 1 : s < 2.0 ? 2 : s < 2.5 ? 3 : 4;
+  const tool = [1, 2, 3, 0, 0][sel];
+  const rowOf = [0, 1, 3, 5, 6][sel];
+  const ROW_AT = [0.4, 1.0, 1.3, 1.42, 1.74, 1.85, 2.22];
+  const at = (r: Rc): Rc => ({ x: AB.x + r.x, y: AB.y + r.y, w: r.w, h: r.h });
+  const finals: Rc[] = [
+    { ...AB },
+    at(R.img),
+    at(R.title),
+    at(R.btn),
+    at(R.plans),
+  ];
+  const rects: Rc[] = [
+    { x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame },
+    ...finals.slice(1),
+  ];
   // glide from the previous element's box to the new one (no jump)
   const g = sel ? smooth(seg(s, SEL_AT[sel], SEL_AT[sel] + 0.12)) : 1;
   const from = finals[Math.max(0, sel - 1)];
   const to = rects[sel];
-  const selBox: Rc = { x: from.x + (to.x - from.x) * g, y: from.y + (to.y - from.y) * g, w: from.w + (to.w - from.w) * g, h: from.h + (to.h - from.h) * g };
-  // between actions the pointer glides (ease in-out); while dragging it is pinned to the corner being drawn
-  const path: [number, number, number][] = [
-    [0.0, 640, 600],
-    [0.455, AB.x + 2, AB.y + 2],
-    [1.05, AB.x + AB.w, AB.y + AB.h],
-    [1.2, AB.x + R.img.x + 2, AB.y + R.img.y + 2],
-    [1.5, AB.x + R.img.x + R.img.w, AB.y + R.img.y + R.img.h],
-    [1.6, AB.x + R.title.x + 4, AB.y + R.title.y + 26],
-    // click to place the caret, then drift out of the way while the title is typed
-    [1.78, AB.x + R.title.x + 150, AB.y + R.title.y + R.title.h + 44],
-    [2.0, AB.x + R.title.x + 120, AB.y + R.title.y + R.title.h + 56],
-    [2.1, AB.x + R.btn.x + 2, AB.y + R.btn.y + 2],
-    [2.26, AB.x + R.btn.x + R.btn.w, AB.y + R.btn.y + R.btn.h],
-    [2.36, 930, 444],
-    [2.56, 930 + 3 * 48, 444],
-    [3.0, 930 + 3 * 48, 444],
-  ];
-  const pin =
-    s > 0.5 && s < 1.05
-      ? { x: AB.x + AB.w * frame, y: AB.y + AB.h * frame }
-      : s > 1.2 && s < 1.5
-        ? { x: AB.x + R.img.x + R.img.w * imgK, y: AB.y + R.img.y + R.img.h * imgK }
-        : s > 2.1 && s < 2.26
-          ? { x: AB.x + R.btn.x + R.btn.w * btnK, y: AB.y + R.btn.y + R.btn.h * btnK }
-          : s > 2.36 && s < 2.56
-            ? { x: 930 + Math.min(3, pick * 4) * 48, y: 444 }
-            : null;
-  const down = (s > 0.5 && s < 1.05) || (s > 1.2 && s < 1.5) || (s > 2.1 && s < 2.26) || (s > 2.53 && s < 2.62);
+  const selBox: Rc = {
+    x: lerp(from.x, to.x, g),
+    y: lerp(from.y, to.y, g),
+    w: lerp(from.w, to.w, g),
+    h: lerp(from.h, to.h, g),
+  };
+  const fillHex =
+    sel === 3 ? btnColor : sel === 2 ? INK : sel === 4 ? "#ffffff" : "#f4f0e8";
+
+  // a component instance flies from its tile in the components panel to its place on the artboard
+  const ghost = (
+    k: number,
+    src: Rc,
+    dst: Rc,
+    children: ReactNode,
+    cls: string,
+    bg?: string,
+  ) =>
+    k > 0 && k < 1 ? (
+      <div
+        className={`pointer-events-none absolute z-10 ${cls}`}
+        style={{
+          left: lerp(src.x, dst.x, k),
+          top: lerp(src.y, dst.y, k) - Math.sin(Math.PI * k) * 40,
+          width: lerp(src.w, dst.w, k),
+          height: lerp(src.h, dst.h, k),
+          background: bg,
+          filter: `blur(${(Math.sin(Math.PI * k) * 3).toFixed(2)}px)`,
+          boxShadow: `0 ${20 * Math.sin(Math.PI * k)}px 40px -12px rgb(0 0 0 / 0.6)`,
+          willChange: "left, top, width, height, filter",
+        }}
+      >
+        {children}
+      </div>
+    ) : null;
+  const planDst = (k: number): Rc => ({
+    x: AB.x + R.plans.x + k * (PLAN_W + 10),
+    y: AB.y + R.plans.y,
+    w: PLAN_W,
+    h: R.plans.h,
+  });
 
   return (
     <>
       {/* toolbar */}
-      <div className="tool flex flex-col gap-1 p-1.5" style={{ ...box(40, 160, 52), ...fly(tb, -180, 0) }}>
+      <div
+        className="tool flex flex-col gap-1 p-1.5"
+        style={{ ...box(40, 166, 52), ...fly(pan(0), -160, 0) }}
+      >
         {TOOLS.map((Ic, i) => (
-          <span key={i} className={`grid size-10 place-items-center rounded-xl transition-colors duration-200 ${i === tool ? "bg-violet text-white" : "text-grey"}`}>
+          <span
+            key={i}
+            className={`grid size-10 place-items-center rounded-xl transition-colors duration-300 ${i === tool ? "bg-violet text-white" : "text-grey"}`}
+          >
             <Ic size={18} />
           </span>
         ))}
       </div>
+      {/* pages + frames */}
+      <div
+        className="tool p-4"
+        style={{ ...box(112, 20, 220), ...fly(pan(0), -180, 0) }}
+      >
+        <p className={label}>{D.pagesLabel}</p>
+        <ul className="mt-2.5 flex flex-col gap-0.5 text-[13px]">
+          {D.pages.map((p, i) => (
+            <li
+              key={p}
+              className={`flex items-center justify-between rounded-lg px-2 py-1 ${i === 0 ? "bg-white/[0.06] text-fg" : "text-body"}`}
+            >
+              {p}
+              {i === 0 && <span className="text-[11px] text-grey">1440</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
       {/* layers */}
-      <div className="tool p-4" style={{ ...box(112, 160, 200), ...fly(ly, -200, 0) }}>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">{D.layersLabel}</p>
-        <ul className="mt-3 flex flex-col gap-1">
+      <div
+        className="tool p-4"
+        style={{ ...box(112, 172, 220), ...fly(pan(1), -180, 0) }}
+      >
+        <p className={label}>{D.layersLabel}</p>
+        <ul className="mt-2.5 flex flex-col gap-0.5">
           {D.layers.map((l, i) => {
-            const on = [s > 0.5, s > 1.2, s > 1.62, s > 2.1][i];
+            const on = expo(seg(s, ROW_AT[i], ROW_AT[i] + 0.25));
+            const Ic = [
+              FrameCorners,
+              ImageIcon,
+              Rows,
+              TextT,
+              TextAlignLeft,
+              Square,
+              SquaresFour,
+            ][i];
             return (
               <li
                 key={l}
-                className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] ${i === sel ? "bg-violet/20 text-fg" : "text-body"}`}
-                style={{ ...fly(on ? 1 : 0, -20, 0, 6), paddingLeft: i ? 24 : 8, transition: "opacity .3s, transform .3s, filter .3s" }}
+                className={`flex items-center gap-2 rounded-lg px-2 py-1 text-[13px] transition-colors duration-300 ${i === rowOf ? "bg-violet/20 text-fg" : "text-body"}`}
+                style={{ ...fly(on, -16, 0, 5), paddingLeft: i ? 26 : 8 }}
               >
-                {[FrameCorners, ImageIcon, TextT, Square].map((Ic, k) => k === i && <Ic key={k} size={13} />)}
+                <Ic size={13} className="shrink-0 text-grey" />
                 {l}
               </li>
             );
           })}
         </ul>
       </div>
-      {/* properties + palette */}
-      <div className="tool p-4" style={{ ...box(900, 160, 260), ...fly(pr, 200, 0) }}>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">{D.props}</p>
-        <div className="mt-3 grid grid-cols-2 gap-2 text-[13px] tabular-nums text-body">
-          <span className="rounded-lg bg-white/[0.05] px-2.5 py-2">W {Math.round(selBox.w)}</span>
-          <span className="rounded-lg bg-white/[0.05] px-2.5 py-2">H {Math.round(selBox.h)}</span>
+      {/* components: the sources of the instances */}
+      <div
+        className="tool p-4"
+        style={{ ...box(CP.x, CP.y, CP.w, 158), ...fly(pan(2), -180, 0) }}
+      >
+        <p className={label}>{D.compLabel}</p>
+      </div>
+      {D.comps.map((c, i) => {
+        const r = tile(i);
+        const hot =
+          (i === 0 && btnFly > 0 && btnFly < 1) ||
+          (i === 1 && planFly(0) > 0 && planFly(2) < 1);
+        return (
+          <div
+            key={c}
+            className={`grid place-items-center gap-1 rounded-lg border transition-colors duration-300 ${hot ? "border-violet bg-violet/10" : "border-transparent bg-white/[0.04]"}`}
+            style={{ ...box(r.x, r.y, r.w, r.h), ...fly(pan(2), -180, 0) }}
+          >
+            {i === 0 && <span className="h-3 w-10 rounded-full bg-white/70" />}
+            {i === 1 && <span className="h-4 w-10 rounded bg-white/25" />}
+            {i === 2 && (
+              <span className="h-3 w-12 rounded border border-white/40" />
+            )}
+            {i === 3 && (
+              <span className="h-2.5 w-7 rounded-full bg-violet-soft/70" />
+            )}
+            <span className="text-[10px] text-grey">{c}</span>
+          </div>
+        );
+      })}
+
+      {/* properties + auto layout */}
+      <div
+        className="tool p-4"
+        style={{ ...box(870, 20, 290), ...fly(pan(0), 180, 0) }}
+      >
+        <p className={label}>{D.props}</p>
+        <div className="mt-2.5 grid grid-cols-2 gap-2">
+          <span className={cell}>
+            <span className="text-grey">X</span> {Math.round(selBox.x - AB.x)}
+          </span>
+          <span className={cell}>
+            <span className="text-grey">Y</span> {Math.round(selBox.y - AB.y)}
+          </span>
+          <span className={cell}>
+            <span className="text-grey">W</span> {Math.round(selBox.w)}
+          </span>
+          <span className={cell}>
+            <span className="text-grey">H</span> {Math.round(selBox.h)}
+          </span>
         </div>
-        <p className="mt-4 text-[12px] text-grey">{D.fill}</p>
-        <div className="mt-1.5 flex items-center gap-2 rounded-lg bg-white/[0.05] px-2.5 py-2 text-[13px] uppercase tabular-nums text-body">
-          <span className="size-4 rounded" style={{ background: sel === 3 ? btnColor : sel === 2 ? "#1a1714" : "#efe9de" }} />
-          {sel === 3 ? btnColor : sel === 2 ? "#1a1714" : "#efe9de"}
+        <p className={`${label} mt-4`}>{D.layout}</p>
+        <div className="mt-2.5 grid grid-cols-[auto_1fr_1fr] gap-2">
+          <span className="flex items-center gap-0.5 rounded-lg bg-white/[0.05] p-1">
+            <span className="grid size-6 place-items-center rounded-md bg-violet text-white">
+              <ArrowDown size={12} weight="bold" />
+            </span>
+            <span className="grid size-6 place-items-center rounded-md text-grey">
+              <ArrowRight size={12} weight="bold" />
+            </span>
+          </span>
+          <span className={cell}>
+            <ArrowsOutLineVertical size={13} className="text-grey" />{" "}
+            {sel === 4 ? 10 : 24}
+          </span>
+          <span className={cell}>
+            <ArrowsOut size={13} className="text-grey" /> 24
+          </span>
         </div>
-        <div className="mt-4" style={fly(smooth(seg(s, 2.16, 2.34)), 0, 14, 8)}>
-          <div className="h-20 rounded-lg" style={{ background: `linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,${btnColor})` }} />
-          <div className="mt-3 flex gap-3">
-            {SWATCHES.map((c, i) => (
-              <span
-                key={c}
-                className="size-9 rounded-full"
-                style={{ background: c, boxShadow: pick > 0 && i === (s >= 2.56 ? 3 : hover) ? `0 0 0 2px #0a0d15, 0 0 0 4px ${c}` : "none" }}
-              />
-            ))}
+      </div>
+      {/* typography: lights up while the title is set */}
+      <div
+        className="tool p-4"
+        style={{ ...box(870, 246, 290), ...fly(pan(1), 180, 0) }}
+      >
+        <p className={label}>{D.text}</p>
+        <div
+          className="mt-2.5 flex flex-col gap-2 transition-opacity duration-300"
+          style={{ opacity: sel === 2 ? 1 : 0.55 }}
+        >
+          <span className={`${cell} justify-between text-fg`}>
+            {D.font} <CaretDown size={12} className="text-grey" />
+          </span>
+          <div className="grid grid-cols-[1fr_72px] gap-2">
+            <span className={`${cell} justify-between`}>
+              {D.weight} <CaretDown size={12} className="text-grey" />
+            </span>
+            <span
+              className={`${cell} ${sel === 2 ? "text-fg ring-1 ring-violet/60" : ""}`}
+            >
+              40
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <span className={cell}>
+              <TextAa size={13} className="text-grey" /> 100%
+            </span>
+            <span className={cell}>
+              <span className="text-grey">|A|</span> −4.5%
+            </span>
           </div>
         </div>
       </div>
-      {/* artboard: the site being drawn (children use the same rects as the selection) */}
-      <div className="overflow-hidden rounded-md bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-40px_rgb(0_0_0/0.9)]" style={{ ...box(AB.x, AB.y, AB.w, AB.h), clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)` }}>
-        <div className="absolute inset-x-6 top-5 flex items-center justify-between">
-          <span className="text-[17px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
+      {/* fill + palette */}
+      <div
+        className="tool p-4"
+        style={{ ...box(870, 424, 290), ...fly(pan(2), 180, 0) }}
+      >
+        <p className={label}>{D.fill}</p>
+        <div className={`${cell} mt-2.5 uppercase`}>
+          <span
+            className="size-4 rounded border border-white/20"
+            style={{ background: fillHex, transition: "background-color .25s" }}
+          />
+          {fillHex}
+        </div>
+        <div className="mt-2.5 flex items-center gap-2.5">
+          {SWATCHES.map((c, i) => {
+            const on = pick > 0 && i === (s >= 2.42 ? 3 : hover);
+            return (
+              <span
+                key={c}
+                className="size-8 rounded-full border border-white/15"
+                style={{
+                  background: c,
+                  boxShadow: on
+                    ? `0 0 0 2px #0a0d15, 0 0 0 4px ${c === INK ? "#f5f7fa" : c}`
+                    : "none",
+                  transform: `scale(${on ? 1.08 : 1})`,
+                  transition: "transform .2s, box-shadow .2s",
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* artboard: the site assembling itself (children use the same rects as the selection) */}
+      <div
+        className="overflow-hidden rounded-md bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-40px_rgb(0_0_0/0.9)]"
+        style={{
+          ...box(AB.x, AB.y, AB.w, AB.h),
+          clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)`,
+        }}
+      >
+        <div
+          className="absolute inset-x-6 top-5 flex items-center justify-between"
+          style={fly(nav, 0, -12, 6)}
+        >
+          <span className="text-[17px] font-semibold tracking-[-0.03em]">
+            {BUILD.brand}
+          </span>
           <span className="flex items-center gap-4 text-[12px] font-medium text-[#5c564c]">
             {D.nav.map((n) => (
               <span key={n}>{n}</span>
             ))}
-            <span className="rounded-full bg-[#1a1714] px-3 py-1.5 text-[11px] font-semibold text-[#f4f0e8]">{D.login}</span>
-          </span>
-        </div>
-        {s > 1.2 && (
-          <div className="absolute overflow-hidden rounded-xl bg-[#e3d8c6]" style={box(R.img.x, R.img.y, R.img.w * imgK, R.img.h * imgK)}>
-            <div className="absolute left-0 top-0" style={{ width: R.img.w, height: R.img.h, opacity: expo(seg(s, 1.28, 1.6)) }}>
-              <Mountains />
-              <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-[#1a1714]" style={fly(expo(seg(s, 1.42, 1.7)), -10, 0, 4)}>
-                <MapPin size={12} weight="fill" /> {D.place}
-              </span>
-            </div>
-          </div>
-        )}
-        {/* booking bar floating over the photo */}
-        <div
-          className="absolute flex items-center gap-1 rounded-2xl bg-white p-1.5 shadow-[0_12px_30px_-12px_rgb(40_30_20/0.45)]"
-          style={{ ...box(R.img.x + 16, R.img.y + R.img.h - 24, R.img.w - 32, 48), ...fly(expo(seg(s, 1.5, 1.85)), 0, 18, 8) }}
-        >
-          {D.book.map(([l, v], k) => (
-            <span key={l} className={`flex flex-1 items-center gap-2 px-2.5 ${k ? "border-l border-black/10" : ""}`}>
-              {[CalendarBlank, CalendarBlank, Users].map((Ic, j) => j === k && <Ic key={j} size={15} className="shrink-0 text-[#7a7368]" />)}
-              <span className="leading-tight">
-                <span className="block text-[10px] text-[#7a7368]">{l}</span>
-                <span className="block whitespace-nowrap text-[12px] font-semibold">{v}</span>
-              </span>
+            <span className="rounded-full bg-[#1a1714] px-3 py-1.5 text-[11px] font-semibold text-[#f4f0e8]">
+              {D.login}
             </span>
-          ))}
-          <span className="flex h-full items-center gap-1.5 rounded-xl bg-[#1a1714] px-3.5 text-[12px] font-semibold text-[#f4f0e8]">
-            <MagnifyingGlass size={13} weight="bold" /> {D.find}
           </span>
         </div>
-        <p className="absolute flex items-center whitespace-nowrap text-[40px] font-semibold leading-none tracking-[-0.045em]" style={box(R.title.x, R.title.y, R.title.w, R.title.h)}>
-          <Typed text={D.title} k={title} caret={s > 1.62 && s < 2.04} color="#1a1714" />
+        <div
+          className="absolute overflow-hidden rounded-xl"
+          style={{
+            ...box(R.img.x, R.img.y, R.img.w, R.img.h),
+            clipPath: `inset(${((1 - img) * 100).toFixed(2)}% 0 0 0 round 12px)`,
+            opacity: Math.min(1, img * 2),
+          }}
+        >
+          <div
+            className="absolute inset-0"
+            style={{ transform: `scale(${(1.12 - img * 0.12).toFixed(4)})` }}
+          >
+            <Visual />
+          </div>
+          <span
+            className="absolute left-3 top-3 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-[#1a1714]"
+            style={fly(badge, -10, 0, 4)}
+          >
+            {D.badge}
+          </span>
+        </div>
+        {/* email signup bar floating over the visual */}
+        <div
+          className="absolute flex items-center gap-2 rounded-2xl bg-white p-1.5 pl-4 shadow-[0_12px_30px_-12px_rgb(40_30_20/0.45)]"
+          style={{
+            ...box(R.img.x + 16, R.img.y + R.img.h - 24, R.img.w - 32, 48),
+            ...fly(signup, 0, 18, 8),
+          }}
+        >
+          <EnvelopeSimple size={16} className="text-[#7a7368]" />
+          <span className="flex-1 text-[13px] text-[#9a9287]">{D.email}</span>
+          <span className="flex h-full items-center rounded-xl bg-[#1a1714] px-4 text-[12px] font-semibold text-[#f4f0e8]">
+            {D.join}
+          </span>
+        </div>
+        <p
+          className="absolute flex items-center whitespace-nowrap text-[40px] font-semibold leading-none tracking-[-0.045em]"
+          style={box(R.title.x, R.title.y, R.title.w, R.title.h)}
+        >
+          <Typed
+            text={D.title}
+            k={title}
+            caret={s > 1.42 && s < 1.86}
+            color="#1a1714"
+          />
         </p>
-        <p className="absolute text-[15px] text-[#5c564c]" style={{ ...box(R.title.x, R.title.y + R.title.h + 8, R.title.w), ...fly(lines, 0, 10, 6) }}>
+        <p
+          className="absolute text-[15px] text-[#5c564c]"
+          style={{
+            ...box(R.title.x, R.title.y + R.title.h + 8, R.title.w),
+            ...fly(sub, 0, 10, 6),
+          }}
+        >
           {D.sub}
         </p>
-        <span className="absolute flex items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold text-[#1a1714]" style={{ ...box(R.btn.x + R.btn.w + 22, R.btn.y, undefined, R.btn.h), ...fly(expo(seg(s, 2.18, 2.45)), -12, 0, 5) }}>
-          {D.more} <ArrowRight size={14} />
-        </span>
-        <div className="absolute grid grid-cols-3 gap-2.5" style={box(R.img.x, 470, R.img.w)}>
-          {D.houses.map((h, k) => (
-            <div key={h.name} className="flex items-center gap-2.5 rounded-xl bg-white p-2 shadow-[0_1px_2px_rgb(0_0_0/0.06)]" style={fly(expo(seg(s, 1.98 + k * 0.07, 2.3 + k * 0.07)), 0, 16, 6)}>
-              <span className="relative size-11 shrink-0 overflow-hidden rounded-lg">
-                <Mountains v={k} />
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-[12px] font-semibold leading-tight">{h.name}</span>
-                <span className="mt-0.5 block text-[11px] text-[#7a7368]">{h.price}</span>
-              </span>
-            </div>
-          ))}
-        </div>
-        {s > 2.1 && (
+        {btnFly >= 1 && (
           <span
-            className="absolute grid place-items-center overflow-hidden whitespace-nowrap rounded-full text-[15px] font-semibold text-white"
-            style={{ ...box(R.btn.x, R.btn.y, R.btn.w * btnK, R.btn.h * btnK), background: btnColor, transition: "background-color .18s" }}
+            className="absolute grid place-items-center whitespace-nowrap rounded-full text-[15px] font-semibold text-white"
+            style={{
+              ...box(R.btn.x, R.btn.y, R.btn.w, R.btn.h),
+              background: btnColor,
+              transition: "background-color .25s",
+            }}
           >
-            <span style={{ opacity: smooth(seg(s, 2.2, 2.3)) }}>{D.button}</span>
+            {D.button}
           </span>
         )}
+        <span
+          className="absolute flex items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold"
+          style={{
+            ...box(R.btn.x + R.btn.w + 22, R.btn.y, undefined, R.btn.h),
+            ...fly(more, -12, 0, 5),
+          }}
+        >
+          {D.more} <ArrowRight size={14} />
+        </span>
+        {D.plans.map((p, k) =>
+          planFly(k) >= 1 ? (
+            <div
+              key={p.name}
+              className="absolute flex items-center gap-2.5 rounded-xl bg-white p-2 shadow-[0_1px_2px_rgb(0_0_0/0.06)]"
+              style={box(
+                R.plans.x + k * (PLAN_W + 10),
+                R.plans.y,
+                PLAN_W,
+                R.plans.h,
+              )}
+            >
+              <PlanBody i={k} />
+            </div>
+          ) : null,
+        )}
       </div>
+
+      {/* instances in flight */}
+      {ghost(
+        btnFly,
+        tile(0),
+        at(R.btn),
+        <span className="grid h-full place-items-center whitespace-nowrap text-[15px] font-semibold text-white">
+          {D.button}
+        </span>,
+        "overflow-hidden rounded-full",
+        "#c9c5bd",
+      )}
+      {D.plans.map((p, k) => (
+        <Fragment key={p.name}>
+          {ghost(
+            planFly(k),
+            tile(1),
+            planDst(k),
+            <PlanBody i={k} />,
+            "flex items-center gap-2.5 overflow-hidden rounded-xl bg-white p-2 text-[#1a1714]",
+          )}
+        </Fragment>
+      ))}
+
       {/* selection + size label */}
-      {s > 0.5 && (
-        <div className="pointer-events-none border-[1.5px] border-violet" style={box(selBox.x - 2, selBox.y - 2, selBox.w + 4, selBox.h + 4)}>
+      {s > 0.4 && (
+        <div
+          className="pointer-events-none border-[1.5px] border-violet"
+          style={box(selBox.x - 2, selBox.y - 2, selBox.w + 4, selBox.h + 4)}
+        >
           {[
             [-5, -5],
             [selBox.w - 1, -5],
             [-5, selBox.h - 1],
             [selBox.w - 1, selBox.h - 1],
           ].map(([x, y], i) => (
-            <i key={i} className="absolute size-2.5 border-[1.5px] border-violet bg-white" style={{ left: x, top: y }} />
+            <i
+              key={i}
+              className="absolute size-2.5 border-[1.5px] border-violet bg-white"
+              style={{ left: x, top: y }}
+            />
           ))}
           <span className="absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-violet px-2 py-0.5 text-[11px] font-semibold tabular-nums text-white">
             {Math.round(selBox.w)} × {Math.round(selBox.h)}
           </span>
         </div>
       )}
-      <BlurPointer s={s} path={path} down={down} pin={pin} />
+    </>
+  );
+}
+
+function PlanBody({ i }: { i: number }) {
+  const p = D.plans[i];
+  return (
+    <>
+      <span className="relative size-12 shrink-0 overflow-hidden rounded-lg">
+        <Visual v={i} />
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate text-[13px] font-semibold leading-tight">
+          {p.name}
+        </span>
+        <span className="mt-1 block text-[12px] text-[#7a7368]">{p.price}</span>
+      </span>
     </>
   );
 }
@@ -501,16 +886,78 @@ const PU = "#8b919c";
 const TX = "#d6deeb";
 type Tok = [string, string];
 const LINES: Tok[][] = [
-  [["export default function ", KW], ["Home", TG], ["() {", PU]],
-  [["  return ", KW], ["(", PU]],
-  [["    <", PU], ["Header", TG], [" logo", AT], ["=", PU], ['"Your site"', STR], [" />", PU]],
-  [["    <", PU], ["Hero", TG], [">", PU]],
-  [["      <", PU], ["h1", TG], [">", PU], [C.h1, TX], ["</", PU], ["h1", TG], [">", PU]],
-  [["      <", PU], ["p", TG], [">", PU], [C.p, TX], ["</", PU], ["p", TG], [">", PU]],
-  [["      <", PU], ["Button", TG], [">", PU], [C.btn, TX], ["</", PU], ["Button", TG], [">", PU]],
-  [["      <", PU], ["Booking", TG], [" dates guests", AT], [" />", PU]],
-  [["    </", PU], ["Hero", TG], [">", PU]],
-  [["    <", PU], ["Houses", TG], [" items", AT], ["=", PU], ["{", PU], ["houses", TX], ["}", PU], [" />", PU]],
+  [
+    ["export default function ", KW],
+    ["Home", TG],
+    ["() {", PU],
+  ],
+  [
+    ["  return ", KW],
+    ["(", PU],
+  ],
+  [
+    ["    <", PU],
+    ["Header", TG],
+    [" logo", AT],
+    ["=", PU],
+    ['"Your product"', STR],
+    [" />", PU],
+  ],
+  [
+    ["    <", PU],
+    ["Hero", TG],
+    [">", PU],
+  ],
+  [
+    ["      <", PU],
+    ["h1", TG],
+    [">", PU],
+    [C.h1, TX],
+    ["</", PU],
+    ["h1", TG],
+    [">", PU],
+  ],
+  [
+    ["      <", PU],
+    ["p", TG],
+    [">", PU],
+    [C.p, TX],
+    ["</", PU],
+    ["p", TG],
+    [">", PU],
+  ],
+  [
+    ["      <", PU],
+    ["Button", TG],
+    [">", PU],
+    [C.btn, TX],
+    ["</", PU],
+    ["Button", TG],
+    [">", PU],
+  ],
+  [
+    ["      <", PU],
+    ["Signup", TG],
+    [" placeholder", AT],
+    ["=", PU],
+    ['"email"', STR],
+    [" />", PU],
+  ],
+  [
+    ["    </", PU],
+    ["Hero", TG],
+    [">", PU],
+  ],
+  [
+    ["    <", PU],
+    ["Plans", TG],
+    [" items", AT],
+    ["=", PU],
+    ["{", PU],
+    ["plans", TX],
+    ["}", PU],
+    [" />", PU],
+  ],
   [["  );", PU]],
   [["}", PU]],
 ];
@@ -520,27 +967,52 @@ const CHARS = LEN.reduce((a, b) => a + b, 0);
 
 function CodeStage({ s }: { s: number }) {
   const chars = Math.round(seg(s, 0.3, 1.95) * CHARS);
-  const lineK = (i: number) => Math.min(1, Math.max(0, (chars - START[i]) / LEN[i]));
+  const lineK = (i: number) =>
+    Math.min(1, Math.max(0, (chars - START[i]) / LEN[i]));
   const cur = LINES.findIndex((_, i) => chars < START[i] + LEN[i]);
   const textOf = (line: number, tok: number) => {
-    const before = LINES[line].slice(0, tok).reduce((a, [x]) => a + x.length, 0);
-    return typed(LINES[line][tok][0], (chars - START[line] - before) / LINES[line][tok][0].length);
+    const before = LINES[line]
+      .slice(0, tok)
+      .reduce((a, [x]) => a + x.length, 0);
+    return typed(
+      LINES[line][tok][0],
+      (chars - START[line] - before) / LINES[line][tok][0].length,
+    );
   };
   const term = expo(seg(s, 1.9, 2.2));
 
   return (
     <>
       {/* code written straight on the background */}
-      <div className="border-l-2 border-[#5aa2ff]/40 pl-6 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[18px] leading-[34px]" style={box(40, 20, 640)}>
+      <div
+        className="border-l-2 border-[#5aa2ff]/40 pl-6 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[18px] leading-[34px]"
+        style={box(40, 20, 640)}
+      >
         {LINES.map((line, i) => {
           let left = chars - START[i];
           const k = ease(Math.min(1, lineK(i) * 4));
           return (
-            <div key={i} className="flex" style={{ opacity: chars > START[i] ? 1 : 0.15 }}>
-              <span className="w-9 shrink-0 pr-4 text-right text-faint">{i + 1}</span>
-              <span className="whitespace-pre" style={chars > START[i] && k < 1 ? { filter: `blur(${((1 - k) * 4).toFixed(1)}px)` } : undefined}>
+            <div
+              key={i}
+              className="flex"
+              style={{ opacity: chars > START[i] ? 1 : 0.15 }}
+            >
+              <span className="w-9 shrink-0 pr-4 text-right text-faint">
+                {i + 1}
+              </span>
+              <span
+                className="whitespace-pre"
+                style={
+                  chars > START[i] && k < 1
+                    ? { filter: `blur(${((1 - k) * 4).toFixed(1)}px)` }
+                    : undefined
+                }
+              >
                 {line.map(([x, c], j) => {
-                  const show = x.slice(0, Math.max(0, Math.min(x.length, left)));
+                  const show = x.slice(
+                    0,
+                    Math.max(0, Math.min(x.length, left)),
+                  );
                   left -= x.length;
                   return (
                     <span key={j} style={{ color: c }}>
@@ -555,58 +1027,105 @@ function CodeStage({ s }: { s: number }) {
         })}
       </div>
       {/* terminal */}
-      <div className="tool flex items-center gap-4 px-5 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[15px]" style={{ ...box(40, 456, 640, 60), ...fly(term, 0, 40, 12) }}>
-        <span className="text-green">~/your-site $</span>
+      <div
+        className="tool flex items-center gap-4 px-5 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[15px]"
+        style={{ ...box(40, 456, 640, 60), ...fly(term, 0, 40, 12) }}
+      >
+        <span className="text-green">~/your-product $</span>
         <span className="text-body">{typed(C.cmd, seg(s, 2.02, 2.2))}</span>
-        <span className="ml-auto flex items-center gap-2 text-green" style={fly(expo(seg(s, 2.22, 2.45)), 20, 0, 8)}>
+        <span
+          className="ml-auto flex items-center gap-2 text-green"
+          style={fly(expo(seg(s, 2.22, 2.45)), 20, 0, 8)}
+        >
           <CheckCircle size={17} weight="fill" /> {C.ok}
         </span>
       </div>
       {/* live preview building as the code is written */}
-      <div className="overflow-hidden rounded-xl bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-30px_rgb(0_0_0/0.9)]" style={{ ...box(730, 20, 430, 496), ...fly(expo(seg(s, 0.06, 0.6)), 220, 0, 18) }}>
+      <div
+        className="overflow-hidden rounded-xl bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-30px_rgb(0_0_0/0.9)]"
+        style={{
+          ...box(730, 20, 430, 496),
+          ...fly(expo(seg(s, 0.06, 0.6)), 220, 0, 18),
+        }}
+      >
         <div className="flex h-8 items-center gap-1.5 bg-[#e6e0d4] px-3">
           <i className="size-2 rounded-full bg-black/20" />
           <i className="size-2 rounded-full bg-black/20" />
           <i className="size-2 rounded-full bg-black/20" />
-          <span className="ml-2 rounded bg-white/70 px-2 text-[11px] text-[#5c564c]">localhost:3000</span>
+          <span className="ml-2 rounded bg-white/70 px-2 text-[11px] text-[#5c564c]">
+            localhost:3000
+          </span>
         </div>
         <div className="p-5">
-          <div className="flex items-center justify-between" style={fly(expo(lineK(2)), 0, -16, 8)}>
-            <span className="text-[15px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
+          <div
+            className="flex items-center justify-between"
+            style={fly(expo(lineK(2)), 0, -16, 8)}
+          >
+            <span className="text-[15px] font-semibold tracking-[-0.03em]">
+              {BUILD.brand}
+            </span>
             <span className="flex items-center gap-3 text-[10px] font-medium text-[#5c564c]">
               {BUILD.design.nav.map((n) => (
                 <span key={n}>{n}</span>
               ))}
-              <span className="rounded-full bg-[#1a1714] px-2 py-1 text-[9px] font-semibold text-[#f4f0e8]">{BUILD.design.login}</span>
+              <span className="rounded-full bg-[#1a1714] px-2 py-1 text-[9px] font-semibold text-[#f4f0e8]">
+                {BUILD.design.login}
+              </span>
             </span>
           </div>
-          <div className="relative mt-4 h-[64px] overflow-hidden rounded-xl" style={fly(expo(lineK(3)), 0, 16, 10)}>
-            <Mountains />
+          <div
+            className="relative mt-4 h-[64px] overflow-hidden rounded-xl"
+            style={fly(expo(lineK(3)), 0, 16, 10)}
+          >
+            <Visual />
           </div>
           <div className="pt-3">
-            <p className="min-h-[28px] text-[26px] font-semibold leading-none tracking-[-0.045em]">{textOf(4, 3)}</p>
-            <p className="mt-1.5 min-h-[18px] text-[13px] text-[#5c564c]">{textOf(5, 3)}</p>
-            <span className="mt-3 inline-grid h-9 min-w-[110px] place-items-center rounded-full bg-[#3d5a3a] px-5 text-[12px] font-semibold text-white" style={fly(expo(Math.min(1, lineK(6) * 2.5)), 0, 12, 8)}>
+            <p className="min-h-[28px] text-[26px] font-semibold leading-none tracking-[-0.045em]">
+              {textOf(4, 3)}
+            </p>
+            <p className="mt-1.5 min-h-[18px] text-[13px] text-[#5c564c]">
+              {textOf(5, 3)}
+            </p>
+            <span
+              className="mt-3 inline-grid h-9 min-w-[110px] place-items-center rounded-full bg-[#1a1714] px-5 text-[12px] font-semibold text-white"
+              style={fly(expo(Math.min(1, lineK(6) * 2.5)), 0, 12, 8)}
+            >
               {textOf(6, 3) || " "}
             </span>
           </div>
-          <div className="mt-3 flex items-center gap-1 rounded-xl bg-white p-1 shadow-[0_6px_16px_-10px_rgb(40_30_20/0.5)]" style={fly(expo(Math.min(1, lineK(7) * 2)), 0, 14, 8)}>
-            {BUILD.design.book.map(([l, v], k) => (
-              <span key={l} className={`flex-1 px-2 leading-tight ${k ? "border-l border-black/10" : ""}`}>
-                <span className="block text-[9px] text-[#7a7368]">{l}</span>
-                <span className="block whitespace-nowrap text-[11px] font-semibold">{v}</span>
-              </span>
-            ))}
-            <span className="grid h-8 place-items-center rounded-lg bg-[#1a1714] px-2.5 text-[11px] font-semibold text-[#f4f0e8]">{BUILD.design.find}</span>
+          <div
+            className="mt-3 flex items-center gap-2 rounded-xl bg-white p-1 pl-3 shadow-[0_6px_16px_-10px_rgb(40_30_20/0.5)]"
+            style={fly(expo(Math.min(1, lineK(7) * 2)), 0, 14, 8)}
+          >
+            <EnvelopeSimple size={13} className="text-[#7a7368]" />
+            <span className="flex-1 text-[11px] text-[#9a9287]">
+              {BUILD.design.email}
+            </span>
+            <span className="grid h-8 place-items-center rounded-lg bg-[#1a1714] px-2.5 text-[11px] font-semibold text-[#f4f0e8]">
+              {BUILD.design.join}
+            </span>
           </div>
           <div className="mt-4 grid grid-cols-3 gap-2.5">
             {[0, 1, 2].map((k) => (
-              <div key={k} className="rounded-lg bg-white p-2" style={fly(expo(seg(lineK(9), k * 0.2, k * 0.2 + 0.6)), 0, 30, 10)}>
+              <div
+                key={k}
+                className="rounded-lg bg-white p-2"
+                style={fly(
+                  expo(seg(lineK(9), k * 0.2, k * 0.2 + 0.6)),
+                  0,
+                  30,
+                  10,
+                )}
+              >
                 <div className="relative h-14 overflow-hidden rounded-md">
-                  <Mountains v={k} />
+                  <Visual v={k} />
                 </div>
-                <p className="mt-2 truncate text-[11px] font-semibold">{BUILD.design.houses[k].name}</p>
-                <p className="text-[10px] text-[#7a7368]">{BUILD.design.houses[k].price}</p>
+                <p className="mt-2 truncate text-[11px] font-semibold">
+                  {BUILD.design.plans[k].name}
+                </p>
+                <p className="text-[10px] text-[#7a7368]">
+                  {BUILD.design.plans[k].price}
+                </p>
               </div>
             ))}
           </div>
@@ -619,157 +1138,446 @@ function CodeStage({ s }: { s: number }) {
 /* ---------------- 3 · CMS ---------------- */
 const M = BUILD.cms;
 
+/** one CMS input: label row, field with focus ring, optional hint under it */
+function Field({
+  label,
+  right,
+  focus,
+  children,
+  hint,
+  className = "",
+}: {
+  label: string;
+  right?: ReactNode;
+  focus: number;
+  children: ReactNode;
+  hint?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={className}>
+      <p className="flex items-center justify-between text-[12px] font-medium text-grey">
+        {label}
+        {right}
+      </p>
+      <div
+        className="mt-1.5 flex h-11 items-center rounded-xl border bg-white/[0.035] text-[15px] text-fg"
+        style={{
+          borderColor: `color-mix(in srgb, #22d3ee ${(focus * 100).toFixed(0)}%, rgb(255 255 255 / 0.12))`,
+          boxShadow: `0 0 0 ${(focus * 4).toFixed(2)}px rgb(34 211 238 / 0.12)`,
+        }}
+      >
+        {children}
+      </div>
+      {hint}
+    </div>
+  );
+}
+
+/** text swap: the old label rolls up and out, the new one rolls in from below (no overlapping cross-fade) */
+function Swap({ k, a, b }: { k: number; a: ReactNode; b: ReactNode }) {
+  return (
+    <span className="grid overflow-hidden">
+      <span
+        className="col-start-1 row-start-1 text-center"
+        style={{
+          transform: `translateY(${(-k * 110).toFixed(1)}%)`,
+          opacity: 1 - k,
+        }}
+      >
+        {a}
+      </span>
+      <span
+        className="col-start-1 row-start-1 flex justify-center"
+        style={{
+          transform: `translateY(${((1 - k) * 110).toFixed(1)}%)`,
+          opacity: k,
+        }}
+      >
+        {b}
+      </span>
+    </span>
+  );
+}
+
 function CmsStage({ s }: { s: number }) {
-  const name = typed(M.nameVal, seg(s, 0.45, 1.05));
-  const price = typed(M.priceVal, seg(s, 1.15, 1.4));
-  const up = seg(s, 1.5, 1.9);
-  const photo = s > 1.9;
-  const stock = s > 2.05;
-  const pressed = s > 2.2 && s < 2.35;
-  const pub = s > 2.35;
-  const card = (k: number) => fly(expo(seg(s, 0.06 + k * 0.07, 0.6 + k * 0.07)), -200, 0, 14);
-  const photoK = expo(seg(s, 1.88, 2.1));
-  const stockK = expo(seg(s, 2.05, 2.3));
-  const path: [number, number, number][] = [
-    [0, 620, 560],
-    [0.38, 460, 82],
-    [1.05, 460, 82],
-    [1.14, 300, 192],
-    [1.42, 300, 192],
-    [1.5, 380, 300],
-    [1.92, 380, 300],
-    [2.03, 512, 426],
-    [2.1, 512, 426],
-    [2.2, 210, 532],
-    [3, 230, 548],
-  ];
-  const down = (s > 0.4 && s < 0.46) || (s > 1.13 && s < 1.18) || (s > 1.48 && s < 1.53) || (s > 2.03 && s < 2.08) || pressed;
-  const input = "mt-2 flex h-12 items-center rounded-xl border px-4 text-[17px] text-fg";
+  const focusK = (a: number, b: number) =>
+    smooth(seg(s, a, a + 0.08)) * (1 - smooth(seg(s, b, b + 0.08)));
+  const fName = focusK(0.38, 0.98);
+  const fPrice = focusK(0.98, 1.28);
+  const fDesc = focusK(1.72, 2.05);
+  const nameK = seg(s, 0.45, 0.92);
+  const name = typed(M.nameVal, nameK);
+  const priceK = seg(s, 1.03, 1.24);
+  const up = seg(s, 1.3, 1.68);
+  const photoK = expo(seg(s, 1.66, 1.9));
+  const descK = seg(s, 1.76, 2.02);
+  const stockK = expo(seg(s, 2.05, 2.28));
+  const pressed = s > 2.2 && s < 2.3;
+  const pubK = expo(seg(s, 2.3, 2.55));
+  const pub = s > 2.3;
+  const row = (i: number) =>
+    fly(expo(seg(s, 0.1 + i * 0.045, 0.6 + i * 0.045)), -40, 0, 8);
+  const LOG_AT = [1.0, 1.3, 1.7, 2.32];
 
   return (
     <>
-      <div className="tool p-5" style={{ ...box(60, 30, 480), ...card(0) }}>
-        <p className="text-[13px] text-grey">{M.name}</p>
-        <p className={`${input} transition-colors duration-300 ${s > 0.4 && s < 1.1 ? "border-cyan" : "border-white/15"}`}>
-          <Typed text={M.nameVal} k={seg(s, 0.45, 1.05)} caret={s > 0.4 && s < 1.1} color="#22d3ee" />
-        </p>
-      </div>
-      <div className="tool p-5" style={{ ...box(60, 150, 230), ...card(1) }}>
-        <p className="text-[13px] text-grey">{M.price}</p>
-        <p className={`${input} tabular-nums transition-colors duration-300 ${s > 1.12 && s < 1.45 ? "border-cyan" : "border-white/15"}`}>
-          <Typed text={M.priceVal} k={seg(s, 1.15, 1.4)} caret={s > 1.12 && s < 1.45} color="#22d3ee" />
-        </p>
-      </div>
-      <div className="tool flex items-center gap-4 p-5" style={{ ...box(60, 270, 480, 104), ...card(2) }}>
-        <span className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/[0.06]">
-          <ImageIcon size={24} className="text-grey" />
-          <span className="absolute inset-0" style={{ opacity: photoK, transform: `scale(${1.15 - photoK * 0.15})` }}>
-            <Mountains />
-          </span>
-        </span>
-        <div className="flex-1">
-          <p className="flex items-center gap-2 text-[15px] text-body">
-            {photo ? <CheckCircle size={16} weight="fill" className="text-green" /> : <UploadSimple size={16} />}
-            {photo ? M.file : `${M.photo} · ${Math.round(up * 100)}%`}
-          </p>
-          <span className="mt-3 block h-2 overflow-hidden rounded-full bg-white/[0.08]">
-            <span className="block h-full rounded-full bg-cyan" style={{ width: `${up * 100}%` }} />
+      {/* the product form */}
+      <div
+        className="tool flex flex-col gap-3 p-6"
+        style={{
+          ...box(40, 0, 540, 612),
+          ...fly(expo(seg(s, 0.02, 0.55)), -200, 0, 14),
+        }}
+      >
+        <div className="flex items-start justify-between" style={row(0)}>
+          <div>
+            <p className="text-[12px] text-grey">{M.crumb}</p>
+            <p className="mt-0.5 text-[20px] font-semibold tracking-[-0.02em] text-fg">
+              {M.form}
+            </p>
+          </div>
+          <span
+            className="mt-1 rounded-full px-3 py-1.5 text-[12px] font-semibold"
+            style={{
+              background: `color-mix(in srgb, rgb(52 211 153 / 0.15) ${(pubK * 100).toFixed(0)}%, rgb(255 255 255 / 0.08))`,
+              color: `color-mix(in srgb, #34d399 ${(pubK * 100).toFixed(0)}%, #c4cad4)`,
+            }}
+          >
+            <Swap
+              k={pubK}
+              a={M.draft}
+              b={
+                <span className="flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-green" />{" "}
+                  {M.published}
+                </span>
+              }
+            />
           </span>
         </div>
-      </div>
-      <div className="tool flex items-center justify-between px-5" style={{ ...box(60, 396, 480, 64), ...card(3) }}>
-        <span className="text-[16px] text-fg">{M.stock}</span>
-        <span className="relative h-7 w-12 rounded-full" style={{ background: `color-mix(in srgb, #34d399 ${(stockK * 100).toFixed(0)}%, rgb(255 255 255 / 0.15))` }}>
-          <span className="absolute left-1 top-1 size-5 rounded-full bg-white shadow" style={{ transform: `translateX(${(stockK * 20).toFixed(1)}px)` }} />
-        </span>
-      </div>
-      <span
-        className={`inline-flex items-center gap-2 rounded-full px-7 text-[16px] font-semibold text-white transition-colors duration-300 ${pub ? "bg-[#1f9d68]" : "bg-blue"}`}
-        style={{ ...box(60, 500, undefined, 56), ...card(4), transform: `${card(4).transform} scale(${pressed ? 0.94 : 1})` }}
-      >
-        {pub && <CheckCircle size={18} weight="fill" />}
-        {pub ? M.published : M.publish}
-      </span>
-      {/* toast */}
-      <div className="tool flex items-center gap-2 px-4 py-2.5 text-[14px] text-green" style={{ ...box(580, 40), ...fly(expo(seg(s, 2.4, 2.7)), 0, -24, 10) }}>
-        <CheckCircle size={16} weight="fill" /> {M.toast}
-      </div>
-      {/* availability calendar: the free dates light up when «Вільно» is on */}
-      <div className="tool p-4" style={{ ...box(580, 150, 220), ...fly(expo(seg(s, 0.2, 0.75)), 0, 30, 12) }}>
-        <p className="flex items-center justify-between text-[13px] font-semibold text-fg">
-          {M.cal} <CalendarBlank size={15} className="text-grey" />
-        </p>
-        <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[11px] tabular-nums">
-          {Array.from({ length: 28 }, (_, d) => {
-            const day = d + 1;
-            const booked = day >= 12 && day <= 14;
-            const free = !booked && day % 7 >= 5;
-            const k = free ? stockK : 0;
-            return (
+
+        <div style={row(1)}>
+          <Field
+            label={M.name}
+            focus={fName}
+            right={
+              <span className="tabular-nums text-faint">
+                {Array.from(name).length}/{M.max}
+              </span>
+            }
+            hint={
+              <p className="mt-1.5 flex items-center gap-1.5 text-[12px] text-grey">
+                <LinkSimple size={12} />
+                <span className="text-faint">{M.slug.split("/")[0]}/</span>
+                <span className="text-body">
+                  {typed(M.slug.split("/")[1], nameK)}
+                </span>
+              </p>
+            }
+          >
+            <span className="px-4">
+              <Typed
+                text={M.nameVal}
+                k={nameK}
+                caret={fName > 0.5}
+                color="#22d3ee"
+              />
+            </span>
+          </Field>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3" style={row(2)}>
+          <Field label={M.price} focus={fPrice}>
+            <span className="flex-1 px-4 tabular-nums">
+              <Typed
+                text={M.priceVal}
+                k={priceK}
+                caret={fPrice > 0.5}
+                color="#22d3ee"
+              />
+            </span>
+            <span className="grid h-full w-11 place-items-center border-l border-white/10 text-grey">
+              {M.cur}
+            </span>
+          </Field>
+          <Field label={M.cat} focus={0}>
+            <span className="flex flex-1 items-center justify-between px-4">
+              {M.catVal} <CaretDown size={13} className="text-grey" />
+            </span>
+          </Field>
+        </div>
+
+        {/* photo dropzone */}
+        <div style={row(3)}>
+          <p className="text-[12px] font-medium text-grey">{M.photo}</p>
+          <div
+            className="mt-1.5 flex h-[72px] items-center gap-3.5 rounded-xl border border-dashed px-3"
+            style={{
+              borderColor:
+                up > 0 && up < 1
+                  ? "rgb(34 211 238 / 0.6)"
+                  : "rgb(255 255 255 / 0.16)",
+              transition: "border-color .3s",
+            }}
+          >
+            <span className="relative grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-white/[0.06]">
+              <UploadSimple size={18} className="text-grey" />
               <span
-                key={d}
-                className="grid h-6 place-items-center rounded-md"
+                className="absolute inset-0"
                 style={{
-                  background: booked ? "rgb(255 255 255 / 0.14)" : `rgb(52 211 153 / ${(0.22 * k).toFixed(3)})`,
-                  color: booked ? "#f5f7fa" : k > 0.5 ? "#34d399" : "#8b919c",
+                  opacity: Math.max(up > 0 ? 0.35 : 0, photoK),
+                  transform: `scale(${(1.15 - photoK * 0.15).toFixed(4)})`,
                 }}
               >
-                {day}
+                <Visual />
               </span>
+            </span>
+            <div className="min-w-0 flex-1">
+              {up <= 0 ? (
+                <p className="text-[13px] text-grey">{M.drop}</p>
+              ) : (
+                <>
+                  <p className="flex items-center justify-between text-[13px] text-body">
+                    <span className="flex items-center gap-1.5">
+                      {photoK > 0.5 && (
+                        <CheckCircle
+                          size={14}
+                          weight="fill"
+                          className="text-green"
+                        />
+                      )}
+                      {M.file}
+                    </span>
+                    <span className="tabular-nums text-grey">
+                      {photoK > 0.5 ? M.size : `${Math.round(up * 100)}%`}
+                    </span>
+                  </p>
+                  <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
+                    <span
+                      className="block h-full origin-left rounded-full bg-cyan"
+                      style={{
+                        transform: `scaleX(${up})`,
+                        opacity: 1 - photoK * 0.6,
+                      }}
+                    />
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* description with a small editor toolbar */}
+        <div
+          className="rounded-xl border bg-white/[0.035]"
+          style={{
+            ...row(4),
+            borderColor: `color-mix(in srgb, #22d3ee ${(fDesc * 100).toFixed(0)}%, rgb(255 255 255 / 0.12))`,
+            boxShadow: `0 0 0 ${(fDesc * 4).toFixed(2)}px rgb(34 211 238 / 0.12)`,
+          }}
+        >
+          <div className="flex items-center gap-1 border-b border-white/[0.08] px-2 py-1.5 text-grey">
+            {[TextB, TextItalic, LinkSimple, ListBullets].map((Ic, i) => (
+              <span
+                key={i}
+                className="grid size-7 place-items-center rounded-md"
+              >
+                <Ic size={14} />
+              </span>
+            ))}
+          </div>
+          <p className="h-[40px] px-4 py-2 text-[14px] text-body">
+            <Typed
+              text={M.descVal}
+              k={descK}
+              caret={fDesc > 0.5}
+              color="#22d3ee"
+            />
+          </p>
+        </div>
+
+        {/* availability */}
+        <div
+          className="flex items-center justify-between rounded-xl bg-white/[0.035] px-4 py-3"
+          style={row(5)}
+        >
+          <span>
+            <span className="block text-[14px] text-fg">{M.stock}</span>
+            <span className="block text-[12px] text-grey">{M.stockHint}</span>
+          </span>
+          <span
+            className="relative h-7 w-12 rounded-full"
+            style={{
+              background: `color-mix(in srgb, #34d399 ${(stockK * 100).toFixed(0)}%, rgb(255 255 255 / 0.15))`,
+            }}
+          >
+            <span
+              className="absolute left-1 top-1 size-5 rounded-full bg-white shadow"
+              style={{ transform: `translateX(${(stockK * 20).toFixed(1)}px)` }}
+            />
+          </span>
+        </div>
+
+        {/* actions */}
+        <div
+          className="mt-auto flex items-center justify-end gap-3"
+          style={row(6)}
+        >
+          <span className="rounded-full border border-white/15 px-5 py-3 text-[14px] font-semibold text-body">
+            {M.save}
+          </span>
+          <span
+            className="relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-3 text-[14px] font-semibold text-white"
+            style={{
+              background: `color-mix(in srgb, #1f9d68 ${(pubK * 100).toFixed(0)}%, #3d8bff)`,
+              transform: `scale(${pressed ? 0.95 : 1})`,
+              transition: "transform .15s",
+            }}
+          >
+            <Swap
+              k={pubK}
+              a={M.publish}
+              b={
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle size={16} weight="fill" /> {M.published}
+                </span>
+              }
+            />
+          </span>
+        </div>
+      </div>
+
+      {/* toast */}
+      <div
+        className="tool flex items-center gap-2 px-4 py-2.5 text-[14px] text-green"
+        style={{
+          ...box(604, 40),
+          ...fly(expo(seg(s, 2.36, 2.66)), 0, -24, 10),
+        }}
+      >
+        <CheckCircle size={16} weight="fill" /> {M.toast}
+      </div>
+      {/* change history: every edit is saved */}
+      <div
+        className="tool p-4"
+        style={{
+          ...box(604, 120, 200),
+          ...fly(expo(seg(s, 0.2, 0.75)), 0, 30, 12),
+        }}
+      >
+        <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">
+          {M.logLabel}
+        </p>
+        <ul className="mt-3 flex flex-col gap-2.5">
+          {M.log.map((l, i) => {
+            const k = expo(seg(s, LOG_AT[i], LOG_AT[i] + 0.3));
+            return (
+              <li
+                key={l}
+                className="flex items-start gap-2.5"
+                style={fly(k, 0, 10, 5)}
+              >
+                <span
+                  className={`mt-1.5 size-1.5 shrink-0 rounded-full ${i === 3 ? "bg-green" : "bg-cyan"}`}
+                />
+                <span className="leading-tight">
+                  <span className="block text-[13px] text-fg">{l}</span>
+                  <span className="block text-[11px] text-grey">{M.now}</span>
+                </span>
+              </li>
             );
           })}
-        </div>
-        <p className="mt-3 text-[11px] text-grey">{M.calNote}</p>
+        </ul>
       </div>
-      {/* iPhone: the live site updates */}
-      <IPhone style={{ ...box(830, 0, 290, 610), ...fly(expo(seg(s, 0.04, 0.6)), 220, 0, 16) }}>
+
+      {/* iPhone: the live product page updates */}
+      <IPhone
+        style={{
+          ...box(830, 0, 290, 610),
+          ...fly(expo(seg(s, 0.04, 0.6)), 220, 0, 16),
+        }}
+      >
         <div className="flex items-center justify-between px-1">
           <span className="text-[15px] font-semibold">{BUILD.brand}</span>
-          <span className={`flex items-center gap-1.5 text-[11px] font-semibold ${pub ? "text-[#1f8f5f]" : "text-black/30"}`}>
-            <span className={`size-1.5 rounded-full ${pub ? "bg-[#1f8f5f]" : "bg-black/25"}`} />
+          <span
+            className="flex items-center gap-1.5 text-[11px] font-semibold"
+            style={{
+              color: `color-mix(in srgb, #1f8f5f ${(pubK * 100).toFixed(0)}%, rgb(0 0 0 / 0.3))`,
+            }}
+          >
+            <span className="size-1.5 rounded-full bg-current" />
             {M.live}
           </span>
         </div>
         <div className="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <div className="relative grid h-40 place-items-center overflow-hidden bg-[#ebe5da]">
+          <div className="relative grid h-40 place-items-center overflow-hidden bg-[#ebe8e2]">
             <ImageIcon size={30} className="text-black/20" />
-            <div className="absolute inset-0" style={{ opacity: photoK, transform: `scale(${1.12 - photoK * 0.12})` }}>
-              <Mountains />
+            <div
+              className="absolute inset-0"
+              style={{
+                opacity: photoK,
+                transform: `scale(${(1.12 - photoK * 0.12).toFixed(4)})`,
+              }}
+            >
+              <Visual />
             </div>
+            <span className="absolute left-3 top-3 flex gap-1.5">
+              {M.tags.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-[#1a1714]"
+                >
+                  {t}
+                </span>
+              ))}
+            </span>
           </div>
           <div className="p-4">
-            <p className="min-h-[22px] text-[17px] font-semibold leading-tight">{name || " "}</p>
-            <div className="mt-2 flex items-center justify-between">
-              <span className="text-[18px] font-semibold tabular-nums">{price}</span>
-              <span className="rounded-full bg-[#1f8f5f]/15 px-2.5 py-1 text-[11px] font-semibold text-[#1f8f5f]" style={fly(stockK, 10, 0, 6)}>
+            <div className="flex items-center justify-between">
+              <p className="min-h-[22px] text-[18px] font-semibold leading-tight">
+                {name || " "}
+              </p>
+              <span
+                className="rounded-full bg-[#1f8f5f]/15 px-2.5 py-1 text-[11px] font-semibold text-[#1f8f5f]"
+                style={fly(stockK, 10, 0, 6)}
+              >
                 {M.stock}
               </span>
             </div>
-            <div className="mt-3 flex gap-1.5">
-              {M.amen.map((a) => (
-                <span key={a} className="rounded-full bg-[#f1ece2] px-2 py-0.5 text-[10px] font-medium text-[#5c564c]">
-                  {a}
-                </span>
-              ))}
-            </div>
+            <p className="mt-1 text-[18px] font-semibold tabular-nums">
+              {typed(M.priceVal, priceK)}
+              {priceK > 0 && ` ${M.cur}`}
+            </p>
+            <p className="mt-2 min-h-[34px] text-[12px] leading-snug text-[#5c564c]">
+              {typed(M.descVal, descK)}
+            </p>
+            <span className="mt-3 grid h-10 place-items-center rounded-full bg-[#1a1714] text-[13px] font-semibold text-white">
+              {M.buy}
+            </span>
           </div>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-2.5 opacity-60">
-          <div className="relative h-24 overflow-hidden rounded-xl">
-            <Mountains v={1} />
+        <div className="mt-3 grid grid-cols-2 gap-2.5 opacity-70">
+          <div className="relative h-20 overflow-hidden rounded-xl">
+            <Visual v={1} />
           </div>
-          <div className="relative h-24 overflow-hidden rounded-xl">
-            <Mountains v={2} />
+          <div className="relative h-20 overflow-hidden rounded-xl">
+            <Visual v={2} />
           </div>
         </div>
       </IPhone>
-      <BlurPointer s={s} path={path} down={down} />
     </>
   );
 }
 
 /** iPhone-style device: titanium frame, side buttons, Dynamic Island, status bar, home indicator */
-function IPhone({ style, children }: { style: CSSProperties; children: ReactNode }) {
+function IPhone({
+  style,
+  children,
+}: {
+  style: CSSProperties;
+  children: ReactNode;
+}) {
   return (
     <div style={style}>
       {/* side buttons */}
@@ -786,7 +1594,11 @@ function IPhone({ style, children }: { style: CSSProperties; children: ReactNode
               <span className="flex items-center gap-1.5">
                 <span className="flex items-end gap-[2px]">
                   {[4, 6, 8, 10].map((h) => (
-                    <i key={h} className="w-[3px] rounded-sm bg-[#1a1714]" style={{ height: h }} />
+                    <i
+                      key={h}
+                      className="w-[3px] rounded-sm bg-[#1a1714]"
+                      style={{ height: h }}
+                    />
                   ))}
                 </span>
                 <span className="relative h-[11px] w-[22px] rounded-[3px] border border-[#1a1714]/50 p-[1.5px]">
@@ -831,7 +1643,13 @@ function LaunchStage({ s }: { s: number }) {
         className="overflow-hidden rounded-2xl border bg-[#f4f0e8]"
         style={{
           ...box(BR.x, BR.y, BR.w, BR.h),
-          ...fly(shell, 0, 60, 18, `scale(${0.9 + shell * 0.1 + lift * 0.015}) translateY(${-lift * 6}px)`),
+          ...fly(
+            shell,
+            0,
+            60,
+            18,
+            `scale(${0.9 + shell * 0.1 + lift * 0.015}) translateY(${-lift * 6}px)`,
+          ),
           borderColor: `rgb(52 211 153 / ${0.15 + lift * 0.45})`,
           boxShadow: `0 50px 110px -30px rgb(0 0 0 / 0.95), 0 0 0 ${lift * 6}px rgb(52 211 153 / ${0.12 * lift})`,
         }}
@@ -841,18 +1659,33 @@ function LaunchStage({ s }: { s: number }) {
           <i className="size-2.5 rounded-full bg-black/20" />
           <i className="size-2.5 rounded-full bg-black/20" />
           <span className="ml-4 flex h-6 min-w-[220px] items-center gap-1.5 rounded-md bg-white/80 px-3 text-[13px] text-[#3f3a33]">
-            <Lock size={12} weight="fill" className={s > 1.65 ? "text-[#1f8f5f]" : "text-black/25"} />
+            <Lock
+              size={12}
+              weight="fill"
+              className={s > 1.65 ? "text-[#1f8f5f]" : "text-black/25"}
+            />
             {url}
             <Caret on={s > 1.25 && s < 1.7} color="#1a1714" />
           </span>
         </div>
         {/* deploy progress under the address bar */}
-        <span className="absolute left-0 top-10 z-[2] h-[3px] w-full origin-left bg-gradient-to-r from-[#5aa2ff] to-[#34d399]" style={{ transform: `scaleX(${deploy})`, opacity: s < 2.4 ? 1 : 1 - seg(s, 2.4, 2.6) }} />
+        <span
+          className="absolute left-0 top-10 z-[2] h-[3px] w-full origin-left bg-gradient-to-r from-[#5aa2ff] to-[#34d399]"
+          style={{
+            transform: `scaleX(${deploy})`,
+            opacity: s < 2.4 ? 1 : 1 - seg(s, 2.4, 2.6),
+          }}
+        />
         {/* light sweep once it is live */}
         {sweep > 0 && sweep < 1 && (
           <span
             className="pointer-events-none absolute inset-y-0 z-[3] w-40 -skew-x-12"
-            style={{ left: `${-30 + sweep * 130}%`, background: "linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent)", filter: "blur(6px)" }}
+            style={{
+              left: `${-30 + sweep * 130}%`,
+              background:
+                "linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent)",
+              filter: "blur(6px)",
+            }}
           />
         )}
         {PIECES.map((p, i) => {
@@ -861,11 +1694,27 @@ function LaunchStage({ s }: { s: number }) {
             <div
               key={i}
               className="absolute rounded-xl"
-              style={{ left: p.x, top: p.y, width: p.w, height: p.h, background: p.c, borderRadius: i === 0 ? 0 : 12, ...fly(k, p.dx, p.dy, 22, `rotate(${((1 - k) * (i % 2 ? 10 : -10)).toFixed(1)}deg)`) }}
+              style={{
+                left: p.x,
+                top: p.y,
+                width: p.w,
+                height: p.h,
+                background: p.c,
+                borderRadius: i === 0 ? 0 : 12,
+                ...fly(
+                  k,
+                  p.dx,
+                  p.dy,
+                  22,
+                  `rotate(${((1 - k) * (i % 2 ? 10 : -10)).toFixed(1)}deg)`,
+                ),
+              }}
             >
               {i === 0 && (
                 <div className="flex h-full items-center justify-between px-6 text-[#1a1714]">
-                  <span className="text-[18px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
+                  <span className="text-[18px] font-semibold tracking-[-0.03em]">
+                    {BUILD.brand}
+                  </span>
                   <span className="flex gap-4 text-[12px] font-medium text-[#5c564c]">
                     {BUILD.design.nav.map((n) => (
                       <span key={n}>{n}</span>
@@ -876,20 +1725,30 @@ function LaunchStage({ s }: { s: number }) {
               {i === 1 && (
                 <div className="relative h-full overflow-hidden rounded-xl p-6 text-[#1a1714]">
                   <div className="absolute inset-y-3 right-3 w-[250px] overflow-hidden rounded-lg">
-                    <Mountains />
+                    <Visual />
                   </div>
-                  <p className="relative text-[30px] font-semibold leading-none tracking-[-0.045em]">{BUILD.design.title}</p>
-                  <p className="relative mt-2.5 text-[13px] text-[#5c564c]">{BUILD.design.sub}</p>
-                  <span className="relative mt-5 inline-grid h-10 place-items-center rounded-full bg-[#3d5a3a] px-5 text-[13px] font-semibold text-white">{BUILD.design.button}</span>
+                  <p className="relative text-[30px] font-semibold leading-none tracking-[-0.045em]">
+                    {BUILD.design.title}
+                  </p>
+                  <p className="relative mt-2.5 text-[13px] text-[#5c564c]">
+                    {BUILD.design.sub}
+                  </p>
+                  <span className="relative mt-5 inline-grid h-10 place-items-center rounded-full bg-[#1a1714] px-5 text-[13px] font-semibold text-white">
+                    {BUILD.design.button}
+                  </span>
                 </div>
               )}
               {i >= 2 && (
                 <div className="p-2.5">
                   <div className="relative h-16 overflow-hidden rounded-lg">
-                    <Mountains v={i - 2} />
+                    <Visual v={i - 2} />
                   </div>
-                  <p className="mt-2 truncate text-[12px] font-semibold text-[#1a1714]">{BUILD.design.houses[i - 2].name}</p>
-                  <p className="text-[11px] text-[#7a7368]">{BUILD.design.houses[i - 2].price}</p>
+                  <p className="mt-2 truncate text-[12px] font-semibold text-[#1a1714]">
+                    {BUILD.design.plans[i - 2].name}
+                  </p>
+                  <p className="text-[11px] text-[#7a7368]">
+                    {BUILD.design.plans[i - 2].price}
+                  </p>
                 </div>
               )}
             </div>
@@ -901,16 +1760,36 @@ function LaunchStage({ s }: { s: number }) {
         {[0, 0.22].map((d) => {
           const k = seg(s, 2.1 + d, 2.9 + d);
           return k > 0 && k < 1 ? (
-            <span key={d} className="absolute inset-0 rounded-full border-2 border-green" style={{ transform: `scale(${1 + ease(k) * 0.7}, ${1 + ease(k) * 1.4})`, opacity: (1 - k) * 0.6 }} />
+            <span
+              key={d}
+              className="absolute inset-0 rounded-full border-2 border-green"
+              style={{
+                transform: `scale(${1 + ease(k) * 0.7}, ${1 + ease(k) * 1.4})`,
+                opacity: (1 - k) * 0.6,
+              }}
+            />
           ) : null;
         })}
         <p className="flex h-full items-center justify-center gap-2 rounded-full border border-green/30 bg-[#0d1a17] text-[16px] font-semibold text-green">
-          <span className="size-2.5 animate-pulse rounded-full bg-green" /> {L.online}
+          <span className="size-2.5 animate-pulse rounded-full bg-green" />{" "}
+          {L.online}
         </p>
       </div>
-      <ul className="flex justify-center gap-3" style={box(BR.x - 60, 536, BR.w + 120)}>
+      <ul
+        className="flex justify-center gap-3"
+        style={box(BR.x - 60, 536, BR.w + 120)}
+      >
         {L.checks.map((c, i) => (
-          <li key={c} className="tool flex items-center gap-2 px-4 py-2.5 text-[15px] text-fg" style={fly(expo(seg(s, 2.25 + i * 0.08, 2.65 + i * 0.08)), 0, 24, 10)}>
+          <li
+            key={c}
+            className="tool flex items-center gap-2 px-4 py-2.5 text-[15px] text-fg"
+            style={fly(
+              expo(seg(s, 2.25 + i * 0.08, 2.65 + i * 0.08)),
+              0,
+              24,
+              10,
+            )}
+          >
             <CheckCircle size={17} weight="fill" className="text-green" /> {c}
           </li>
         ))}
