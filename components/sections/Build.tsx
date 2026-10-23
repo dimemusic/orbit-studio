@@ -11,6 +11,7 @@ import {
   Check,
   CheckCircle,
   Cursor,
+  Drop,
   EnvelopeSimple,
   FrameCorners,
   GraduationCap,
@@ -403,24 +404,27 @@ const R = {
 const PLAN_W = (R.plans.w - 20) / 3;
 const SWATCHES = ["#e8492a", "#a78bfa", "#22d3ee", INK];
 const TOOLS = [Cursor, FrameCorners, Square, TextT, PenNib, Hand];
-/** components panel (left, bottom): tiles are the sources the button and cards fly out of */
-const CP = { x: 112, y: 452, w: 220 };
+/** two sidebars, exactly as tall as the artboard and 40px from it on both sides */
+const LS = { x: 60, y: 20, w: 260, h: 560 };
+const RS = { x: 880, y: 20, w: 260, h: 560 };
+/** component tiles (left sidebar, bottom section): the sources the button and cards fly out of */
 const tile = (i: number) => ({
-  x: CP.x + 16 + (i % 2) * 98,
-  y: CP.y + 40 + Math.floor(i / 2) * 58,
-  w: 90,
-  h: 50,
+  x: LS.x + 16 + (i % 2) * 118,
+  y: LS.y + 464 + Math.floor(i / 2) * 44,
+  w: 110,
+  h: 36,
 });
+/** hairline between sidebar sections */
+const Hr = ({ y }: { y: number }) => <i className="absolute inset-x-0 h-px bg-white/[0.07]" style={{ top: y }} />;
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 const label = "text-[11px] font-semibold uppercase tracking-[0.1em] text-grey";
-const cell =
-  "flex items-center gap-2 rounded-lg bg-white/[0.05] px-2.5 py-2 text-[13px] tabular-nums text-body";
+const cell = "flex h-[34px] items-center gap-2 rounded-lg bg-white/[0.05] px-2.5 text-[13px] tabular-nums text-body";
 
 const VI = "#a78bfa"; // designer
 const CY = "#22d3ee"; // copywriter
 const GR = "#34d399"; // client
 /** swatch centres in the Fill panel */
-const swatch = (i: number) => ({ x: 902 + i * 42 + 4, y: 528 + 6 });
+const swatch = (i: number) => ({ x: RS.x + 32 + i * 42 + 4, y: RS.y + 478 + 6 });
 /** where a hand holds an element it drags */
 const grab = (r: Rc) => ({ x: r.x + r.w * 0.55, y: r.y + r.h * 0.62 });
 
@@ -541,215 +545,187 @@ function DesignStage({ s }: { s: number }) {
 
   return (
     <>
-      {/* toolbar */}
-      <div
-        className="tool flex flex-col gap-1 p-1.5"
-        style={{ ...box(40, 166, 52), ...fly(pan(0), -160, 0) }}
-      >
-        {TOOLS.map((Ic, i) => (
-          <span
-            key={i}
-            className={`grid size-10 place-items-center rounded-xl transition-colors duration-300 ${i === tool ? "bg-violet text-white" : "text-grey"}`}
-          >
-            <Ic size={18} />
-          </span>
-        ))}
+      {/* left sidebar: tools · pages · layers · components, one panel with hairline sections (Figma-like) */}
+      <div className="tool overflow-hidden" style={{ ...box(LS.x, LS.y, LS.w, LS.h), ...fly(pan(0), -160, 0) }}>
+        <div className="absolute inset-x-4 flex items-center gap-1" style={{ top: 12 }}>
+          {TOOLS.map((Ic, i) => (
+            <span
+              key={i}
+              className={`grid size-8 place-items-center rounded-lg transition-colors duration-300 ${i === tool ? "bg-violet text-white" : "text-grey"}`}
+            >
+              <Ic size={16} />
+            </span>
+          ))}
+        </div>
+        <Hr y={56} />
+        <div className="absolute inset-x-4" style={{ top: 70, ...fly(pan(1), -20, 0, 4) }}>
+          <p className={`${label} flex h-5 items-center justify-between`}>
+            {D.pagesLabel}
+            <span className="flex -space-x-1.5">
+              {[VI, CY, GR].map((c, i) => (
+                <span
+                  key={c}
+                  className="grid size-5 place-items-center rounded-full border-2 border-[#0a0d15] text-[9px] font-bold normal-case tracking-normal text-[#05070d]"
+                  style={{ background: c }}
+                >
+                  {D.team[i].name[0]}
+                </span>
+              ))}
+            </span>
+          </p>
+          <ul className="mt-1 flex flex-col gap-0.5 text-[13px]">
+            {D.pages.map((p, i) => (
+              <li key={p} className={`flex h-[26px] items-center justify-between rounded-md px-2 ${i === 0 ? "bg-white/[0.06] text-fg" : "text-body"}`}>
+                {p}
+                {i === 0 && <span className="text-[11px] tabular-nums text-grey">1440</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <Hr y={190} />
+        <div className="absolute inset-x-4" style={{ top: 204, ...fly(pan(2), -20, 0, 4) }}>
+          <p className={`${label} flex h-4 items-center`}>{D.layersLabel}</p>
+          <ul className="mt-1.5 flex flex-col gap-px">
+            {D.layers.map((l, i) => {
+              const at0 = [0.4, 1.02, 1.3, 1.46, 1.78, 1.85, 2.22][i];
+              const on = expo(seg(s, at0, at0 + 0.25));
+              const Ic = [FrameCorners, ImageIcon, Rows, TextT, TextAlignLeft, Square, SquaresFour][i];
+              return (
+                <li
+                  key={l}
+                  className={`flex h-[26px] items-center gap-2 rounded-md px-2 text-[13px] ${i === rowV || i === rowC ? "text-fg" : "text-body"}`}
+                  style={{
+                    ...fly(on, -12, 0, 4),
+                    paddingLeft: i ? 24 : 8,
+                    background: i === rowV ? "rgb(167 139 250 / 0.2)" : i === rowC ? "rgb(34 211 238 / 0.16)" : undefined,
+                    transition: "background-color .3s",
+                  }}
+                >
+                  <Ic size={13} className="shrink-0 text-grey" />
+                  {l}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        <Hr y={428} />
+        <p className={`${label} absolute inset-x-4 flex h-4 items-center`} style={{ top: 442, ...fly(pan(3), -20, 0, 4) }}>
+          {D.compLabel}
+        </p>
+        {D.comps.map((c, i) => {
+          const r = tile(i);
+          const hot = i === 0 && btnFly > 0 && btnFly < 1 ? VI : i === 1 && planFly(0) > 0 && planFly(2) < 1 ? CY : null;
+          return (
+            <div
+              key={c}
+              className="absolute flex items-center gap-2.5 rounded-lg border bg-white/[0.04] px-2.5 transition-colors duration-300"
+              style={{ ...box(r.x - LS.x, r.y - LS.y, r.w, r.h), ...fly(pan(3), -20, 0, 4), borderColor: hot ?? "transparent" }}
+            >
+              <span className="grid w-7 shrink-0 place-items-center">
+                {i === 0 && <span className="h-2.5 w-7 rounded-full bg-white/70" />}
+                {i === 1 && <span className="h-4 w-6 rounded bg-white/25" />}
+                {i === 2 && <span className="h-2.5 w-7 rounded border border-white/40" />}
+                {i === 3 && <span className="h-2.5 w-5 rounded-full bg-violet-soft/70" />}
+              </span>
+              <span className="text-[12px] text-body">{c}</span>
+            </div>
+          );
+        })}
       </div>
-      {/* pages + frames */}
-      <div
-        className="tool p-4"
-        style={{ ...box(112, 20, 220), ...fly(pan(0), -180, 0) }}
-      >
-        <p className={`${label} flex items-center justify-between`}>
-          {D.pagesLabel}
-          <span className="flex -space-x-1.5">
-            {[VI, CY, GR].map((c, i) => (
-              <span key={c} className="grid size-5 place-items-center rounded-full border-2 border-[#0a0d15] text-[9px] font-bold normal-case tracking-normal text-[#05070d]" style={{ background: c }}>
-                {D.team[i].name[0]}
+
+      {/* right sidebar: properties · auto layout · text · fill · effects */}
+      <div className="tool overflow-hidden" style={{ ...box(RS.x, RS.y, RS.w, RS.h), ...fly(pan(0), 160, 0) }}>
+        <div className="absolute inset-x-4" style={{ top: 16, ...fly(pan(1), 20, 0, 4) }}>
+          <p className={`${label} flex h-4 items-center`}>{D.props}</p>
+          <div className="mt-[6px] grid grid-cols-2 gap-2">
+            {(
+              [
+                ["X", selBox.x - AB.x],
+                ["Y", selBox.y - AB.y],
+                ["W", selBox.w],
+                ["H", selBox.h],
+              ] as const
+            ).map(([k, v]) => (
+              <span key={k} className={cell}>
+                <span className="text-grey">{k}</span> {Math.round(v)}
               </span>
             ))}
-          </span>
-        </p>
-        <ul className="mt-2.5 flex flex-col gap-0.5 text-[13px]">
-          {D.pages.map((p, i) => (
-            <li
-              key={p}
-              className={`flex items-center justify-between rounded-lg px-2 py-1 ${i === 0 ? "bg-white/[0.06] text-fg" : "text-body"}`}
-            >
-              {p}
-              {i === 0 && <span className="text-[11px] text-grey">1440</span>}
-            </li>
-          ))}
-        </ul>
-      </div>
-      {/* layers */}
-      <div
-        className="tool p-4"
-        style={{ ...box(112, 172, 220), ...fly(pan(1), -180, 0) }}
-      >
-        <p className={label}>{D.layersLabel}</p>
-        <ul className="mt-2.5 flex flex-col gap-0.5">
-          {D.layers.map((l, i) => {
-            const on = expo(seg(s, [0.4, 1.02, 1.3, 1.46, 1.78, 1.85, 2.22][i], [0.4, 1.02, 1.3, 1.46, 1.78, 1.85, 2.22][i] + 0.25));
-            const Ic = [
-              FrameCorners,
-              ImageIcon,
-              Rows,
-              TextT,
-              TextAlignLeft,
-              Square,
-              SquaresFour,
-            ][i];
-            return (
-              <li
-                key={l}
-                className={`flex items-center gap-2 rounded-lg px-2 py-1 text-[13px] transition-colors duration-300 ${i === rowV || i === rowC ? "text-fg" : "text-body"}`}
-                style={{
-                  ...fly(on, -16, 0, 5),
-                  paddingLeft: i ? 26 : 8,
-                  background: i === rowV ? "rgb(167 139 250 / 0.2)" : i === rowC ? "rgb(34 211 238 / 0.16)" : undefined,
-                  transition: "background-color .3s",
-                }}
-              >
-                <Ic size={13} className="shrink-0 text-grey" />
-                {l}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-      {/* components: the sources of the instances */}
-      <div
-        className="tool p-4"
-        style={{ ...box(CP.x, CP.y, CP.w, 158), ...fly(pan(2), -180, 0) }}
-      >
-        <p className={label}>{D.compLabel}</p>
-      </div>
-      {D.comps.map((c, i) => {
-        const r = tile(i);
-        const hot = i === 0 && btnFly > 0 && btnFly < 1 ? VI : i === 1 && planFly(0) > 0 && planFly(2) < 1 ? CY : null;
-        return (
-          <div
-            key={c}
-            className="grid place-items-center gap-1 rounded-lg border bg-white/[0.04] transition-colors duration-300"
-            style={{ ...box(r.x, r.y, r.w, r.h), ...fly(pan(2), -180, 0), borderColor: hot ?? "transparent" }}
-          >
-            {i === 0 && <span className="h-3 w-10 rounded-full bg-white/70" />}
-            {i === 1 && <span className="h-4 w-10 rounded bg-white/25" />}
-            {i === 2 && (
-              <span className="h-3 w-12 rounded border border-white/40" />
-            )}
-            {i === 3 && (
-              <span className="h-2.5 w-7 rounded-full bg-violet-soft/70" />
-            )}
-            <span className="text-[10px] text-grey">{c}</span>
           </div>
-        );
-      })}
-
-      {/* properties + auto layout */}
-      <div
-        className="tool p-4"
-        style={{ ...box(870, 20, 290), ...fly(pan(0), 180, 0) }}
-      >
-        <p className={label}>{D.props}</p>
-        <div className="mt-2.5 grid grid-cols-2 gap-2">
-          <span className={cell}>
-            <span className="text-grey">X</span> {Math.round(selBox.x - AB.x)}
-          </span>
-          <span className={cell}>
-            <span className="text-grey">Y</span> {Math.round(selBox.y - AB.y)}
-          </span>
-          <span className={cell}>
-            <span className="text-grey">W</span> {Math.round(selBox.w)}
-          </span>
-          <span className={cell}>
-            <span className="text-grey">H</span> {Math.round(selBox.h)}
-          </span>
         </div>
-        <p className={`${label} mt-4`}>{D.layout}</p>
-        <div className="mt-2.5 grid grid-cols-[auto_1fr_1fr] gap-2">
-          <span className="flex items-center gap-0.5 rounded-lg bg-white/[0.05] p-1">
-            <span className="grid size-6 place-items-center rounded-md bg-violet text-white">
-              <ArrowDown size={12} weight="bold" />
-            </span>
-            <span className="grid size-6 place-items-center rounded-md text-grey">
-              <ArrowRight size={12} weight="bold" />
-            </span>
-          </span>
-          <span className={cell}>
-            <ArrowsOutLineVertical size={13} className="text-grey" />{" "}
-            24
-          </span>
-          <span className={cell}>
-            <ArrowsOut size={13} className="text-grey" /> 24
-          </span>
-        </div>
-      </div>
-      {/* typography: lights up while the title is set */}
-      <div
-        className="tool p-4"
-        style={{ ...box(870, 246, 290), ...fly(pan(1), 180, 0) }}
-      >
-        <p className={label}>{D.text}</p>
-        <div
-          className="mt-2.5 flex flex-col gap-2 transition-opacity duration-300"
-          style={{ opacity: titleOn ? 1 : 0.55 }}
-        >
-          <span className={`${cell} justify-between text-fg`}>
-            {D.font} <CaretDown size={12} className="text-grey" />
-          </span>
-          <div className="grid grid-cols-[1fr_72px] gap-2">
-            <span className={`${cell} justify-between`}>
-              {D.weight} <CaretDown size={12} className="text-grey" />
-            </span>
-            <span
-              className={`${cell} ${titleOn ? "text-fg ring-1 ring-cyan/60" : ""}`}
-            >
-              40
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <span className={cell}>
-              <TextAa size={13} className="text-grey" /> 100%
+        <Hr y={128} />
+        <div className="absolute inset-x-4" style={{ top: 142, ...fly(pan(1), 20, 0, 4) }}>
+          <p className={`${label} flex h-4 items-center`}>{D.layout}</p>
+          <div className="mt-[6px] grid grid-cols-[auto_1fr_1fr] gap-2">
+            <span className="flex h-[34px] items-center gap-0.5 rounded-lg bg-white/[0.05] px-1">
+              <span className="grid size-6 place-items-center rounded-md bg-violet text-white">
+                <ArrowDown size={12} weight="bold" />
+              </span>
+              <span className="grid size-6 place-items-center rounded-md text-grey">
+                <ArrowRight size={12} weight="bold" />
+              </span>
             </span>
             <span className={cell}>
-              <span className="text-grey">|A|</span> −4.5%
+              <ArrowsOutLineVertical size={13} className="text-grey" /> 24
+            </span>
+            <span className={cell}>
+              <ArrowsOut size={13} className="text-grey" /> 24
             </span>
           </div>
         </div>
-      </div>
-      {/* fill + palette */}
-      <div
-        className="tool p-4"
-        style={{ ...box(870, 424, 290), ...fly(pan(2), 180, 0) }}
-      >
-        <p className={label}>{D.fill}</p>
-        <div className={`${cell} mt-2.5 uppercase`}>
-          <span
-            className="size-4 rounded border border-white/20"
-            style={{ background: fillHex, transition: "background-color .25s" }}
-          />
-          {fillHex}
+        <Hr y={212} />
+        <div className="absolute inset-x-4" style={{ top: 226, ...fly(pan(2), 20, 0, 4) }}>
+          <p className={`${label} flex h-4 items-center`}>{D.text}</p>
+          <div className="mt-[6px] flex flex-col gap-2 transition-opacity duration-300" style={{ opacity: titleOn ? 1 : 0.55 }}>
+            <span className={`${cell} justify-between text-fg`}>
+              {D.font} <CaretDown size={12} className="text-grey" />
+            </span>
+            <div className="grid grid-cols-[1fr_72px] gap-2">
+              <span className={`${cell} justify-between`}>
+                {D.weight} <CaretDown size={12} className="text-grey" />
+              </span>
+              <span className={`${cell} ${titleOn ? "text-fg ring-1 ring-cyan/60" : ""}`}>40</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <span className={cell}>
+                <TextAa size={13} className="text-grey" /> 100%
+              </span>
+              <span className={cell}>
+                <span className="text-grey">|A|</span> −4.5%
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="mt-2.5 flex items-center gap-2.5">
-          {SWATCHES.map((c, i) => {
-            const on = pick > 0 && i === (s >= 2.5 ? 3 : hover);
-            return (
-              <span
-                key={c}
-                className="size-8 rounded-full border border-white/15"
-                style={{
-                  background: c,
-                  boxShadow: on
-                    ? `0 0 0 2px #0a0d15, 0 0 0 4px ${c === INK ? "#f5f7fa" : c}`
-                    : "none",
-                  transform: `scale(${on ? 1.08 : 1})`,
-                  transition: "transform .2s, box-shadow .2s",
-                }}
-              />
-            );
-          })}
+        <Hr y={380} />
+        <div className="absolute inset-x-4" style={{ top: 394, ...fly(pan(3), 20, 0, 4) }}>
+          <p className={`${label} flex h-4 items-center`}>{D.fill}</p>
+          <div className={`${cell} mt-[6px] uppercase`}>
+            <span className="size-4 rounded border border-white/20" style={{ background: fillHex, transition: "background-color .25s" }} />
+            {fillHex}
+          </div>
+          <div className="mt-3 flex items-center gap-2.5">
+            {SWATCHES.map((c, i) => {
+              const on = pick > 0 && i === (s >= 2.5 ? 3 : hover);
+              return (
+                <span
+                  key={c}
+                  className="size-8 rounded-full border border-white/15"
+                  style={{
+                    background: c,
+                    boxShadow: on ? `0 0 0 2px #0a0d15, 0 0 0 4px ${c === INK ? "#f5f7fa" : c}` : "none",
+                    transform: on ? "scale(1.08)" : undefined,
+                    transition: "transform .2s, box-shadow .2s",
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+        <Hr y={508} />
+        <div className="absolute inset-x-4 flex h-[34px] items-center justify-between" style={{ top: 516, ...fly(pan(3), 20, 0, 4) }}>
+          <span className={label}>{D.effects}</span>
+          <span className="flex items-center gap-2 text-[13px] text-body">
+            <Drop size={13} className="text-grey" /> {D.shadow}
+          </span>
         </div>
       </div>
 

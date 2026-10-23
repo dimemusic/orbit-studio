@@ -362,6 +362,8 @@ export const BUILD = {
     font: "Geologica",
     weight: "Semibold",
     fill: "Заливка",
+    effects: "Ефекти",
+    shadow: "Тінь",
     nav: ["Продукт", "Ціни", "Контакти"],
     login: "Почати",
     badge: "Новинка",
