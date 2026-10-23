@@ -75,8 +75,12 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
       uMouseOn: { value: 0 },
       uMorph: { value: 0 },
       uIvy: { value: 0 },
+      /** page scroll in world units at z = 0 (the star field scrolls with the page and wraps) */
+      uScroll: { value: 0 },
+      uFieldH: { value: visH + 0.8 },
+      uCamZ: { value: camZ },
     }),
-    [reduce],
+    [reduce, visH, camZ],
   );
   useEffect(() => {
     uniforms.uDPR.value = dpr;
@@ -277,6 +281,9 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
     const dt = Math.min(delta, 0.05);
     const u = uniforms;
     u.uTime.value = state.clock.elapsedTime;
+    // stars follow the page scroll (smoothed); the field wraps vertically so it never runs out
+    const scrollTarget = (window.scrollY / window.innerHeight) * visH;
+    u.uScroll.value = reduce ? scrollTarget : u.uScroll.value + (scrollTarget - u.uScroll.value) * Math.min(1, dt * 10);
     u.uPulse.value = Math.max(0, u.uPulse.value - dt * 0.55);
 
     // the ivy is attached to the page: camera follows scroll 1:1

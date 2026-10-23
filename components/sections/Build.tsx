@@ -16,6 +16,8 @@ import { along, Caret, ease, Pointer, seg, typed } from "../process/util";
  */
 const STAGE_LEN = 3;
 const TOTAL = STAGE_LEN * BUILD.stages.length;
+/** real playing time of the whole film (the timeline above is in "beats" and is stretched to this) */
+const PLAY_SECONDS = 22;
 const SW = 1200;
 const SH = 620;
 
@@ -42,7 +44,7 @@ export function Build() {
     let start = 0;
     const tick = (now: number) => {
       if (!start) start = now;
-      const v = Math.min(TOTAL, (now - start) / 1000);
+      const v = Math.min(TOTAL, ((now - start) / 1000 / PLAY_SECONDS) * TOTAL);
       setT(v);
       if (v < TOTAL) raf = requestAnimationFrame(tick);
     };
@@ -323,7 +325,7 @@ function DesignStage({ s }: { s: number }) {
       {/* artboard: the site being drawn (children use the same rects as the selection) */}
       <div className="overflow-hidden rounded-md bg-[#f4f0e8] text-[#1a1714]" style={{ ...box(AB.x, AB.y, AB.w, AB.h), clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)` }}>
         <div className="absolute inset-x-6 top-5 flex items-center justify-between">
-          <span className="text-[17px] font-semibold tracking-[-0.03em]">Maina</span>
+          <span className="text-[17px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
           <span className="flex gap-3">
             <i className="h-2 w-10 rounded-full bg-black/20" />
             <i className="h-2 w-10 rounded-full bg-black/20" />
@@ -378,7 +380,7 @@ type Tok = [string, string];
 const LINES: Tok[][] = [
   [["export default function ", KW], ["Home", TG], ["() {", PU]],
   [["  return ", KW], ["(", PU]],
-  [["    <", PU], ["Header", TG], [" logo", AT], ["=", PU], ['"Maina"', STR], [" />", PU]],
+  [["    <", PU], ["Header", TG], [" logo", AT], ["=", PU], ['"Your site"', STR], [" />", PU]],
   [["    <", PU], ["Hero", TG], [">", PU]],
   [["      <", PU], ["h1", TG], [">", PU], [C.h1, TX], ["</", PU], ["h1", TG], [">", PU]],
   [["      <", PU], ["p", TG], [">", PU], [C.p, TX], ["</", PU], ["p", TG], [">", PU]],
@@ -430,7 +432,7 @@ function CodeStage({ s }: { s: number }) {
       </div>
       {/* terminal */}
       <div className="tool flex items-center gap-4 px-5 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[15px]" style={{ ...box(40, 456, 640, 60), ...fly(term, 0, 40, 12) }}>
-        <span className="text-green">~/maina $</span>
+        <span className="text-green">~/your-site $</span>
         <span className="text-body">{typed(C.cmd, seg(s, 2.3, 2.55))}</span>
         <span className="ml-auto flex items-center gap-2 text-green" style={fly(ease(seg(s, 2.6, 2.75)), 20, 0, 8)}>
           <CheckCircle size={17} weight="fill" /> {C.ok}
@@ -446,7 +448,7 @@ function CodeStage({ s }: { s: number }) {
         </div>
         <div className="p-5">
           <div className="flex items-center justify-between" style={fly(ease(lineK(2)), 0, -16, 8)}>
-            <span className="text-[16px] font-semibold tracking-[-0.03em]">Maina</span>
+            <span className="text-[16px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
             <span className="flex gap-2">
               <i className="h-1.5 w-9 rounded-full bg-black/20" />
               <i className="h-1.5 w-9 rounded-full bg-black/20" />
@@ -553,7 +555,7 @@ function CmsStage({ s }: { s: number }) {
       {/* iPhone: the live site updates */}
       <IPhone style={{ ...box(830, 0, 290, 610), ...fly(ease(seg(s, 0.05, 0.45)), 260, 0, 18) }}>
         <div className="flex items-center justify-between px-1">
-          <span className="text-[15px] font-semibold">Maina</span>
+          <span className="text-[15px] font-semibold">{BUILD.brand}</span>
           <span className={`flex items-center gap-1.5 text-[11px] font-semibold ${pub ? "text-[#1f8f5f]" : "text-black/30"}`}>
             <span className={`size-1.5 rounded-full ${pub ? "bg-[#1f8f5f]" : "bg-black/25"}`} />
             {M.live}
@@ -680,7 +682,7 @@ function LaunchStage({ s }: { s: number }) {
             >
               {i === 0 && (
                 <div className="flex h-full items-center justify-between px-6 text-[#1a1714]">
-                  <span className="text-[18px] font-semibold tracking-[-0.03em]">Maina</span>
+                  <span className="text-[18px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
                   <span className="flex gap-3">
                     <i className="h-2 w-10 rounded-full bg-black/20" />
                     <i className="h-2 w-10 rounded-full bg-black/20" />

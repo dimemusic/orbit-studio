@@ -334,6 +334,8 @@ export const CONTACT = {
 /** «Як ми працюємо»: one self-playing ~12s film right after the hero. Demo labels are illustrative. */
 export const BUILD = {
   label: "Як ми працюємо",
+  /** neutral demo brand shown inside the mock site */
+  brand: "Your site",
   stages: [
     { id: "design", title: ["Малюємо", "дизайн."], step: "Дизайн", days: "3–5 днів", color: "#a78bfa" }, // DRAFT: days
     { id: "code", title: ["Пишемо", "код."], step: "Верстка", days: "5–7 днів", color: "#5aa2ff" }, // DRAFT: days
@@ -344,7 +346,7 @@ export const BUILD = {
   design: { layers: ["Desktop", "Фото", "Заголовок", "Кнопка"], layersLabel: "Шари", props: "Властивості", fill: "Заливка", title: "Домашня кухня", button: "Замовити" },
   code: { cmd: "npm run build", ok: "Ready · 0.9s", h1: "Домашня кухня", p: "Заморожені напівфабрикати", btn: "Замовити" },
   cms: { name: "Назва", nameVal: "Вареники з картоплею", price: "Ціна", priceVal: "149 ₴", photo: "Фото", stock: "В наявності", publish: "Опублікувати", published: "Опубліковано", toast: "Зміни вже на сайті", live: "Наживо" },
-  launch: { url: "maina.com.ua", online: "Онлайн", checks: ["Домен і SSL", "Аналітика", "Навчання", "Підтримка"] },
+  launch: { url: "your-site.com", online: "Онлайн", checks: ["Домен і SSL", "Аналітика", "Навчання", "Підтримка"] },
 };
 
 export const FOOTER = {

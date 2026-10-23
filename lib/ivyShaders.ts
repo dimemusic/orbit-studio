@@ -117,6 +117,9 @@ void main() { gl_FragColor = vec4(vCol, vA); }
 export const ivyFieldVertex = /* glsl */ `
 ${ivyCommon}
 uniform float uDPR;
+uniform float uScroll;
+uniform float uFieldH;
+uniform float uCamZ;
 attribute vec3 aTarget;
 attribute vec3 aColor;
 attribute float aDepth;
@@ -134,8 +137,12 @@ void main() {
   float f = 1.0 - m;
   float t = uTime * uMotion;
 
-  // drifting dust
+  // drifting dust; scrolls with the page (nearer stars a bit faster = parallax) and wraps vertically
   vec3 fp = position;
+  float sc = (uCamZ - fp.z) / uCamZ;
+  float near = clamp((fp.z + 5.0) / 7.5, 0.0, 1.0);
+  float period = uFieldH * sc;
+  fp.y = mod(fp.y + uScroll * sc * mix(0.55, 1.0, near) + period * 0.5, period) - period * 0.5;
   fp += f * 0.06 * vec3(sin(t * 0.9 + fp.y * 2.1 + aStagger * 6.28), cos(t * 0.7 + fp.x * 1.9), sin(t * 0.8 + fp.z * 2.3 + aStagger * 3.0));
   fp += vec3(sin(t * 0.21 + aStagger * 6.28), cos(t * 0.17 + aStagger * 4.0), sin(t * 0.13 + aStagger * 9.0)) * 0.18;
 
