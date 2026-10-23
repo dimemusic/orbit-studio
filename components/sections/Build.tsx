@@ -534,7 +534,7 @@ function DesignStage({ s }: { s: number }) {
       [2.5, grab(planDst(0)).x, grab(planDst(0)).y],
       [3, grab(planDst(1)).x + 20, grab(planDst(1)).y - 46],
     ]);
-  const pinAt = { x: AB.x + 330, y: AB.y + R.btn.y - 34 };
+  const pinAt = { x: AB.x + 318, y: AB.y + R.btn.y + 4 };
   const gPos = along(s, [
     [0, 760, 700],
     [1.92, 760, 700],
@@ -1337,15 +1337,6 @@ function CmsStage({ s }: { s: number }) {
                 {Array.from(name).length}/{M.max}
               </span>
             }
-            hint={
-              <p className="mt-1.5 flex items-center gap-1.5 text-[12px] text-grey">
-                <LinkSimple size={12} />
-                <span className="text-faint">{M.slug.split("/")[0]}/</span>
-                <span className="text-body">
-                  {typed(M.slug.split("/")[1], nameK)}
-                </span>
-              </p>
-            }
           >
             <span className="px-4">
               <Typed
@@ -1470,13 +1461,10 @@ function CmsStage({ s }: { s: number }) {
 
         {/* availability */}
         <div
-          className="flex items-center justify-between rounded-xl bg-white/[0.035] px-4 py-3"
+          className="flex h-12 items-center justify-between rounded-xl bg-white/[0.035] px-4"
           style={row(5)}
         >
-          <span>
-            <span className="block text-[14px] text-fg">{M.stock}</span>
-            <span className="block text-[12px] text-grey">{M.stockHint}</span>
-          </span>
+          <span className="text-[14px] text-fg">{M.stock}</span>
           <span
             className="relative h-7 w-12 rounded-full"
             style={{
@@ -1565,7 +1553,7 @@ function CmsStage({ s }: { s: number }) {
       {/* iPhone: the live product page updates */}
       <IPhone
         style={{
-          ...box(846, 20, 266, 560),
+          ...box(836, 20, 286, 560),
           ...fly(expo(seg(s, 0.04, 0.6)), 220, 0, 16),
         }}
       >
