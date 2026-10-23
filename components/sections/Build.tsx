@@ -145,74 +145,16 @@ export function Build() {
                 opacity: Math.min(1, enter * 1.4) * (1 - exit),
               }}
             >
-              <div className="absolute inset-0" style={camera(i, s0)}>
-                {i === 0 && <DesignStage s={s0} />}
-                {i === 1 && <CodeStage s={s0} />}
-                {i === 2 && <CmsStage s={s0} />}
-                {i === 3 && <LaunchStage s={s0} />}
-              </div>
+              {i === 0 && <DesignStage s={s0} />}
+              {i === 1 && <CodeStage s={s0} />}
+              {i === 2 && <CmsStage s={s0} />}
+              {i === 3 && <LaunchStage s={s0} />}
             </div>
           );
         })}
       </StageBox>
     </section>
   );
-}
-
-/**
- * Camera per stage: keyframes [beat, zoom, focusX, focusY] in stage px, eased in and out (smootherstep),
- * plus a short punch-in on the key moment (colour applied, build ready, published, online).
- * Zoom/pan speed adds a light blur so camera moves read as motion, not a jump.
- */
-type Key = [number, number, number, number];
-const C0 = SW / 2;
-const C1 = SH / 2;
-const CAMS: Key[][] = [
-  // design: settle on the artboard while the frame is drawn, close in on the title, swing to the palette
-  [[0, 1, C0, C1], [0.45, 1, C0, C1], [1.05, 1.06, 600, 320], [1.58, 1.11, 600, 300], [2.0, 1.11, 600, 300], [2.3, 1.08, 820, 380], [2.55, 1.1, 900, 380], [3, 1.1, 900, 380]],
-  // code: lean into the lines as they are typed, pull back for the build
-  [[0, 1.02, C0, C1], [0.3, 1.1, 400, 200], [1.75, 1.1, 400, 360], [2.1, 1.03, C0, 340], [3, 1.05, C0, 350]],
-  // cms: the form while it is filled, then the phone at publish
-  [[0, 1.02, C0, C1], [0.4, 1.1, 360, 200], [1.45, 1.1, 360, 320], [2.0, 1.08, 480, 400], [2.4, 1.1, 860, 330], [3, 1.12, 900, 320]],
-  // launch: wide while the site assembles, push in on «Онлайн»
-  [[0, 1.05, C0, 240], [1.5, 1, C0, C1], [2.15, 1.08, C0, 400], [3, 1.06, C0, 400]],
-];
-const PUNCH = [2.56, 2.26, 2.35, 2.02];
-
-function camAt(i: number, s: number) {
-  const keys = CAMS[i];
-  if (s <= keys[0][0]) return keys[0].slice(1) as [number, number, number];
-  for (let j = 1; j < keys.length; j++) {
-    const [b1, ...v1] = keys[j];
-    const [b0, ...v0] = keys[j - 1];
-    if (s <= b1) {
-      const k = smooth((s - b0) / Math.max(1e-6, b1 - b0));
-      return v0.map((a, n) => a + (v1[n] - a) * k) as [number, number, number];
-    }
-  }
-  return keys[keys.length - 1].slice(1) as [number, number, number];
-}
-
-/** keep the zoomed stage inside its headroom (m stage px each side), so it never runs under the header */
-const clampT = (v: number, size: number, z: number, m: number) => {
-  const lo = size + m - size * z;
-  const hi = m;
-  return lo > hi ? (lo + hi) / 2 : Math.min(hi, Math.max(lo, v));
-};
-
-function camera(i: number, s: number): CSSProperties {
-  const [z0, fx, fy] = camAt(i, s);
-  const p = seg(s, PUNCH[i], PUNCH[i] + 0.3);
-  const z = z0 * (1 + 0.035 * Math.sin(Math.PI * p) * (1 - p * 0.4));
-  // speed of the camera (zoom + pan per beat) → blur
-  const [za, xa, ya] = camAt(i, s + 0.03);
-  const rate = (Math.abs(za - z0) * 6 + Math.hypot(xa - fx, ya - fy) / 300) / 0.03;
-  const blur = Math.min(1.1, Math.max(0, rate - 1.6) * 0.6);
-  return {
-    transformOrigin: "0 0",
-    transform: `translate3d(${clampT(C0 - fx * z, SW, z, 70).toFixed(2)}px, ${clampT(C1 - fy * z, SH, z, 34).toFixed(2)}px, 0) scale(${z.toFixed(4)})`,
-    filter: blur > 0.15 ? `blur(${blur.toFixed(2)}px)` : undefined,
-  };
 }
 
 /** stage title, letter by letter with blur in and blur out */
@@ -261,7 +203,7 @@ function StageBox({ children }: { children: ReactNode }) {
     if (!el) return;
     const fit = () => {
       const r = el.getBoundingClientRect();
-      setK(Math.min(r.width / SW, r.height / SH) * 0.9); // 10% headroom for the camera zooms
+      setK(Math.min(r.width / SW, r.height / SH));
     };
     fit();
     const ro = new ResizeObserver(fit);
