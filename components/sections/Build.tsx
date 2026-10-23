@@ -6,10 +6,14 @@ import {
   ArrowsOut,
   ArrowsOutLineVertical,
   CaretDown,
+  ChartLineUp,
+  ChatCircleDots,
+  Check,
   CheckCircle,
   Cursor,
   EnvelopeSimple,
   FrameCorners,
+  GraduationCap,
   Hand,
   Image as ImageIcon,
   LinkSimple,
@@ -17,6 +21,7 @@ import {
   Lock,
   PenNib,
   Rows,
+  ShieldCheck,
   Square,
   SquaresFour,
   TextAa,
@@ -1705,7 +1710,7 @@ function IPhone({
 
 /* ---------------- 4 · Launch ---------------- */
 const L = BUILD.launch;
-const BR = { x: 300, y: 10, w: 600, h: 430 };
+const BR = { x: 540, y: 95, w: 600, h: 430 };
 const PIECES = [
   { x: 0, y: 40, w: 600, h: 50, dx: -420, dy: -120, c: "#e6e0d4" },
   { x: 24, y: 110, w: 552, h: 160, dx: 460, dy: -80, c: "#efe9de" },
@@ -1713,6 +1718,15 @@ const PIECES = [
   { x: 215, y: 290, w: 170, h: 116, dx: 0, dy: 320, c: "#efe9de" },
   { x: 406, y: 290, w: 170, h: 116, dx: 480, dy: 160, c: "#efe9de" },
 ];
+/** launch checklist: when each item finishes (beats), its colour and icon */
+const DONE = [1.05, 1.4, 1.75, 2.1];
+const CHECK = [
+  { color: "#5aa2ff", icon: ShieldCheck },
+  { color: "#a78bfa", icon: ChartLineUp },
+  { color: "#22d3ee", icon: GraduationCap },
+  { color: "#34d399", icon: ChatCircleDots },
+];
+
 function LaunchStage({ s }: { s: number }) {
   const shell = expo(seg(s, 0.03, 0.55));
   const url = typed(L.url, seg(s, 1.25, 1.65));
@@ -1720,7 +1734,6 @@ function LaunchStage({ s }: { s: number }) {
   const sweep = seg(s, 2.0, 2.45);
   const online = expo(seg(s, 2.0, 2.35));
   const lift = ease(seg(s, 2.0, 2.4));
-  const cx = BR.x + BR.w / 2;
   return (
     <>
       {/* browser assembling */}
@@ -1736,7 +1749,7 @@ function LaunchStage({ s }: { s: number }) {
             `scale(${0.9 + shell * 0.1 + lift * 0.015}) translateY(${-lift * 6}px)`,
           ),
           borderColor: `rgb(52 211 153 / ${0.15 + lift * 0.45})`,
-          boxShadow: `0 50px 110px -30px rgb(0 0 0 / 0.95), 0 0 0 ${lift * 6}px rgb(52 211 153 / ${0.12 * lift})`,
+          boxShadow: "0 50px 110px -30px rgb(0 0 0 / 0.95)",
         }}
       >
         <div className="flex h-10 items-center gap-2 bg-[#e6e0d4] px-4">
@@ -1751,6 +1764,17 @@ function LaunchStage({ s }: { s: number }) {
             />
             {url}
             <Caret on={s > 1.25 && s < 1.7} color="#1a1714" />
+          </span>
+          {/* live status: a round ping on the dot, the pill itself stays still */}
+          <span
+            className="ml-auto flex items-center gap-2 rounded-full bg-[#1f8f5f]/12 px-3 py-1 text-[12px] font-semibold text-[#1f8f5f]"
+            style={fly(online, 12, 0, 6)}
+          >
+            <span className="relative grid size-2 place-items-center">
+              {online > 0.5 && <span className="absolute inset-0 animate-ping rounded-full bg-[#1f8f5f]/60" />}
+              <span className="relative size-2 rounded-full bg-[#1f8f5f]" />
+            </span>
+            {L.online}
           </span>
         </div>
         {/* deploy progress under the address bar */}
@@ -1840,45 +1864,113 @@ function LaunchStage({ s }: { s: number }) {
           );
         })}
       </div>
-      {/* online + checks */}
-      <div style={{ ...box(cx - 75, 462, 150, 44), ...fly(online, 0, 24, 12) }}>
-        {[0, 0.22].map((d) => {
-          const k = seg(s, 2.1 + d, 2.9 + d);
-          return k > 0 && k < 1 ? (
-            <span
-              key={d}
-              className="absolute inset-0 rounded-full border-2 border-green"
-              style={{
-                transform: `scale(${1 + ease(k) * 0.7}, ${1 + ease(k) * 1.4})`,
-                opacity: (1 - k) * 0.6,
-              }}
-            />
-          ) : null;
-        })}
-        <p className="flex h-full items-center justify-center gap-2 rounded-full border border-green/30 bg-[#0d1a17] text-[16px] font-semibold text-green">
-          <span className="size-2.5 animate-pulse rounded-full bg-green" />{" "}
-          {L.online}
-        </p>
-      </div>
-      <ul
-        className="flex justify-center gap-3"
-        style={box(BR.x - 60, 536, BR.w + 120)}
+      {/* launch checklist: every item has its own icon and its own little motion */}
+      <div
+        className="flex items-center justify-between"
+        style={{ ...box(40, 90, 430), ...fly(expo(seg(s, 0.02, 0.5)), -40, 0, 8) }}
       >
-        {L.checks.map((c, i) => (
-          <li
-            key={c}
-            className="tool flex items-center gap-2 px-4 py-2.5 text-[15px] text-fg"
-            style={fly(
-              expo(seg(s, 2.25 + i * 0.08, 2.65 + i * 0.08)),
-              0,
-              24,
-              10,
-            )}
+        <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">{L.listLabel}</span>
+        <span className="text-[13px] font-semibold tabular-nums text-fg">
+          {DONE.filter((d) => s >= d).length}/{L.items.length}
+        </span>
+      </div>
+      {L.items.map((it, i) => {
+        const work = seg(s, DONE[i] - 0.5, DONE[i]);
+        const done = expo(seg(s, DONE[i], DONE[i] + 0.3));
+        const c = CHECK[i].color;
+        const Ic = CHECK[i].icon;
+        return (
+          <div
+            key={it.t}
+            className="tool flex items-center gap-4 px-4"
+            style={{
+              ...box(40, 124 + i * 106, 430, 92),
+              ...fly(expo(seg(s, 0.06 + i * 0.07, 0.62 + i * 0.07)), -80, 0, 12),
+            }}
           >
-            <CheckCircle size={17} weight="fill" className="text-green" /> {c}
-          </li>
-        ))}
-      </ul>
+            <span
+              className="grid size-12 shrink-0 place-items-center rounded-xl"
+              style={{
+                background: `color-mix(in srgb, ${c} ${(12 + done * 10).toFixed(0)}%, transparent)`,
+                color: c,
+                transform: `scale(${(1 + Math.sin(Math.PI * done) * 0.12).toFixed(3)})`,
+              }}
+            >
+              <Ic size={22} weight={done > 0.5 ? "fill" : "regular"} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[16px] font-semibold leading-tight text-fg">{it.t}</p>
+              <p className="mt-1 truncate text-[13px] leading-tight text-grey">{it.d}</p>
+              {/* the item's own motion */}
+              <div className="mt-2 flex h-3 items-center">
+                {i === 0 && (
+                  <span
+                    className="flex items-center gap-1.5 text-[11px] font-semibold"
+                    style={{ color: c, opacity: work > 0 ? 1 : 0 }}
+                  >
+                    <Lock size={11} weight="fill" /> {typed("https://", Math.min(1, work * 1.4))}
+                  </span>
+                )}
+                {i === 1 && (
+                  <svg
+                    viewBox="0 0 120 12"
+                    width="120"
+                    height="12"
+                    style={{ clipPath: `inset(0 ${((1 - work) * 100).toFixed(1)}% 0 0)` }}
+                  >
+                    <polyline
+                      points="1,10 16,8 30,9 44,5 58,7 72,3 86,5 100,2 119,1"
+                      fill="none"
+                      stroke={c}
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+                {i === 2 && (
+                  <span className="block h-1.5 w-[160px] overflow-hidden rounded-full bg-white/[0.08]">
+                    <span className="block h-full origin-left rounded-full" style={{ background: c, transform: `scaleX(${work})` }} />
+                  </span>
+                )}
+                {i === 3 && (
+                  <span className="flex items-center gap-1" style={{ opacity: work > 0 ? 1 : 0 }}>
+                    {[0, 1, 2].map((d) => (
+                      <span
+                        key={d}
+                        className="size-1.5 rounded-full"
+                        style={{
+                          background: c,
+                          transform: `translateY(${(done > 0.5 ? 0 : Math.sin(s * 18 - d * 1.2) * 2).toFixed(2)}px)`,
+                          opacity: done > 0.5 ? 1 : 0.5 + 0.5 * Math.abs(Math.sin(s * 9 - d)),
+                        }}
+                      />
+                    ))}
+                  </span>
+                )}
+              </div>
+            </div>
+            {/* status: progress ring, then a check */}
+            <span className="relative grid size-8 shrink-0 place-items-center">
+              <span
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: `conic-gradient(${c} ${(work * 360).toFixed(1)}deg, rgb(255 255 255 / 0.1) 0deg)`,
+                  WebkitMask: "radial-gradient(circle, transparent 58%, #000 60%)",
+                  mask: "radial-gradient(circle, transparent 58%, #000 60%)",
+                  opacity: 1 - done,
+                }}
+              />
+              <span
+                className="absolute inset-0 grid place-items-center rounded-full bg-green text-[#05070d]"
+                style={{ transform: `scale(${done.toFixed(3)})`, opacity: done }}
+              >
+                <Check size={16} weight="bold" />
+              </span>
+            </span>
+          </div>
+        );
+      })}
     </>
   );
 }

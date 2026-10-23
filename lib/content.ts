@@ -409,7 +409,17 @@ export const BUILD = {
     tags: ["Новинка", "Хіт"],
     buy: "Купити",
   },
-  launch: { url: "your-product.com", online: "Онлайн", checks: ["Домен і SSL", "Аналітика", "Навчання", "Підтримка"] },
+  launch: {
+    url: "your-product.com",
+    online: "Онлайн",
+    listLabel: "Перед запуском",
+    items: [
+      { t: "Домен і SSL", d: "your-product.com · HTTPS" },
+      { t: "Аналітика", d: "Видно, звідки приходять клієнти" },
+      { t: "Навчання", d: "Показуємо, як керувати сайтом" },
+      { t: "Підтримка", d: "На зв'язку і після запуску" },
+    ],
+  },
 };
 
 export const FOOTER = {
