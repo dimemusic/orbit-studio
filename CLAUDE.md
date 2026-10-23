@@ -58,6 +58,11 @@ Scene code: `components/IvyScene.tsx`, `lib/ivy.ts` (generator), `lib/ivyShaders
 ## Background decision (Oct 2026, overrides the ivy notes above)
 The ivy / neurons are OFF site-wide. `IvyScene` only renders the hero dust field as stars (morph locked at 0, no ivy points/lines, no case nodes) and its canvas fades out after the first screen. Below the hero the calm `Ambient` layer shows: page colour + two very soft drifting colour washes whose tint follows the section on screen (`components/Ambient.tsx`, `.ambient` in globals.css). This replaces the "no coloured glow" rule for the background only.
 
+## Rebuild in progress (Oct 2026, overrides the section table below)
+The home page is being rebuilt section by section. It currently renders ONLY: Hero → `Build` («Як ми працюємо», `components/sections/Build.tsx`, id `process`).
+Work / Pricing / About / Faq / FinalCta stay in `components/sections/` but are not rendered; bring each back only when asked. `NAV` and `HOME_SECTIONS` list only live sections.
+`Build`: a ~12s film that plays ONCE by itself when the section is 45% in view (not scroll-linked), then holds the final frame. A grid draws on the page background (allowed here, overrides the "no grid" ban), our own tool panels fly in around the artboard (`.tool` surface: opaque dark, no backdrop-filter, so motion blur via `filter` is safe), 4 stages of 3s: design → code → CMS → launch, whip transitions with blur, big centred H1 per stage typed letter by letter with blur, everything moving carries motion blur. Fixed 1200×620 stage scaled to fit. Reduced motion: final frame at once. Copy in `BUILD` (`lib/content.ts`).
+
 ## Structure decision (Oct 2026)
 About, the admin-panel demo, Team and Guarantees were removed on purpose: too much decoration, too little information. Do not bring them back unless asked. Icons: one glyph per idea via `components/ui/icons.tsx` (`Icon name="brief|design|code|cms|launch"`) inside `IconTile`.
 

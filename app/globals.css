@@ -672,3 +672,17 @@ html {
     opacity: 1;
   }
 }
+
+/* ---------- «Як ми працюємо» film ---------- */
+/* tool panels float on the page background and get motion blur, so they use an opaque dark surface
+   (no backdrop-filter: a filter on a .card would kill its glass) */
+.tool {
+  background: rgb(10 13 21 / 0.94);
+  border: 1px solid rgb(255 255 255 / 0.09);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px -18px rgb(0 0 0 / 0.7);
+}
+.build-grid line {
+  stroke: rgb(255 255 255 / 0.06);
+  stroke-width: 1;
+}

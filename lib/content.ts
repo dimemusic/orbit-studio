@@ -26,13 +26,8 @@ export const CTA = {
   work: "Наші роботи",
 };
 
-export const NAV = [
-  { href: "/#work", label: "Роботи" },
-  { href: "/#services", label: "Послуги" },
-  { href: "/#process", label: "Процес" },
-  { href: "/#about", label: "Про нас" },
-  { href: "/#faq", label: "FAQ" },
-];
+// sections are being rebuilt one by one: only the live ones are linked
+export const NAV = [{ href: "/#process", label: "Як ми працюємо" }];
 
 export const HERO = {
   /** line 1 · plain start of line 2 · gradient end of line 2 */
@@ -336,6 +331,22 @@ export const CONTACT = {
   or: "Або напишіть напряму",
 };
 
+/** «Як ми працюємо»: one self-playing ~12s film right after the hero. Demo labels are illustrative. */
+export const BUILD = {
+  label: "Як ми працюємо",
+  stages: [
+    { id: "design", title: ["Малюємо", "дизайн."], step: "Дизайн", days: "3–5 днів", color: "#a78bfa" }, // DRAFT: days
+    { id: "code", title: ["Пишемо", "код."], step: "Верстка", days: "5–7 днів", color: "#5aa2ff" }, // DRAFT: days
+    { id: "cms", title: ["Підключаємо", "панель."], step: "Панель керування", days: "2–3 дні", color: "#22d3ee" }, // DRAFT: days
+    { id: "launch", title: ["Запускаємо", "сайт."], step: "Запуск", days: "1 день", color: "#34d399" }, // DRAFT: days
+  ],
+  replayNote: "Разом: від 2 тижнів", // DRAFT
+  design: { layers: ["Desktop", "Фото", "Заголовок", "Кнопка"], layersLabel: "Шари", props: "Властивості", fill: "Заливка", title: "Домашня кухня", button: "Замовити" },
+  code: { cmd: "npm run build", ok: "Ready · 0.9s", h1: "Домашня кухня", p: "Заморожені напівфабрикати", btn: "Замовити" },
+  cms: { name: "Назва", nameVal: "Вареники з картоплею", price: "Ціна", priceVal: "149 ₴", photo: "Фото", stock: "В наявності", publish: "Опублікувати", published: "Опубліковано", toast: "Зміни вже на сайті", live: "Наживо" },
+  launch: { url: "maina.com.ua", online: "Онлайн", checks: ["Домен і SSL", "Аналітика", "Навчання", "Підтримка"] },
+};
+
 export const FOOTER = {
   copy: "© 2026",
   privacy: "Політика конфіденційності",
@@ -350,10 +361,5 @@ export const PRIVACY = {
 /** Home page story: order shared by section headers, the ambient background and the bottom section indicator. */
 export const HOME_SECTIONS = [
   { id: "top", label: "Головна" },
-  { id: "work", label: WORK.label },
-  { id: "services", label: SERVICES.label },
-  { id: "process", label: PROCESS.label },
-  { id: "about", label: ABOUT.label },
-  { id: "faq", label: FAQ.label },
-  { id: "contact", label: CONTACT.label },
+  { id: "process", label: BUILD.label },
 ] as const;
