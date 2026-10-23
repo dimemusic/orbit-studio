@@ -69,7 +69,7 @@ About, the admin-panel demo, Team and Guarantees were removed on purpose: too mu
 | # | Section (file) | id | Content |
 |---|---|---|---|
 | 01 | Hero (`Hero.tsx` + `Logos.tsx`) | `top` | promise in mega type, lead, «Обговорити проєкт» + «Наші роботи», availability pill + 4 trust points |
-| 02 | Work (`Work.tsx`) | `work` | Maina featured + 3 cases; click opens the case window (native `<dialog>`: task, what we did, facts, «Хочу схожий», live link) |
+| 02 | Work (`Work.tsx`) | `work` | endless marquee of project names (click → its slide), then desktop: pinned horizontal showcase (vertical scroll slides projects in, parallax via `--o`, counter + progress); phones: swipe carousel with snap. Slides open the case window (native `<dialog>`) |
 | 03 | Services (`Pricing.tsx`) | `services` | 3 service cards with «Додати» toggles + live estimate bar; all three = «Під ключ» (`.card-pro`) with saving |
 | 04 | Process (`Process.tsx`) | `process` | 5 steps with icons + durations on a drawn progress line, total under it |
 | 05 | About (`About.tsx`) | `about` | 2 people (photo or initials) + 3 promises row |

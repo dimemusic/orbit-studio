@@ -639,3 +639,36 @@ html {
     transition: none;
   }
 }
+
+/* ---------- Work: marquee + pinned showcase ---------- */
+.marquee-track {
+  animation: marquee 48s linear infinite;
+}
+.group\/mq:hover .marquee-track {
+  animation-play-state: paused;
+}
+/* parallax inside a slide: --o = slide offset from screen centre (-1..1), written by Work on scroll */
+.case-slide .slide-text {
+  transform: translate3d(calc(var(--o, 0) * 70px), 0, 0);
+  opacity: calc(1 - min(1, max(0, max(var(--o, 0), calc(var(--o, 0) * -1)) - 0.25) * 1.6));
+}
+.case-slide .slide-media .device-stage {
+  transform: translate3d(calc(var(--o, 0) * -40px), 0, 0) scale(calc(1.04 - min(1, max(var(--o, 0), calc(var(--o, 0) * -1))) * 0.08));
+}
+@media (max-width: 47.99rem) {
+  .case-slide .slide-text,
+  .case-slide .slide-media .device-stage {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+  .case-slide .slide-text,
+  .case-slide .slide-media .device-stage {
+    transform: none;
+    opacity: 1;
+  }
+}
