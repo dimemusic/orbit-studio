@@ -75,8 +75,9 @@ const fly = (
   px = 14,
   extra = "",
 ): CSSProperties => ({
-  transform: `translate3d(${((1 - k) * dx).toFixed(1)}px, ${((1 - k) * dy).toFixed(1)}px, 0) ${extra}`,
-  filter: k < 1 ? `blur(${((1 - k) * px).toFixed(2)}px)` : undefined,
+  // settled elements get no transform / filter / will-change, so the browser rasterises them sharp at the final scale
+  transform: k < 1 ? `translate(${((1 - k) * dx).toFixed(1)}px, ${((1 - k) * dy).toFixed(1)}px) ${extra}` : extra || undefined,
+  filter: k < 0.999 ? `blur(${((1 - k) * px).toFixed(2)}px)` : undefined,
   opacity: Math.min(1, k * 1.6),
   willChange: k < 1 ? "transform, filter, opacity" : undefined,
 });
@@ -211,15 +212,17 @@ export function Build() {
             <div
               key={s.id}
               className="absolute inset-0"
-              style={{
-                transform: `translate3d(${((1 - enter) * 200 - exit * 220).toFixed(1)}px, 0, 0) scale(${(1 - (1 - enter) * 0.03 - exit * 0.03).toFixed(4)})`,
-                filter:
-                  enter < 0.995 || exit > 0
-                    ? `blur(${((1 - enter) * 12 + exit * 14).toFixed(1)}px)`
-                    : undefined,
-                opacity: Math.min(1, enter * 1.25) * (1 - exit),
-                willChange: "transform, filter, opacity",
-              }}
+              style={
+                // only while the whip runs: a permanent will-change / 3D transform freezes the raster and the stage turns soft when scaled up
+                enter < 0.999 || exit > 0
+                  ? {
+                      transform: `translate(${((1 - enter) * 200 - exit * 220).toFixed(1)}px, 0) scale(${(1 - (1 - enter) * 0.03 - exit * 0.03).toFixed(4)})`,
+                      filter: `blur(${((1 - enter) * 12 + exit * 14).toFixed(1)}px)`,
+                      opacity: Math.min(1, enter * 1.25) * (1 - exit),
+                      willChange: "transform, filter, opacity",
+                    }
+                  : undefined
+              }
             >
               {i === 0 && <DesignStage s={s0} />}
               {i === 1 && <CodeStage s={s0} />}
@@ -260,14 +263,15 @@ function Title({ t }: { t: number }) {
               <span
                 key={ci}
                 className="inline-block"
-                style={{
-                  transform: `translate3d(${(-out * 40).toFixed(1)}px, ${((1 - k) * 0.35).toFixed(3)}em, 0)`,
-                  filter:
-                    k < 1 || out > 0
-                      ? `blur(${((1 - k) * 12 + out * 14).toFixed(1)}px)`
-                      : undefined,
-                  opacity: Math.min(1, k * 1.5) * (1 - out),
-                }}
+                style={
+                  k < 0.999 || out > 0
+                    ? {
+                        transform: `translate(${(-out * 40).toFixed(1)}px, ${((1 - k) * 0.35).toFixed(3)}em)`,
+                        filter: `blur(${((1 - k) * 12 + out * 14).toFixed(1)}px)`,
+                        opacity: Math.min(1, k * 1.5) * (1 - out),
+                      }
+                    : undefined
+                }
               >
                 {ch}
               </span>
@@ -932,7 +936,7 @@ function Sel({ r, color, size = false, k = 1 }: { r: Rc; color: string; size?: b
 /** a teammate's cursor, Figma multiplayer style: coloured arrow + name tag; (x, y) is the tip */
 function Mate({ x, y, color, name, down = false, k = 1 }: { x: number; y: number; color: string; name: string; down?: boolean; k?: number }) {
   return (
-    <div className="pointer-events-none absolute z-30" style={{ left: x, top: y, opacity: k, willChange: "left, top" }}>
+    <div className="pointer-events-none absolute z-30" style={{ left: x, top: y, opacity: k }}>
       <svg
         width="24"
         height="24"
