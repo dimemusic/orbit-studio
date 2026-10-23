@@ -216,8 +216,9 @@ export const SERVICES = {
 
 export const PROCESS = {
   label: "Процес",
-  title: ["Пʼять кроків", "до запуску."],
-  lead: "Ви завжди знаєте, що відбувається і коли буде готово.",
+  title: ["Як народжується", "ваш сайт."],
+  lead: "Після брифу (1–2 дні) все відбувається у вас на очах. Гортайте.",
+  scroll: "Гортайте",
   total: "Разом: від 2 тижнів",
   steps: [
     // DRAFT: durations
@@ -227,6 +228,56 @@ export const PROCESS = {
     { n: "04", icon: "cms", title: "Панель керування", text: "Підключаємо CMS: тексти, ціни, фото й товари змінюєте самі.", days: "2–3 дні" },
     { n: "05", icon: "launch", title: "Запуск", text: "Домен, аналітика, навчання команди й підтримка після старту.", days: "1 день" },
   ] as { n: string; icon: IconKey; title: string; text: string; days: string }[],
+  /** labels inside the animated mock UIs (illustrative demo data, not real prices) */
+  demo: {
+    design: {
+      file: "maxart · Головна",
+      layers: ["Desktop", "Фото", "Заголовок", "Кнопка"],
+      layersLabel: "Шари",
+      title: "Сайти, які продають",
+      button: "Замовити",
+      props: "Властивості",
+      fill: "Заливка",
+      font: "Geologica · 44",
+      picker: "Колір кнопки",
+    },
+    code: {
+      file: "app/page.tsx",
+      url: "localhost:3000",
+      h1: "Домашня кухня",
+      p: "Заморожені напівфабрикати",
+      btn: "Замовити",
+      cmd: "npm run build",
+      ok1: "Compiled successfully",
+      ok2: "Ready on Vercel",
+    },
+    cms: {
+      win: "Панель керування · Sanity",
+      nav: ["Товари", "Категорії", "Сторінки", "Налаштування"],
+      crumb: "Товари / Новий товар",
+      name: "Назва",
+      nameVal: "Вареники з картоплею",
+      price: "Ціна",
+      priceVal: "149",
+      currency: "₴",
+      photo: "Фото",
+      upload: "Завантаження",
+      stock: "В наявності",
+      publish: "Опублікувати",
+      published: "Опубліковано",
+      toast: "Зміни вже на сайті",
+      live: "Наживо",
+      preview: "Сайт",
+    },
+    launch: {
+      pack: "MaxArt Digital → клієнту",
+      url: "https://ваш-сайт.ua",
+      online: "Онлайн",
+      checks: ["Домен і SSL", "Аналітика", "Навчання команди", "Підтримка"],
+      done: "Сайт запущено",
+      client: "Клієнт",
+    },
+  },
 };
 
 export const ABOUT = {

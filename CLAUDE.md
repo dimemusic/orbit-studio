@@ -71,7 +71,7 @@ About, the admin-panel demo, Team and Guarantees were removed on purpose: too mu
 | 01 | Hero (`Hero.tsx` + `Logos.tsx`) | `top` | promise in mega type, lead, «Обговорити проєкт» + «Наші роботи», availability pill + 4 trust points |
 | 02 | Work (`Work.tsx`) | `work` | endless marquee of project names (click → its slide), then desktop: pinned horizontal showcase (vertical scroll slides projects in, parallax via `--o`, counter + progress); phones: swipe carousel with snap. Slides open the case window (native `<dialog>`) |
 | 03 | Services (`Pricing.tsx`) | `services` | 3 service cards with «Додати» toggles + live estimate bar; all three = «Під ключ» (`.card-pro`) with saving |
-| 04 | Process (`Process.tsx`) | `process` | 5 steps with icons + durations on a drawn progress line, total under it |
+| 04 | Process (`Process.tsx` + `components/process/*Scene.tsx`) | `process` | scroll-driven film: section pins, scroll plays 4 full-screen mock scenes on a fixed 1000×640 stage scaled to fit: Design (Figma-like: frame, image, typed title, colour picked), Code (typed live + preview builds + build in terminal), CMS (product filled, photo uploads, publish → phone preview updates), Launch (site assembles, packed in a box, shipped to the client's laptop, goes online). Scenes take `t` 0..1; reduced motion = all scenes finished, no pin |
 | 05 | About (`About.tsx`) | `about` | 2 people (photo or initials) + 3 promises row |
 | 06 | FAQ (`Faq.tsx`) | `faq` | 6 questions, accordion |
 | 07 | Contact (`FinalCta.tsx`) | `contact` | Telegram / email panel + form (name, contact, message, chips) → `POST /api/contact` → email via Resend (`RESEND_API_KEY`, `CONTACT_TO`, see `.env.example`) |
