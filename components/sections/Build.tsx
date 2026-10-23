@@ -1824,14 +1824,14 @@ function LaunchStage({ s }: { s: number }) {
                 </div>
               )}
               {i >= 2 && (
-                <div className="p-2.5">
-                  <div className="relative h-16 overflow-hidden rounded-lg">
+                <div className="flex h-full flex-col p-3">
+                  <div className="relative h-[50px] shrink-0 overflow-hidden rounded-lg">
                     <Visual v={i - 2} />
                   </div>
-                  <p className="mt-2 truncate text-[12px] font-semibold text-[#1a1714]">
+                  <p className="mt-2.5 truncate text-[12px] font-semibold leading-tight text-[#1a1714]">
                     {BUILD.design.plans[i - 2].name}
                   </p>
-                  <p className="text-[11px] text-[#7a7368]">
+                  <p className="mt-0.5 text-[11px] leading-tight text-[#7a7368]">
                     {BUILD.design.plans[i - 2].price}
                   </p>
                 </div>
