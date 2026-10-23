@@ -9,6 +9,12 @@ export const typed = (s: string, k: number) => s.slice(0, Math.round(s.length * 
 /** ease-out cubic */
 export const ease = (k: number) => 1 - Math.pow(1 - k, 3);
 
+/** ease-in-out (smootherstep): starts and ends at rest, no jolt */
+export const smooth = (k: number) => {
+  const x = Math.min(1, Math.max(0, k));
+  return x * x * x * (x * (x * 6 - 15) + 10);
+};
+
 /** position on a timed path: points are [t, x, y], linear between them with ease */
 export function along(t: number, pts: [number, number, number][]) {
   if (t <= pts[0][0]) return { x: pts[0][1], y: pts[0][2] };
@@ -16,7 +22,7 @@ export function along(t: number, pts: [number, number, number][]) {
     const [t1, x1, y1] = pts[i];
     const [t0, x0, y0] = pts[i - 1];
     if (t <= t1) {
-      const k = ease((t - t0) / Math.max(1e-6, t1 - t0));
+      const k = smooth((t - t0) / Math.max(1e-6, t1 - t0));
       return { x: x0 + (x1 - x0) * k, y: y0 + (y1 - y0) * k };
     }
   }

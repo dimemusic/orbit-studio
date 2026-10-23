@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { BUILD } from "@/lib/content";
 import { homeNum } from "../home";
 import { Eyebrow } from "../ui/Bits";
-import { along, Caret, ease, Pointer, seg, typed } from "../process/util";
+import { along, Caret, ease, Pointer, seg, smooth, typed } from "../process/util";
 
 /**
  * «Як ми працюємо»: a ~12s film that plays once by itself when the section comes into view.
@@ -14,10 +14,17 @@ import { along, Caret, ease, Pointer, seg, typed } from "../process/util";
  * stages change with a blurred whip; the big centred H1 changes per stage, letter by letter.
  * The mock UI lives on a fixed 1200×620 stage scaled to fit. Reduced motion: final frame at once.
  */
-const STAGE_LEN = 3;
-const TOTAL = STAGE_LEN * BUILD.stages.length;
-/** real playing time of the whole film (the timeline above is in "beats" and is stretched to this) */
-const PLAY_SECONDS = 14;
+/** each stage's inner timeline is 3 beats; this is how many real seconds each one gets.
+ *  Design (the craft) and the panel (the client's benefit) get more time, code and launch read at a glance. */
+const BEATS = 3;
+const STAGE_SEC = [4.6, 2.8, 3.6, 3.0];
+const STAGE_START = STAGE_SEC.map((_, i) => STAGE_SEC.slice(0, i).reduce((a, b) => a + b, 0));
+const TOTAL = STAGE_SEC.reduce((a, b) => a + b, 0);
+const stageAt = (t: number) => {
+  let i = 0;
+  while (i < STAGE_SEC.length - 1 && t >= STAGE_START[i + 1]) i++;
+  return i;
+};
 const SW = 1200;
 const SH = 620;
 
@@ -44,7 +51,7 @@ export function Build() {
     let start = 0;
     const tick = (now: number) => {
       if (!start) start = now;
-      const v = Math.min(TOTAL, ((now - start) / 1000 / PLAY_SECONDS) * TOTAL);
+      const v = Math.min(TOTAL, (now - start) / 1000);
       setT(v);
       if (v < TOTAL) raf = requestAnimationFrame(tick);
     };
@@ -63,7 +70,7 @@ export function Build() {
     };
   }, []);
 
-  const cur = Math.min(BUILD.stages.length - 1, Math.floor(t / STAGE_LEN));
+  const cur = stageAt(t);
   const st = BUILD.stages[cur];
   const gridH = ease(seg(t, 0, 0.7));
   const gridV = ease(seg(t, 0.15, 0.85));
@@ -107,7 +114,7 @@ export function Build() {
               <span className="block h-[3px] w-[clamp(40px,5vw,72px)] overflow-hidden rounded-full bg-white/10">
                 <span
                   className="block h-full origin-left rounded-full"
-                  style={{ background: s.color, transform: `scaleX(${seg(t, i * STAGE_LEN, (i + 1) * STAGE_LEN)})` }}
+                  style={{ background: s.color, transform: `scaleX(${seg(t, STAGE_START[i], STAGE_START[i] + STAGE_SEC[i])})` }}
                 />
               </span>
             </span>
@@ -121,12 +128,13 @@ export function Build() {
 
       <StageBox>
         {BUILD.stages.map((s, i) => {
-          const start = i * STAGE_LEN;
-          if (t < start - 0.15 || (i < BUILD.stages.length - 1 && t > start + STAGE_LEN + 0.05)) return null;
-          const enter = i === 0 ? 1 : ease(seg(t, start - 0.1, start + 0.4));
-          const exitK = i === BUILD.stages.length - 1 ? 0 : seg(t, start + STAGE_LEN - 0.35, start + STAGE_LEN);
+          const start = STAGE_START[i];
+          const len = STAGE_SEC[i];
+          if (t < start - 0.15 || (i < BUILD.stages.length - 1 && t > start + len + 0.05)) return null;
+          const enter = i === 0 ? 1 : smooth(seg(t, start - 0.12, start + 0.45));
+          const exitK = i === BUILD.stages.length - 1 ? 0 : seg(t, start + len - 0.4, start + len);
           const exit = exitK * exitK;
-          const s0 = t - start;
+          const s0 = (Math.max(0, t - start) / len) * BEATS;
           return (
             <div
               key={s.id}
@@ -151,10 +159,11 @@ export function Build() {
 
 /** stage title, letter by letter with blur in and blur out */
 function Title({ t }: { t: number }) {
-  const i = Math.min(BUILD.stages.length - 1, Math.floor(t / STAGE_LEN));
+  const i = stageAt(t);
   const st = BUILD.stages[i];
-  const start = i * STAGE_LEN + (i === 0 ? 0.15 : 0.02);
-  const out = i === BUILD.stages.length - 1 ? 0 : ease(seg(t, i * STAGE_LEN + STAGE_LEN - 0.3, i * STAGE_LEN + STAGE_LEN));
+  const end = STAGE_START[i] + STAGE_SEC[i];
+  const start = STAGE_START[i] + (i === 0 ? 0.15 : 0.04);
+  const out = i === BUILD.stages.length - 1 ? 0 : smooth(seg(t, end - 0.35, end));
   const words = st.title;
   let n = 0;
   return (
@@ -162,7 +171,7 @@ function Title({ t }: { t: number }) {
       {words.map((w, wi) => (
         <span key={wi} className="inline-block whitespace-nowrap" style={{ color: wi === words.length - 1 ? st.color : undefined }}>
           {Array.from(w).map((ch, ci) => {
-            const k = ease(seg(t, start + n * 0.028, start + 0.32 + n * 0.028));
+            const k = smooth(seg(t, start + n * 0.03, start + 0.42 + n * 0.03));
             n++;
             return (
               <span
@@ -210,14 +219,27 @@ function StageBox({ children }: { children: ReactNode }) {
   );
 }
 
-/** pointer that blurs with its own speed */
-function BlurPointer({ s, path, down }: { s: number; path: [number, number, number][]; down?: boolean }) {
-  const p = along(s, path);
-  const q = along(Math.max(0, s - 0.035), path);
-  const v = Math.hypot(p.x - q.x, p.y - q.y);
+/** pointer: follows its path (or a pinned point, e.g. the corner being dragged) through a soft spring,
+ *  so it never jumps; it blurs with its real on-screen speed */
+function BlurPointer({ s, path, down, pin }: { s: number; path: [number, number, number][]; down?: boolean; pin?: { x: number; y: number } | null }) {
+  const target = pin ?? along(s, path);
+  const st = useRef<{ x: number; y: number; at: number; v: number } | null>(null);
+  const now = typeof performance !== "undefined" ? performance.now() : 0;
+  if (!st.current) st.current = { x: target.x, y: target.y, at: now, v: 0 };
+  const cur = st.current;
+  const dt = Math.min(0.1, Math.max(0, (now - cur.at) / 1000));
+  const k = pin ? 1 - Math.exp(-dt / 0.03) : 1 - Math.exp(-dt / 0.07);
+  const nx = cur.x + (target.x - cur.x) * k;
+  const ny = cur.y + (target.y - cur.y) * k;
+  const v = dt > 0 ? Math.hypot(nx - cur.x, ny - cur.y) / dt : cur.v; // px per second
+  cur.x = nx;
+  cur.y = ny;
+  cur.at = now;
+  cur.v = cur.v + (v - cur.v) * 0.35;
+  const blur = Math.min(4, Math.max(0, (cur.v - 250) / 450));
   return (
-    <div className="absolute inset-0" style={{ filter: v > 2 ? `blur(${Math.min(5, v * 0.18).toFixed(1)}px)` : undefined }}>
-      <Pointer x={p.x} y={p.y} down={down} />
+    <div className="absolute inset-0" style={{ filter: blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : undefined }}>
+      <Pointer x={cur.x} y={cur.y} down={down} />
     </div>
   );
 }
@@ -237,36 +259,50 @@ const SWATCHES = ["#e8492a", "#a78bfa", "#22d3ee", "#3d5a3a"];
 const TOOLS = [Cursor, FrameCorners, Square, TextT, PenNib, Hand];
 
 function DesignStage({ s }: { s: number }) {
-  const tb = ease(seg(s, 0.15, 0.55));
-  const ly = ease(seg(s, 0.3, 0.7));
-  const pr = ease(seg(s, 0.25, 0.65));
-  const frame = ease(seg(s, 0.55, 1.0));
-  const img = ease(seg(s, 1.0, 1.35));
-  const title = seg(s, 1.4, 1.95);
-  const lines = ease(seg(s, 1.95, 2.1));
-  const btn = ease(seg(s, 2.05, 2.25));
-  const pick = seg(s, 2.3, 2.8);
+  // panels arrive quickly, the drawing itself takes its time
+  const tb = smooth(seg(s, 0.1, 0.45));
+  const ly = smooth(seg(s, 0.2, 0.55));
+  const pr = smooth(seg(s, 0.15, 0.5));
+  const frame = smooth(seg(s, 0.55, 1.15));
+  const img = smooth(seg(s, 1.35, 1.7));
+  const title = seg(s, 1.85, 2.3);
+  const lines = smooth(seg(s, 2.3, 2.42));
+  const btn = smooth(seg(s, 2.42, 2.6));
+  const pick = seg(s, 2.66, 2.92);
   const hover = Math.min(3, Math.floor(pick * 4));
-  const btnColor = s >= 2.8 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
-  const tool = s < 1.0 ? 1 : s < 1.38 ? 2 : s < 2.0 ? 3 : 0;
-  const sel = s < 1.0 ? 0 : s < 1.38 ? 1 : s < 2.0 ? 2 : 3;
+  const btnColor = s >= 2.92 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
+  const tool = s < 1.2 ? 1 : s < 1.75 ? 2 : s < 2.36 ? 3 : 0;
+  const sel = s < 1.2 ? 0 : s < 1.75 ? 1 : s < 2.36 ? 2 : 3;
   const at = (r: { x: number; y: number; w: number; h: number }, kw = 1) => ({ x: AB.x + r.x, y: AB.y + r.y, w: r.w * kw, h: r.h });
-  const selBox = [{ x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame }, at(R.img, 0.4 + img * 0.6), at(R.title), at(R.btn, 0.6 + btn * 0.4)][sel];
+  const selBox = [{ x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame }, at(R.img, 0.4 + smooth(seg(s, 1.35, 1.7)) * 0.6), at(R.title), at(R.btn, 0.6 + smooth(seg(s, 2.42, 2.6)) * 0.4)][sel];
+  const imgW = 0.4 + img * 0.6;
+  const btnW = 0.6 + btn * 0.4;
+  // between actions the pointer glides (ease in-out); while dragging it is pinned to the corner being drawn
   const path: [number, number, number][] = [
-    [0, 700, 600],
-    [0.55, AB.x + 2, AB.y + 2],
-    [1.0, AB.x + AB.w, AB.y + AB.h],
-    [1.05, AB.x + R.img.x + 4, AB.y + R.img.y + 4],
-    [1.35, AB.x + R.img.x + R.img.w, AB.y + R.img.y + R.img.h],
-    [1.4, AB.x + R.title.x + 4, AB.y + R.title.y + 30],
-    [1.95, AB.x + R.title.x + 380, AB.y + R.title.y + 30],
-    [2.05, AB.x + R.btn.x + 4, AB.y + R.btn.y + 4],
-    [2.25, AB.x + R.btn.x + R.btn.w, AB.y + R.btn.y + R.btn.h],
-    [2.3, 942, 418],
-    [2.8, 942 + 3 * 48, 418],
-    [3, AB.x + R.btn.x + 110, AB.y + R.btn.y + 26],
+    [0, 640, 600],
+    [0.5, AB.x + 2, AB.y + 2],
+    [1.15, AB.x + AB.w, AB.y + AB.h],
+    [1.35, AB.x + R.img.x + 2, AB.y + R.img.y + 2],
+    [1.7, AB.x + R.img.x + R.img.w, AB.y + R.img.y + R.img.h],
+    [1.85, AB.x + R.title.x + 6, AB.y + R.title.y + 28],
+    [2.3, AB.x + R.title.x + 60, AB.y + R.title.y + 70],
+    [2.42, AB.x + R.btn.x + 2, AB.y + R.btn.y + 2],
+    [2.6, AB.x + R.btn.x + R.btn.w, AB.y + R.btn.y + R.btn.h],
+    [2.66, 940, 418],
+    [2.92, 940 + 3 * 48, 418],
+    [3, 940 + 3 * 48, 418],
   ];
-  const down = (s > 0.55 && s < 1.0) || (s > 1.05 && s < 1.35) || (s > 2.05 && s < 2.25) || (s > 2.75 && s < 2.85);
+  const pin =
+    s > 0.55 && s < 1.15
+      ? { x: AB.x + AB.w * frame, y: AB.y + AB.h * frame }
+      : s > 1.35 && s < 1.7
+        ? { x: AB.x + R.img.x + R.img.w * imgW, y: AB.y + R.img.y + R.img.h }
+        : s > 2.42 && s < 2.6
+          ? { x: AB.x + R.btn.x + R.btn.w * btnW, y: AB.y + R.btn.y + R.btn.h }
+          : s > 2.66 && s < 2.92
+            ? { x: 940 + Math.min(3, pick * 4) * 48, y: 418 }
+            : null;
+  const down = (s > 0.55 && s < 1.15) || (s > 1.35 && s < 1.7) || (s > 2.42 && s < 2.6) || (s > 2.88 && s < 2.96);
 
   return (
     <>
@@ -283,7 +319,7 @@ function DesignStage({ s }: { s: number }) {
         <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">{D.layersLabel}</p>
         <ul className="mt-3 flex flex-col gap-1">
           {D.layers.map((l, i) => {
-            const on = [s > 0.55, s > 1.0, s > 1.4, s > 2.05][i];
+            const on = [s > 0.55, s > 1.35, s > 1.85, s > 2.42][i];
             return (
               <li
                 key={l}
@@ -309,14 +345,14 @@ function DesignStage({ s }: { s: number }) {
           <span className="size-4 rounded" style={{ background: sel === 3 ? btnColor : sel === 2 ? "#1a1714" : "#efe9de" }} />
           {sel === 3 ? btnColor : sel === 2 ? "#1a1714" : "#efe9de"}
         </div>
-        <div className="mt-4" style={fly(ease(seg(s, 2.2, 2.4)), 0, 14, 8)}>
+        <div className="mt-4" style={fly(smooth(seg(s, 2.5, 2.68)), 0, 14, 8)}>
           <div className="h-20 rounded-lg" style={{ background: `linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,${btnColor})` }} />
           <div className="mt-3 flex gap-3">
             {SWATCHES.map((c, i) => (
               <span
                 key={c}
                 className="size-9 rounded-full"
-                style={{ background: c, boxShadow: pick > 0 && i === (s >= 2.8 ? 3 : hover) ? `0 0 0 2px #0a0d15, 0 0 0 4px ${c}` : "none" }}
+                style={{ background: c, boxShadow: pick > 0 && i === (s >= 2.92 ? 3 : hover) ? `0 0 0 2px #0a0d15, 0 0 0 4px ${c}` : "none" }}
               />
             ))}
           </div>
@@ -337,7 +373,7 @@ function DesignStage({ s }: { s: number }) {
         </div>
         <p className="absolute flex items-center whitespace-nowrap text-[44px] font-semibold leading-none tracking-[-0.045em]" style={box(R.title.x, R.title.y, R.title.w, R.title.h)}>
           {typed(D.title, title)}
-          <Caret on={s > 1.4 && s < 2.0} color="#1a1714" />
+          <Caret on={s > 1.85 && s < 2.36} color="#1a1714" />
         </p>
         <div className="absolute flex flex-col gap-2" style={{ ...box(R.title.x, R.title.y + R.title.h + 14), opacity: lines }}>
           <i className="h-2.5 w-80 rounded-full bg-black/20" />
@@ -363,7 +399,7 @@ function DesignStage({ s }: { s: number }) {
           </span>
         </div>
       )}
-      <BlurPointer s={s} path={path} down={down} />
+      <BlurPointer s={s} path={path} down={down} pin={pin} />
     </>
   );
 }
@@ -491,16 +527,16 @@ function CmsStage({ s }: { s: number }) {
   const card = (k: number) => fly(ease(seg(s, 0.1 + k * 0.1, 0.5 + k * 0.1)), -260, 0, 16);
   const path: [number, number, number][] = [
     [0, 620, 560],
-    [0.4, 460, 82],
-    [1.1, 460, 82],
-    [1.15, 300, 192],
-    [1.45, 300, 192],
+    [0.38, 460, 82],
+    [1.05, 460, 82],
+    [1.14, 300, 192],
+    [1.42, 300, 192],
     [1.5, 380, 300],
-    [1.95, 380, 300],
-    [2.05, 512, 426],
-    [2.15, 512, 426],
-    [2.25, 210, 532],
-    [3, 260, 560],
+    [1.92, 380, 300],
+    [2.03, 512, 426],
+    [2.1, 512, 426],
+    [2.2, 210, 532],
+    [3, 230, 548],
   ];
   const down = (s > 0.4 && s < 0.46) || (s > 1.13 && s < 1.18) || (s > 1.48 && s < 1.53) || (s > 2.03 && s < 2.08) || pressed;
   const input = "mt-2 flex h-12 items-center rounded-xl border px-4 text-[17px] text-fg";
