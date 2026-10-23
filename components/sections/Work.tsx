@@ -1,21 +1,37 @@
 "use client";
 
-import { ArrowUpRight, Plus } from "@phosphor-icons/react/dist/ssr";
+import { ArrowUpRight, CheckCircle, X } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
-import { CTA, WORK, type Case } from "@/lib/content";
-import { CASE_HOVER } from "../home";
+import { useEffect, useRef, useState } from "react";
+import { WORK, type Case } from "@/lib/content";
 import { G, Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { HomeSection } from "../ui/HomeSection";
 
-// anchors for the case nodes in the particle network (IvyScene snaps each one to the nearest ivy particle);
-// they sit in the side margins, alternating left / right, at these heights of the section
-const NODE_AT = ["22%", "38%", "56%", "72%"];
-
-const hover = (i: number | null) => window.dispatchEvent(new CustomEvent(CASE_HOVER, { detail: i }));
-
-/** 02: the most important section. Four cases + a closing tile, all in the same card system. */
+/** Work: Maina featured on top, three cases below. A click opens the case window (native <dialog>). */
 export function Work() {
+  const [open, setOpen] = useState<number | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const opener = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    const d = dialog.current;
+    if (!d) return;
+    if (open !== null && !d.open) d.showModal();
+    if (open === null && d.open) d.close();
+  }, [open]);
+
+  const show = (i: number, el: HTMLButtonElement) => {
+    opener.current = el;
+    setOpen(i);
+  };
+  const hide = () => {
+    setOpen(null);
+    opener.current?.focus();
+  };
+
+  const c = open !== null ? WORK.cases[open] : null;
+
   return (
     <HomeSection
       id="work"
@@ -23,157 +39,155 @@ export function Work() {
       color="green"
       title={
         <>
-          <span className="text-[0.88em]">
-            {WORK.title[0]} <G tone="aurora">{WORK.title[1]}</G>
-          </span>
+          {WORK.title[0]} <G tone="aurora">{WORK.title[1]}</G>
         </>
       }
       lead={WORK.lead}
     >
-      {NODE_AT.map((top, i) => (
-        <span
-          key={top}
-          aria-hidden="true"
-          data-case-node={i}
-          className={`pointer-events-none absolute hidden size-px xl:block ${
-            i % 2 ? "right-[calc((100%-1120px)/4)]" : "left-[calc((100%-1120px)/4)]"
-          }`}
-          style={{ top }}
-        />
-      ))}
-
-      <ul data-work-grid className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
-        {WORK.cases.map((c, i) => (
-          <CaseCard key={c.id} c={c} i={i} />
+      <ul className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
+        {WORK.cases.map((item, i) => (
+          <CaseCard key={item.id} c={item} i={i} onOpen={show} />
         ))}
-        <li data-reveal style={{ ["--d" as string]: "200ms" }} className="md:col-span-3">
-          <div className="card flex flex-col items-center gap-4 px-6 py-5 text-center sm:flex-row sm:justify-between sm:px-8 sm:text-left">
-            <div className="flex items-center gap-5">
-              <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full border border-dashed border-white/25 text-fg/80">
-                <Plus size={22} weight="light" />
-              </span>
-              <div>
-                <h3 className="text-title font-semibold">{WORK.closing.title}</h3>
-                <p className="mt-1 text-[15px] text-body">{WORK.closing.text}</p>
-              </div>
-            </div>
-            <Button href="#contact" className="shrink-0">
-              {CTA.primary}
-            </Button>
-          </div>
-        </li>
       </ul>
 
-      {/* hint only where the case nodes exist: fine pointer + wide margins */}
-      <p className="legible mt-8 hidden text-[14px] text-body xl:[@media(hover:hover)_and_(pointer:fine)]:block">{WORK.nodeHint}</p>
+      <dialog
+        ref={dialog}
+        className="case-dialog"
+        aria-labelledby="case-title"
+        onClose={() => open !== null && hide()}
+        onClick={(e) => e.target === e.currentTarget && hide()}
+      >
+        {c && (
+          <div className="case-panel card overflow-hidden text-left">
+            <div className="relative aspect-[16/7] max-h-[38vh] w-full border-b border-white/[0.07] bg-bg">
+              <Image src={c.media} alt={`${c.name}: превʼю сайту`} fill sizes="960px" className="object-cover object-top" />
+              <button
+                type="button"
+                onClick={hide}
+                aria-label={WORK.close}
+                className="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-[rgb(6_8_14/0.75)] text-fg transition-colors hover:bg-[rgb(6_8_14/0.95)]"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+            <div className="grid gap-8 p-6 sm:p-9 md:grid-cols-[1.3fr_1fr]">
+              <div>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <h3 id="case-title" className="text-headline font-semibold" translate="no">
+                    {c.name}
+                  </h3>
+                  <span className="text-[13px] text-grey">{c.kind}</span>
+                </div>
+                <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.12em] text-grey">{WORK.taskLabel}</p>
+                <p className="mt-2 text-[16px] leading-relaxed text-body">{c.task}</p>
+                <ul aria-label="Теги" className="mt-5 flex flex-wrap gap-1.5">
+                  {c.tags.map((t, k) => (
+                    <li key={t}>
+                      <Tag color={k === 0 ? c.accent : undefined}>{t}</Tag>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex flex-col gap-6">
+                <div>
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-grey">{WORK.doneLabel}</p>
+                  <ul className="mt-3 flex flex-col gap-2.5">
+                    {c.done.map((d) => (
+                      <li key={d} className="flex items-center gap-2.5 text-[15px] text-body">
+                        <CheckCircle size={18} weight="fill" aria-hidden="true" className="shrink-0" style={{ color: c.color }} />
+                        {d}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <dl className="grid grid-cols-2 gap-3">
+                  {c.facts.map((f) => (
+                    <div key={f.label} className="rounded-xl border border-white/[0.07] px-4 py-3">
+                      <dt className="text-[12px] text-grey">{f.label}</dt>
+                      <dd className="mt-0.5 text-[17px] font-semibold tracking-[-0.02em] text-fg">{f.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-auto flex flex-wrap items-center gap-4">
+                  <Button href="#contact" onClick={() => setOpen(null)}>
+                    {WORK.cta}
+                  </Button>
+                  {c.url && (
+                    <a
+                      href={c.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 rounded-full py-1 text-[15px] font-medium text-blue transition-colors hover:text-fg"
+                    >
+                      {WORK.visit} <ArrowUpRight size={15} aria-hidden="true" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </dialog>
     </HomeSection>
   );
 }
 
-function CaseCard({ c, i }: { c: Case; i: number }) {
+function CaseCard({ c, i, onOpen }: { c: Case; i: number; onOpen: (i: number, el: HTMLButtonElement) => void }) {
   const featured = i === 0;
   return (
     <li data-reveal style={{ ["--d" as string]: `${i * 80}ms` }} className={`min-w-0 ${featured ? "md:col-span-3" : ""}`}>
-      <article
-        data-case-card={i}
-        onPointerEnter={() => hover(i)}
-        onPointerLeave={() => hover(null)}
-        onFocus={() => hover(i)}
-        onBlur={() => hover(null)}
+      <button
+        type="button"
+        onClick={(e) => onOpen(i, e.currentTarget)}
+        aria-haspopup="dialog"
+        aria-label={`${WORK.open}: ${c.name}`}
         style={{ ["--c" as string]: c.color }}
-        className={`card group flex h-full flex-col overflow-hidden text-left transition-[border-color] duration-500 data-[hot]:border-[color:color-mix(in_srgb,var(--c)_55%,transparent)] ${
+        className={`card group flex h-full w-full flex-col overflow-hidden text-left transition-[border-color] duration-500 hover:border-[color:color-mix(in_srgb,var(--c)_50%,transparent)] ${
           featured ? "md:grid md:grid-cols-[1.4fr_1fr]" : ""
         }`}
       >
-        <CasePreview c={c} featured={featured} />
-        <div className={`flex flex-1 flex-col ${featured ? "p-6 sm:p-8" : "p-5"}`}>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
-            <h3 className="text-[22px] font-semibold leading-tight tracking-[-0.02em]" translate="no">
-              {c.name}
-            </h3>
-            <span className="text-[12px] text-grey">{c.kind}</span>
-          </div>
-          <p className={`mt-2 text-[14px] leading-snug text-body ${featured ? "" : "line-clamp-2"}`}>{c.text}</p>
-          <ul aria-label="Теги" className="mt-3 flex flex-wrap gap-1.5">
-            {c.tags.map((t, k) => (
-              <li key={t}>
-                <Tag color={k === 0 ? c.accent : undefined}>{t}</Tag>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-auto pt-4" />
-          <div className="flex items-center justify-between gap-4 border-t border-white/[0.07] pt-3">
-            {c.url ? (
-              <a
-                href={c.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 rounded-full py-1 text-[14px] font-medium text-blue transition-colors hover:text-fg"
-              >
-                Відкрити сайт <ArrowUpRight size={14} aria-hidden="true" />
-              </a>
-            ) : (
-              <a
-                href="#contact"
-                aria-label={`${WORK.cta}: ${c.name}`}
-                className="group/l inline-flex items-center gap-1 rounded-full py-1 text-[14px] font-medium text-blue transition-colors hover:text-fg"
-              >
-                {WORK.cta}
-                <span aria-hidden="true" className="transition-transform duration-300 group-hover/l:translate-x-0.5">
-                  →
-                </span>
-              </a>
-            )}
-          </div>
-        </div>
-      </article>
-    </li>
-  );
-}
-
-/** Real screenshot from public/cases when there is one; otherwise a placeholder browser window in the case colour. */
-function CasePreview({ c, featured }: { c: Case; featured: boolean }) {
-  return (
-    <div
-      className={`relative overflow-hidden border-white/[0.07] [background:radial-gradient(80%_90%_at_50%_100%,color-mix(in_srgb,var(--c)_22%,transparent),transparent_70%)] ${
-        featured ? "aspect-[16/7] border-b md:border-b-0 md:border-r" : "aspect-[16/10] border-b"
-      }`}
-    >
-      {c.media ? (
-        <Image
-          src={c.media}
-          alt={`${c.name}: превʼю сайту`}
-          fill
-          sizes={featured ? "(min-width: 768px) 653px, 100vw" : "(min-width: 768px) 370px, 100vw"}
-          className="object-cover object-top transition-transform duration-700 ease-[var(--ease)] group-hover:scale-[1.04]"
-        />
-      ) : (
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-[8%] bottom-0 top-[14%] translate-y-3 rounded-t-xl border border-b-0 border-white/10 bg-[rgb(6_8_14/0.7)] transition-transform duration-700 ease-[var(--ease)] group-hover:translate-y-0 motion-reduce:transition-none"
+        <span
+          className={`relative block overflow-hidden border-white/[0.07] ${
+            featured ? "aspect-[16/8] border-b md:aspect-auto md:min-h-[320px] md:border-b-0 md:border-r" : "aspect-[16/10] border-b"
+          }`}
         >
-          <div className="flex h-8 items-center gap-1.5 border-b border-white/[0.07] px-3">
-            <i className="size-2 rounded-full bg-white/15" />
-            <i className="size-2 rounded-full bg-white/15" />
-            <i className="size-2 rounded-full bg-white/15" />
-          </div>
-          <div className="flex h-[calc(100%-2rem)] flex-col items-center justify-center gap-3 px-6 text-center">
-            <span
-              translate="no"
-              className="text-[clamp(24px,3vw,40px)] font-semibold leading-none tracking-[-0.045em] text-fg transition-transform duration-700 ease-[var(--ease)] group-hover:scale-[1.04]"
-            >
+          <Image
+            src={c.media}
+            alt=""
+            fill
+            sizes={featured ? "(min-width: 768px) 653px, 100vw" : "(min-width: 768px) 370px, 100vw"}
+            className="object-cover object-top transition-transform duration-700 ease-[var(--ease)] group-hover:scale-[1.04]"
+          />
+          <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-[rgb(6_8_14/0.75)] px-3 py-1.5 text-[12px] font-semibold leading-none text-fg/90">
+            <span aria-hidden="true" className="size-1.5 rounded-full" style={{ background: c.color }} />
+            {c.status}
+          </span>
+        </span>
+        <span className={`flex flex-1 flex-col ${featured ? "p-6 sm:p-8" : "p-5"}`}>
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+            <span className="text-[22px] font-semibold leading-tight tracking-[-0.02em]" translate="no">
               {c.name}
             </span>
-            <span className="h-1.5 w-1/3 rounded-full bg-white/[0.08]" />
-            <span className="h-1.5 w-1/4 rounded-full bg-white/[0.06]" />
-            <span className="mt-1 h-6 w-20 rounded-full" style={{ background: "color-mix(in srgb, var(--c) 30%, transparent)" }} />
-          </div>
-        </div>
-      )}
-      <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-[rgb(6_8_14/0.7)] px-3 py-1.5 text-[12px] font-semibold leading-none text-fg/85">
-        <span aria-hidden="true" className="size-1.5 rounded-full" style={{ background: c.color }} />
-        {c.status}
-      </span>
-    </div>
+            <span className="text-[12px] text-grey">{c.kind}</span>
+          </span>
+          <span className={`mt-2 block text-[14px] leading-snug text-body ${featured ? "" : "line-clamp-2"}`}>{c.text}</span>
+          <span className="mt-auto flex items-center justify-between gap-4 pt-5">
+            <span className="flex flex-wrap gap-1.5">
+              {c.tags.slice(0, featured ? 3 : 2).map((t, k) => (
+                <Tag key={t} color={k === 0 ? c.accent : undefined}>
+                  {t}
+                </Tag>
+              ))}
+            </span>
+            <span
+              aria-hidden="true"
+              className="grid size-10 shrink-0 place-items-center rounded-full border border-white/15 text-fg transition-colors duration-300 group-hover:border-transparent group-hover:bg-[color:var(--c)] group-hover:text-bg"
+            >
+              <ArrowUpRight size={16} />
+            </span>
+          </span>
+        </span>
+      </button>
+    </li>
   );
 }

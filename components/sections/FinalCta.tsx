@@ -6,7 +6,6 @@ import { BRAND, CONTACT } from "@/lib/content";
 import { G } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { HomeSection } from "../ui/HomeSection";
-import { useReducedMotion } from "../ui/hooks";
 
 type Field = "name" | "contact" | "needs";
 
@@ -63,9 +62,10 @@ export function FinalCta() {
 
 function ContactForm() {
   const uid = useId();
-  const reduced = useReducedMotion();
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [message, setMessage] = useState("");
+  const [failed, setFailed] = useState(false);
   const [needs, setNeeds] = useState<Set<string>>(() => new Set([CONTACT.chips[0]]));
   // an error is visible only after the field was left (blur) or after a submit attempt
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
@@ -74,9 +74,7 @@ function ContactForm() {
   const [done, setDone] = useState(false);
   const refs = { name: useRef<HTMLInputElement>(null), contact: useRef<HTMLInputElement>(null), needs: useRef<HTMLInputElement>(null) };
   const doneRef = useRef<HTMLHeadingElement>(null);
-  const timer = useRef<number>(0);
 
-  useEffect(() => () => window.clearTimeout(timer.current), []);
   useEffect(() => {
     if (done) doneRef.current?.focus({ preventScroll: true });
   }, [done]);
@@ -102,19 +100,26 @@ function ContactForm() {
       refs[first].current?.focus();
       return;
     }
-    // TODO: send to a backend (Telegram bot / email) once there is one
-    const finish = () => {
-      setBusy(false);
-      setDone(true);
-    };
     setBusy(true);
-    if (reduced) finish();
-    else timer.current = window.setTimeout(finish, 800);
+    setFailed(false);
+    fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: name.trim(), contact: contact.trim(), message: message.trim(), needs: [...needs] }),
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        setDone(true);
+      })
+      .catch(() => setFailed(true))
+      .finally(() => setBusy(false));
   }
 
   function reset() {
     setName("");
     setContact("");
+    setMessage("");
+    setFailed(false);
     setNeeds(new Set([CONTACT.chips[0]]));
     setTouched({});
     setSubmitted(false);
@@ -210,6 +215,22 @@ function ContactForm() {
               </div>
             </div>
 
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor={`${uid}-message`} className={labelCls}>
+                {CONTACT.message}
+              </label>
+              <textarea
+                id={`${uid}-message`}
+                name="message"
+                rows={3}
+                maxLength={1500}
+                placeholder={CONTACT.messagePh}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className={`${inputCls} h-auto resize-none py-3 leading-snug`}
+              />
+            </div>
+
             <fieldset className="flex flex-col gap-2.5" aria-describedby={`${uid}-needs-err`}>
               <legend className={`${labelCls} mb-2.5`}>{CONTACT.needs}</legend>
               <div className="flex flex-wrap gap-2">
@@ -252,6 +273,11 @@ function ContactForm() {
             <Button type="submit" disabled={busy} className="mt-1 w-full disabled:cursor-progress disabled:opacity-80 sm:w-auto sm:self-start">
               {busy ? CONTACT.sending : CONTACT.submit}
             </Button>
+            {failed && (
+              <p role="alert" className="text-[14px] leading-snug text-[#fb7185]">
+                {CONTACT.errSend}
+              </p>
+            )}
             <p className="text-[14px] text-grey">{CONTACT.availability}</p>
           </form>
 

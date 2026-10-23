@@ -282,7 +282,7 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
     // the ivy is attached to the page: camera follows scroll 1:1
     const targetY = -(window.scrollY / window.innerHeight) * visH;
     // hero field → ivy: follows scroll over the first 0.9 screen, smoothed and reversible
-    const morphTarget = Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.9)));
+    const morphTarget = 0; // stars stay stars: the ivy (neurons) is switched off site-wide
     if (L.fresh) {
       // growth is one-way per page: each route starts again, already grown above the visible screen
       L.fresh = false;
@@ -292,7 +292,7 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
     }
     u.uMorph.value = reduce ? morphTarget : u.uMorph.value + (morphTarget - u.uMorph.value) * Math.min(1, dt * 4);
     // ivy lines fade in once the field is half-way into the roots
-    u.uIvy.value = Math.min(1, Math.max(0, (u.uMorph.value - 0.45) / 0.5));
+    u.uIvy.value = 0;
     L.camY += (targetY - L.camY) * Math.min(1, dt * 10);
     camera.position.y = L.camY;
 
@@ -354,8 +354,6 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
 
   return (
     <group ref={group}>
-      <points geometry={pointsGeo} material={pointsMat} frustumCulled={false} />
-      <lineSegments geometry={linesGeo} material={linesMat} frustumCulled={false} />
       <points geometry={fieldGeo} material={fieldMat} frustumCulled={false} />
     </group>
   );
@@ -452,9 +450,27 @@ export default function IvyScene() {
     };
   }, []);
 
+  // stars live in the hero: the canvas fades out over the second half of the first screen
+  const wrap = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = wrap.current;
+    if (!el) return;
+    const onScroll = () => {
+      const h = window.innerHeight;
+      el.style.opacity = String(Math.min(1, Math.max(0, 1 - (window.scrollY - h * 0.35) / (h * 0.55))));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
   return (
     <>
-      <div aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-0 h-lvh w-screen">
+      <div ref={wrap} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[1] h-lvh w-screen">
         <Canvas
           // linear + flat: no colour management / tone mapping, matching the r128 prototype's colours
           linear
@@ -473,7 +489,7 @@ export default function IvyScene() {
           />}
         </Canvas>
       </div>
-      {fine && <CaseNodes nodes={nodes} hot={hot} preview={preview} />}
+      
     </>
   );
 }

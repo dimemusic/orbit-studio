@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { PROCESS } from "@/lib/content";
 import { G, IconTile, Tag } from "../ui/Bits";
 import { HomeSection } from "../ui/HomeSection";
-import { Icon, type IconKey } from "../ui/icons";
+import { Icon } from "../ui/icons";
 import { useInView } from "../ui/hooks";
 
 /**
@@ -50,7 +50,7 @@ export function Process() {
               <div className="card flex h-full w-full flex-col p-5 text-left lg:mt-6">
                 <div className="flex items-center justify-between gap-3">
                   <IconTile color="violet">
-                    <Icon name={s.icon as IconKey} size={20} />
+                    <Icon name={s.icon} size={20} />
                   </IconTile>
                   <span className="text-[13px] font-semibold tabular-nums text-violet-soft lg:hidden">{s.n}</span>
                 </div>
@@ -64,6 +64,7 @@ export function Process() {
           ))}
         </ol>
       </div>
+      <p data-reveal className="legible mt-8 text-[15px] font-medium text-body">{PROCESS.total}</p>
     </HomeSection>
   );
 }

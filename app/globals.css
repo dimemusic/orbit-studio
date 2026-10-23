@@ -445,3 +445,85 @@ p {
     transform: translate3d(0, 8px, 0);
   }
 }
+
+/* ---------- Ambient background (below the hero stars) ---------- */
+@property --amb-a {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(61 139 255 / 0.1);
+}
+@property --amb-b {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(139 92 246 / 0.08);
+}
+html {
+  transition:
+    --amb-a 1.6s var(--ease),
+    --amb-b 1.6s var(--ease);
+}
+.ambient {
+  background:
+    radial-gradient(60% 55% at var(--amb-x, 18%) 30%, var(--amb-a), transparent 70%),
+    radial-gradient(55% 50% at calc(100% - var(--amb-x, 18%)) 75%, var(--amb-b), transparent 70%),
+    var(--bg, #05070d);
+  animation: amb-drift 26s ease-in-out infinite alternate;
+}
+@property --amb-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 18%;
+}
+@keyframes amb-drift {
+  from {
+    --amb-x: 12%;
+  }
+  to {
+    --amb-x: 34%;
+  }
+}
+
+/* ---------- Case window (native <dialog>) ---------- */
+.case-dialog {
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  max-width: min(960px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 16px;
+}
+.case-dialog::backdrop {
+  background: rgb(5 7 13 / 0.72);
+  backdrop-filter: blur(6px);
+}
+.case-dialog[open] .case-panel {
+  animation: case-in 0.5s var(--ease) both;
+}
+.case-dialog[open]::backdrop {
+  animation: fade-in 0.4s ease both;
+}
+@keyframes case-in {
+  from {
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient,
+  .case-dialog[open] .case-panel,
+  .case-dialog[open]::backdrop {
+    animation: none;
+  }
+}

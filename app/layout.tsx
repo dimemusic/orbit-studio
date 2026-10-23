@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geologica } from "next/font/google";
+import { Ambient } from "@/components/Ambient";
 import { Nav } from "@/components/Nav";
 import { Scene } from "@/components/Scene";
 import { Footer } from "@/components/sections/Footer";
@@ -20,7 +21,7 @@ const geologica = Geologica({
 const FOCUSED: string[] = [];
 
 export const metadata: Metadata = {
-  title: { default: META.title, template: "%s · Orbit.studio" },
+  title: { default: META.title, template: "%s · MaxArt Digital" },
   description: META.description,
 };
 
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {/* shared on every page (except FOCUSED ones): fixed ivy scene, nav, footer; reveal + card layers always */}
         <HideOn paths={FOCUSED}>
+          <Ambient />
           <Scene />
           <Nav />
         </HideOn>

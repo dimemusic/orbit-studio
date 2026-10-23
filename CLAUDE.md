@@ -1,6 +1,7 @@
-# Orbit.studio — website for our web studio (UI forked from Cloud Sphere)
+# MaxArt Digital — website for our web studio (UI forked from Cloud Sphere)
 
-> "Orbit.studio" is a working name. All site copy is in **Ukrainian**.
+> Studio name: **MaxArt Digital** (renamed from the working name Orbit.studio). All site copy is in **Ukrainian**.
+> Values marked `// DRAFT` in `lib/content.ts` are invented placeholders (prices, terms, team, contacts, case texts): replace before launch.
 > Forked from `~/Desktop/cloudsphere-site` (restore point: first commit «Fork of Cloud Sphere»). Never edit the original.
 
 ## What it is
@@ -53,6 +54,9 @@ Scene code: `components/IvyScene.tsx`, `lib/ivy.ts` (generator), `lib/ivyShaders
 - Ivy look = 1px quiet lines, brightness carried by the particles. Don't brighten or thicken the lines.
 - **Case nodes** (fine pointers only): `Work` places 4 `[data-case-node]` anchors in its side margins; IvyScene snaps each to the nearest ivy particle (branch depth ≤ 2), projects it to the screen every frame and moves a DOM marker (`CaseNodes`, fixed overlay `z-[3]`, `aria-hidden`). Cursor within 40px → glass preview of that case; click → scrolls to its card. Hovering a case card dispatches `CASE_HOVER` (`components/home.ts`) and lights its node; the shown case gets `data-hot` on its card. Nodes appear only where the side margin is ≥ ~70px (≈ ≥1264px wide); the Work cards carry the same info accessibly.
 
+## Background decision (Oct 2026, overrides the ivy notes above)
+The ivy / neurons are OFF site-wide. `IvyScene` only renders the hero dust field as stars (morph locked at 0, no ivy points/lines, no case nodes) and its canvas fades out after the first screen. Below the hero the calm `Ambient` layer shows: page colour + two very soft drifting colour washes whose tint follows the section on screen (`components/Ambient.tsx`, `.ambient` in globals.css). This replaces the "no coloured glow" rule for the background only.
+
 ## Structure decision (Oct 2026)
 About, the admin-panel demo, Team and Guarantees were removed on purpose: too much decoration, too little information. Do not bring them back unless asked. Icons: one glyph per idea via `components/ui/icons.tsx` (`Icon name="brief|design|code|cms|launch"`) inside `IconTile`.
 
@@ -64,11 +68,12 @@ About, the admin-panel demo, Team and Guarantees were removed on purpose: too mu
 | # | Section (file) | id | Content |
 |---|---|---|---|
 | 01 | Hero (`Hero.tsx` + `Logos.tsx`) | `top` | promise in mega type, lead, «Обговорити проєкт» + «Наші роботи», availability pill + 4 trust points |
-| 02 | Work (`Work.tsx`) | `work` | 4 case cards (preview, status, tags, `[РЕЗУЛЬТАТ]`, «Хочу схожий»), closing tile «Тут може бути ваш сайт»; case-node anchors |
-| 03 | Services (`Pricing.tsx`) | `services` | 3 service cards (icon, name, one line, what's included, «від [ЦІНА]», «Замовити →»); turnkey `.card-pro` «Під ключ — від [ЦІНА]» |
-| 04 | Process (`Process.tsx`) | `process` | 5 steps with icons + `[X днів]` on a drawn progress line: Бриф, Дизайн, Верстка, Панель керування, Запуск |
-| 05 | FAQ (`Faq.tsx`) | `faq` | 6 questions in one card, smooth accordion (guarantees live here as answers) |
-| 06 | Contact (`FinalCta.tsx`) | `contact` | «Є ідея? Поговорімо.», Telegram / email panel + form (name, Telegram/email, multi-select chips), validation + thanks state, no backend |
+| 02 | Work (`Work.tsx`) | `work` | Maina featured + 3 cases; click opens the case window (native `<dialog>`: task, what we did, facts, «Хочу схожий», live link) |
+| 03 | Services (`Pricing.tsx`) | `services` | 3 service cards with «Додати» toggles + live estimate bar; all three = «Під ключ» (`.card-pro`) with saving |
+| 04 | Process (`Process.tsx`) | `process` | 5 steps with icons + durations on a drawn progress line, total under it |
+| 05 | About (`About.tsx`) | `about` | 2 people (photo or initials) + 3 promises row |
+| 06 | FAQ (`Faq.tsx`) | `faq` | 6 questions, accordion |
+| 07 | Contact (`FinalCta.tsx`) | `contact` | Telegram / email panel + form (name, contact, message, chips) → `POST /api/contact` → email via Resend (`RESEND_API_KEY`, `CONTACT_TO`, see `.env.example`) |
 
 ## Content that sells (brief)
 - **Hero:** one concrete promise. Direction: «Сайти, які продають. Від дизайну до адмінки.» Primary CTA «Обговорити проєкт».
