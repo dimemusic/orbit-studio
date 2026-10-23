@@ -36,7 +36,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="uk" className={geologica.variable} suppressHydrationWarning>
       <head>
         {/* lets CSS hide [data-reveal] content only when JS will reveal it */}
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+        {/* "booting": hero, nav and stars wait for the star field's first frame, then come in together (safety timeout 3s) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "var d=document.documentElement;d.classList.add('js','booting');setTimeout(function(){d.classList.remove('booting')},3000)",
+          }}
+        />
       </head>
       <body>
         {/* shared on every page (except FOCUSED ones): fixed ivy scene, nav, footer; reveal + card layers always */}

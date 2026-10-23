@@ -368,6 +368,18 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
 
 export default function IvyScene() {
   const [setup, setSetup] = useState<Setup | null>(null);
+  // the stars are built: let them render two frames, then end the boot so hero, nav and stars appear together
+  useEffect(() => {
+    if (!setup) return;
+    let r2 = 0;
+    const r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => document.documentElement.classList.remove("booting"));
+    });
+    return () => {
+      cancelAnimationFrame(r1);
+      cancelAnimationFrame(r2);
+    };
+  }, [setup]);
   const setupRef = useRef<Setup | null>(null);
   const pathname = usePathname();
   const routeRef = useRef(pathname);
@@ -481,6 +493,7 @@ export default function IvyScene() {
   return (
     <>
       <div ref={wrap} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[1] h-lvh w-screen">
+        <div className="scene-fade h-full w-full">
         <Canvas
           // linear + flat: no colour management / tone mapping, matching the r128 prototype's colours
           linear
@@ -498,6 +511,7 @@ export default function IvyScene() {
             }}
           />}
         </Canvas>
+        </div>
       </div>
       
     </>

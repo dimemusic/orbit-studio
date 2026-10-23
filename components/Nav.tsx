@@ -38,7 +38,7 @@ export function Nav() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-30 px-[clamp(12px,2.5vw,32px)] pt-[calc(12px+env(safe-area-inset-top))]">
+    <header data-boot className="fixed inset-x-0 top-0 z-30 px-[clamp(12px,2.5vw,32px)] pt-[calc(12px+env(safe-area-inset-top))]">
       <a
         href="#main"
         className="sr-only rounded-full bg-fg px-4 py-2 text-sm text-bg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"

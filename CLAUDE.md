@@ -113,3 +113,4 @@ About, the admin-panel demo, Team and Guarantees were removed on purpose: too mu
 - Never run `npm run build` while the dev server may be running (it corrupts `.next`). Use `npx tsc --noEmit`.
 - SVGs with `preserveAspectRatio="none"` need an explicit height.
 - Line draw-in animations: use `clip-path` / `scaleX`, not `stroke-dasharray` + `vector-effect: non-scaling-stroke`.
+- Boot (Oct 2026): `html.booting` is set in the head script; until IvyScene's star field has rendered two frames (or a 3s safety timeout) the stars (`.scene-fade`), the ambient washes, the nav (`[data-boot]`), the `.plate` halos and revealed copy stay hidden, then they all fade in together. Do not let any of them render before that (it looked broken: background, then text, then stars).

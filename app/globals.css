@@ -686,3 +686,28 @@ html {
   stroke: rgb(255 255 255 / 0.06);
   stroke-width: 1;
 }
+
+/* boot: nothing pops in piece by piece. Until the star field has its first frame (html.booting),
+   the stars, the ambient washes, the nav and the revealed copy stay hidden; then they come in together. */
+.scene-fade {
+  transition: opacity 1.2s var(--ease);
+}
+.ambient,
+[data-boot] {
+  transition: opacity 0.9s var(--ease);
+}
+.booting .scene-fade,
+.booting .ambient,
+.booting [data-boot] {
+  opacity: 0;
+}
+.js.booting [data-reveal][data-in] {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+.plate::before {
+  transition: opacity 0.9s var(--ease);
+}
+.booting .plate::before {
+  opacity: 0;
+}
