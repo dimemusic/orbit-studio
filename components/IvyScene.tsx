@@ -280,7 +280,7 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
     u.uPulse.value = Math.max(0, u.uPulse.value - dt * 0.55);
 
     // the ivy is attached to the page: camera follows scroll 1:1
-    const targetY = -(window.scrollY / window.innerHeight) * visH;
+    const targetY = 0; // the star field is the whole page background: it stays put while the page scrolls
     // hero field → ivy: follows scroll over the first 0.9 screen, smoothed and reversible
     const morphTarget = 0; // stars stay stars: the ivy (neurons) is switched off site-wide
     if (L.fresh) {
@@ -450,14 +450,17 @@ export default function IvyScene() {
     };
   }, []);
 
-  // stars live in the hero: the canvas fades out over the second half of the first screen
+  // stars are the page background: sharp in the hero, blurred (and a bit dimmer) below it
   const wrap = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = wrap.current;
     if (!el) return;
     const onScroll = () => {
       const h = window.innerHeight;
-      el.style.opacity = String(Math.min(1, Math.max(0, 1 - (window.scrollY - h * 0.35) / (h * 0.55))));
+      // below the hero the same stars stay, softly out of focus
+      const k = Math.min(1, Math.max(0, (window.scrollY - h * 0.25) / (h * 0.65)));
+      el.style.filter = k > 0.01 ? `blur(${(k * 7).toFixed(2)}px)` : "";
+      el.style.opacity = String(1 - k * 0.35);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });

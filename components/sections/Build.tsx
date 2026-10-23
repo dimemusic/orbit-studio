@@ -69,7 +69,16 @@ export function Build() {
   return (
     <section ref={ref} id="process" aria-labelledby="build-title" className="relative flex min-h-[100dvh] w-full flex-col overflow-hidden">
       {/* grid drawn on the page background */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(75%_70%_at_50%_55%,#000_40%,transparent_100%)]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          maskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 80%, transparent), linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 22%, #000 80%, transparent), linear-gradient(to right, transparent, #000 15%, #000 85%, transparent)",
+          maskComposite: "intersect",
+          WebkitMaskComposite: "source-in",
+        }}
+      >
         <div
           className="absolute inset-0 [background-image:linear-gradient(to_bottom,rgb(255_255_255/0.06)_1px,transparent_1px)] [background-size:100%_80px]"
           style={{ clipPath: `inset(0 ${(1 - gridH) * 100}% 0 0)` }}
@@ -216,6 +225,12 @@ const box = (x: number, y: number, w?: number, h?: number): CSSProperties => ({ 
 /* ---------------- 1 · Design ---------------- */
 const D = BUILD.design;
 const AB = { x: 360, y: 20, w: 480, h: 560 };
+/** element rects inside the artboard: drawn AND selected from the same numbers, so the selection always fits */
+const R = {
+  img: { x: 24, y: 64, w: 432, h: 180 },
+  title: { x: 24, y: 272, w: 420, h: 54 },
+  btn: { x: 24, y: 400, w: 150, h: 46 },
+};
 const SWATCHES = ["#e8492a", "#a78bfa", "#22d3ee", "#3d5a3a"];
 const TOOLS = [Cursor, FrameCorners, Square, TextT, PenNib, Hand];
 
@@ -233,25 +248,21 @@ function DesignStage({ s }: { s: number }) {
   const btnColor = s >= 2.8 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
   const tool = s < 1.0 ? 1 : s < 1.38 ? 2 : s < 2.0 ? 3 : 0;
   const sel = s < 1.0 ? 0 : s < 1.38 ? 1 : s < 2.0 ? 2 : 3;
-  const selBox = [
-    { x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame },
-    { x: AB.x + 24, y: AB.y + 64, w: 432 * img, h: 180 },
-    { x: AB.x + 20, y: AB.y + 266, w: 400, h: 54 },
-    { x: AB.x + 24, y: AB.y + 384, w: 150 * btn, h: 46 },
-  ][sel];
+  const at = (r: { x: number; y: number; w: number; h: number }, kw = 1) => ({ x: AB.x + r.x, y: AB.y + r.y, w: r.w * kw, h: r.h });
+  const selBox = [{ x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame }, at(R.img, 0.4 + img * 0.6), at(R.title), at(R.btn, 0.6 + btn * 0.4)][sel];
   const path: [number, number, number][] = [
     [0, 700, 600],
     [0.55, AB.x + 2, AB.y + 2],
     [1.0, AB.x + AB.w, AB.y + AB.h],
-    [1.05, AB.x + 30, AB.y + 70],
-    [1.35, AB.x + 450, AB.y + 240],
-    [1.4, AB.x + 26, AB.y + 290],
-    [1.95, AB.x + 400, AB.y + 300],
-    [2.05, AB.x + 30, AB.y + 390],
-    [2.25, AB.x + 170, AB.y + 428],
+    [1.05, AB.x + R.img.x + 4, AB.y + R.img.y + 4],
+    [1.35, AB.x + R.img.x + R.img.w, AB.y + R.img.y + R.img.h],
+    [1.4, AB.x + R.title.x + 4, AB.y + R.title.y + 30],
+    [1.95, AB.x + R.title.x + 380, AB.y + R.title.y + 30],
+    [2.05, AB.x + R.btn.x + 4, AB.y + R.btn.y + 4],
+    [2.25, AB.x + R.btn.x + R.btn.w, AB.y + R.btn.y + R.btn.h],
     [2.3, 942, 418],
     [2.8, 942 + 3 * 48, 418],
-    [3, AB.x + 120, AB.y + 410],
+    [3, AB.x + R.btn.x + 110, AB.y + R.btn.y + 26],
   ];
   const down = (s > 0.55 && s < 1.0) || (s > 1.05 && s < 1.35) || (s > 2.05 && s < 2.25) || (s > 2.75 && s < 2.85);
 
@@ -309,9 +320,9 @@ function DesignStage({ s }: { s: number }) {
           </div>
         </div>
       </div>
-      {/* artboard: the site being drawn */}
+      {/* artboard: the site being drawn (children use the same rects as the selection) */}
       <div className="overflow-hidden rounded-md bg-[#f4f0e8] text-[#1a1714]" style={{ ...box(AB.x, AB.y, AB.w, AB.h), clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)` }}>
-        <div className="flex items-center justify-between px-6 pt-5">
+        <div className="absolute inset-x-6 top-5 flex items-center justify-between">
           <span className="text-[17px] font-semibold tracking-[-0.03em]">Maina</span>
           <span className="flex gap-3">
             <i className="h-2 w-10 rounded-full bg-black/20" />
@@ -319,18 +330,18 @@ function DesignStage({ s }: { s: number }) {
             <i className="h-2 w-10 rounded-full bg-black/20" />
           </span>
         </div>
-        <div className="mx-6 mt-6 grid h-[180px] origin-left place-items-center rounded-xl" style={{ background: "linear-gradient(120deg,#d9c6a5,#b98a5e 55%,#7a4e32)", ...fly(img, -60, 0, 16, `scaleX(${0.4 + img * 0.6})`) }}>
+        <div className="absolute grid origin-left place-items-center rounded-xl" style={{ ...box(R.img.x, R.img.y, R.img.w, R.img.h), background: "linear-gradient(120deg,#d9c6a5,#b98a5e 55%,#7a4e32)", ...fly(img, -60, 0, 16, `scaleX(${0.4 + img * 0.6})`) }}>
           <ImageIcon size={36} className="text-white/70" />
         </div>
-        <p className="mx-5 mt-6 min-h-[54px] text-[44px] font-semibold leading-none tracking-[-0.045em]">
+        <p className="absolute flex items-center whitespace-nowrap text-[44px] font-semibold leading-none tracking-[-0.045em]" style={box(R.title.x, R.title.y, R.title.w, R.title.h)}>
           {typed(D.title, title)}
           <Caret on={s > 1.4 && s < 2.0} color="#1a1714" />
         </p>
-        <div className="mx-6 mt-3 flex flex-col gap-2" style={{ opacity: lines }}>
+        <div className="absolute flex flex-col gap-2" style={{ ...box(R.title.x, R.title.y + R.title.h + 14), opacity: lines }}>
           <i className="h-2.5 w-80 rounded-full bg-black/20" />
           <i className="h-2.5 w-56 rounded-full bg-black/20" />
         </div>
-        <span className="mx-6 mt-8 grid h-[46px] w-[150px] origin-left place-items-center rounded-full text-[15px] font-semibold text-white" style={{ background: btnColor, ...fly(btn, 0, 10, 10, `scale(${0.6 + btn * 0.4})`) }}>
+        <span className="absolute grid origin-left place-items-center rounded-full text-[15px] font-semibold text-white" style={{ ...box(R.btn.x, R.btn.y, R.btn.w, R.btn.h), background: btnColor, ...fly(btn, 0, 10, 10, `scale(${0.6 + btn * 0.4})`) }}>
           {D.button}
         </span>
       </div>
@@ -539,38 +550,74 @@ function CmsStage({ s }: { s: number }) {
       <div className="tool flex items-center gap-2 px-4 py-2.5 text-[14px] text-green" style={{ ...box(600, 40), ...fly(ease(seg(s, 2.4, 2.6)), 0, -30, 12) }}>
         <CheckCircle size={16} weight="fill" /> {M.toast}
       </div>
-      {/* phone: the live site updates */}
-      <div className="rounded-[36px] border border-white/15 bg-[#05070d] p-3 shadow-[0_40px_90px_-30px_rgb(0_0_0/0.9)]" style={{ ...box(820, 10, 300, 600), ...fly(ease(seg(s, 0.05, 0.45)), 260, 0, 18) }}>
-        <div className="h-full overflow-hidden rounded-[26px] bg-[#f4f0e8] p-5 text-[#1a1714]">
-          <div className="flex items-center justify-between">
-            <span className="text-[15px] font-semibold">Maina</span>
-            <span className={`flex items-center gap-1.5 text-[11px] font-semibold ${pub ? "text-[#1f8f5f]" : "text-black/30"}`}>
-              <span className={`size-1.5 rounded-full ${pub ? "bg-[#1f8f5f]" : "bg-black/25"}`} />
-              {M.live}
-            </span>
+      {/* iPhone: the live site updates */}
+      <IPhone style={{ ...box(830, 0, 290, 610), ...fly(ease(seg(s, 0.05, 0.45)), 260, 0, 18) }}>
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[15px] font-semibold">Maina</span>
+          <span className={`flex items-center gap-1.5 text-[11px] font-semibold ${pub ? "text-[#1f8f5f]" : "text-black/30"}`}>
+            <span className={`size-1.5 rounded-full ${pub ? "bg-[#1f8f5f]" : "bg-black/25"}`} />
+            {M.live}
+          </span>
+        </div>
+        <div className="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="grid h-40 place-items-center" style={{ background: photo ? PHOTO : "#ebe5da", transition: "background .5s" }}>
+            {!photo && <ImageIcon size={30} className="text-black/20" />}
           </div>
-          <div className="mt-5 overflow-hidden rounded-2xl bg-white shadow-sm">
-            <div className="grid h-44 place-items-center" style={{ background: photo ? PHOTO : "#ebe5da", transition: "background .5s" }}>
-              {!photo && <ImageIcon size={30} className="text-black/20" />}
+          <div className="p-4">
+            <p className="min-h-[44px] text-[17px] font-semibold leading-tight">{name || " "}</p>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-[18px] font-semibold tabular-nums">{price}</span>
+              <span className="rounded-full bg-[#1f8f5f]/15 px-2.5 py-1 text-[11px] font-semibold text-[#1f8f5f]" style={fly(stock ? 1 : 0, 10, 0, 6)}>
+                {M.stock}
+              </span>
             </div>
-            <div className="p-4">
-              <p className="min-h-[44px] text-[17px] font-semibold leading-tight">{name || " "}</p>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="text-[18px] font-semibold tabular-nums">{price}</span>
-                <span className="rounded-full bg-[#1f8f5f]/15 px-2.5 py-1 text-[11px] font-semibold text-[#1f8f5f]" style={fly(stock ? 1 : 0, 10, 0, 6)}>
-                  {M.stock}
+          </div>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2.5 opacity-60">
+          <div className="h-24 rounded-xl bg-[#e6dfd2]" />
+          <div className="h-24 rounded-xl bg-[#e6dfd2]" />
+        </div>
+      </IPhone>
+      <BlurPointer s={s} path={path} down={down} />
+    </>
+  );
+}
+
+/** iPhone-style device: titanium frame, side buttons, Dynamic Island, status bar, home indicator */
+function IPhone({ style, children }: { style: CSSProperties; children: ReactNode }) {
+  return (
+    <div style={style}>
+      {/* side buttons */}
+      <i className="absolute -left-[3px] top-[108px] h-7 w-[3px] rounded-l bg-[#3a3d44]" />
+      <i className="absolute -left-[3px] top-[156px] h-12 w-[3px] rounded-l bg-[#3a3d44]" />
+      <i className="absolute -left-[3px] top-[216px] h-12 w-[3px] rounded-l bg-[#3a3d44]" />
+      <i className="absolute -right-[3px] top-[172px] h-[72px] w-[3px] rounded-r bg-[#3a3d44]" />
+      <div className="relative h-full rounded-[54px] bg-[linear-gradient(145deg,#4a4e57,#1d1f24_35%,#2b2e35_70%,#121317)] p-[3px] shadow-[0_50px_100px_-30px_rgb(0_0_0/0.95)]">
+        <div className="relative h-full rounded-[51px] bg-black p-[9px]">
+          <div className="relative h-full overflow-hidden rounded-[43px] bg-[#f4f0e8] text-[#1a1714]">
+            {/* status bar */}
+            <div className="flex h-[46px] items-center justify-between px-7 pt-1 text-[13px] font-semibold">
+              <span>9:41</span>
+              <span className="flex items-center gap-1.5">
+                <span className="flex items-end gap-[2px]">
+                  {[4, 6, 8, 10].map((h) => (
+                    <i key={h} className="w-[3px] rounded-sm bg-[#1a1714]" style={{ height: h }} />
+                  ))}
                 </span>
-              </div>
+                <span className="relative h-[11px] w-[22px] rounded-[3px] border border-[#1a1714]/50 p-[1.5px]">
+                  <i className="block h-full w-4/5 rounded-[1.5px] bg-[#1a1714]" />
+                </span>
+              </span>
             </div>
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-2.5 opacity-60">
-            <div className="h-24 rounded-xl bg-[#e6dfd2]" />
-            <div className="h-24 rounded-xl bg-[#e6dfd2]" />
+            {/* Dynamic Island */}
+            <i className="absolute left-1/2 top-[11px] h-[30px] w-[96px] -translate-x-1/2 rounded-full bg-black" />
+            <div className="px-4 pt-2">{children}</div>
+            {/* home indicator */}
+            <i className="absolute bottom-2 left-1/2 h-[5px] w-[110px] -translate-x-1/2 rounded-full bg-[#1a1714]/80" />
           </div>
         </div>
       </div>
-      <BlurPointer s={s} path={path} down={down} />
-    </>
+    </div>
   );
 }
 
@@ -584,44 +631,26 @@ const PIECES = [
   { x: 215, y: 290, w: 170, h: 116, dx: 0, dy: 320, c: "#efe9de" },
   { x: 406, y: 290, w: 170, h: 116, dx: 480, dy: 160, c: "#efe9de" },
 ];
-/** warp streaks fanning out from the browser at «launch» */
-const STREAKS = Array.from({ length: 14 }, (_, i) => {
-  const a = (i / 14) * Math.PI * 2 + 0.2;
-  return { a, len: 120 + ((i * 37) % 90), d: (i % 4) * 0.04 };
-});
-
 function LaunchStage({ s }: { s: number }) {
   const shell = ease(seg(s, 0.05, 0.4));
   const url = typed(L.url, seg(s, 1.25, 1.65));
-  const warp = seg(s, 1.65, 2.15);
-  const online = ease(seg(s, 1.8, 2.05));
+  const deploy = ease(seg(s, 1.6, 2.0));
+  const sweep = seg(s, 2.0, 2.45);
+  const online = ease(seg(s, 2.0, 2.25));
+  const lift = ease(seg(s, 2.0, 2.4));
   const cx = BR.x + BR.w / 2;
-  const cy = BR.y + BR.h / 2;
   return (
     <>
-      {/* streaks */}
-      {STREAKS.map((st, i) => {
-        const k = seg(warp, st.d, st.d + 0.7);
-        if (k <= 0 || k >= 1) return null;
-        const r = 260 + k * 420;
-        return (
-          <i
-            key={i}
-            className="absolute h-[2px] rounded-full"
-            style={{
-              left: cx + Math.cos(st.a) * r,
-              top: cy + Math.sin(st.a) * r * 0.62,
-              width: st.len,
-              background: `linear-gradient(90deg, transparent, ${i % 2 ? "#5aa2ff" : "#34d399"})`,
-              transform: `translate(-50%,-50%) rotate(${st.a}rad)`,
-              filter: "blur(1.5px)",
-              opacity: Math.sin(k * Math.PI),
-            }}
-          />
-        );
-      })}
       {/* browser assembling */}
-      <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#f4f0e8] shadow-[0_50px_110px_-30px_rgb(0_0_0/0.95)]" style={{ ...box(BR.x, BR.y, BR.w, BR.h), ...fly(shell, 0, 60, 18, `scale(${0.9 + shell * 0.1})`) }}>
+      <div
+        className="overflow-hidden rounded-2xl border bg-[#f4f0e8]"
+        style={{
+          ...box(BR.x, BR.y, BR.w, BR.h),
+          ...fly(shell, 0, 60, 18, `scale(${0.9 + shell * 0.1 + lift * 0.015}) translateY(${-lift * 6}px)`),
+          borderColor: `rgb(52 211 153 / ${0.15 + lift * 0.45})`,
+          boxShadow: `0 50px 110px -30px rgb(0 0 0 / 0.95), 0 0 0 ${lift * 6}px rgb(52 211 153 / ${0.12 * lift})`,
+        }}
+      >
         <div className="flex h-10 items-center gap-2 bg-[#e6e0d4] px-4">
           <i className="size-2.5 rounded-full bg-black/20" />
           <i className="size-2.5 rounded-full bg-black/20" />
@@ -632,6 +661,15 @@ function LaunchStage({ s }: { s: number }) {
             <Caret on={s > 1.25 && s < 1.7} color="#1a1714" />
           </span>
         </div>
+        {/* deploy progress under the address bar */}
+        <span className="absolute left-0 top-10 z-[2] h-[3px] w-full origin-left bg-gradient-to-r from-[#5aa2ff] to-[#34d399]" style={{ transform: `scaleX(${deploy})`, opacity: s < 2.4 ? 1 : 1 - seg(s, 2.4, 2.6) }} />
+        {/* light sweep once it is live */}
+        {sweep > 0 && sweep < 1 && (
+          <span
+            className="pointer-events-none absolute inset-y-0 z-[3] w-40 -skew-x-12"
+            style={{ left: `${-30 + sweep * 130}%`, background: "linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent)", filter: "blur(6px)" }}
+          />
+        )}
         {PIECES.map((p, i) => {
           const k = ease(seg(s, 0.35 + i * 0.12, 0.8 + i * 0.12));
           return (
@@ -662,12 +700,20 @@ function LaunchStage({ s }: { s: number }) {
         })}
       </div>
       {/* online + checks */}
-      <p className="flex items-center gap-2 rounded-full border border-green/30 bg-[#0d1a17] px-5 py-2 text-[16px] font-semibold text-green" style={{ ...box(cx - 70, 466), ...fly(online, 0, 24, 12) }}>
-        <span className="size-2.5 animate-pulse rounded-full bg-green" /> {L.online}
-      </p>
+      <div style={{ ...box(cx - 75, 462, 150, 44), ...fly(online, 0, 24, 12) }}>
+        {[0, 0.22].map((d) => {
+          const k = seg(s, 2.1 + d, 2.9 + d);
+          return k > 0 && k < 1 ? (
+            <span key={d} className="absolute inset-0 rounded-full border-2 border-green" style={{ transform: `scale(${1 + ease(k) * 0.7}, ${1 + ease(k) * 1.4})`, opacity: (1 - k) * 0.6 }} />
+          ) : null;
+        })}
+        <p className="flex h-full items-center justify-center gap-2 rounded-full border border-green/30 bg-[#0d1a17] text-[16px] font-semibold text-green">
+          <span className="size-2.5 animate-pulse rounded-full bg-green" /> {L.online}
+        </p>
+      </div>
       <ul className="flex justify-center gap-3" style={box(BR.x - 60, 536, BR.w + 120)}>
         {L.checks.map((c, i) => (
-          <li key={c} className="tool flex items-center gap-2 px-4 py-2.5 text-[15px] text-fg" style={fly(ease(seg(s, 2.05 + i * 0.12, 2.35 + i * 0.12)), 0, 30, 12)}>
+          <li key={c} className="tool flex items-center gap-2 px-4 py-2.5 text-[15px] text-fg" style={fly(ease(seg(s, 2.3 + i * 0.1, 2.6 + i * 0.1)), 0, 30, 12)}>
             <CheckCircle size={17} weight="fill" className="text-green" /> {c}
           </li>
         ))}
