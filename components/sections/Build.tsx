@@ -396,10 +396,10 @@ const AB = { x: 360, y: 20, w: 480, h: 560 };
 /** element rects inside the artboard: assembled AND selected from the same numbers, so the selection always fits */
 type Rc = { x: number; y: number; w: number; h: number };
 const R = {
-  img: { x: 24, y: 60, w: 432, h: 170 },
-  title: { x: 24, y: 282, w: 420, h: 48 },
-  btn: { x: 24, y: 386, w: 150, h: 46 },
-  plans: { x: 24, y: 462, w: 432, h: 74 },
+  img: { x: 24, y: 60, w: 432, h: 150 },
+  title: { x: 24, y: 262, w: 420, h: 48 },
+  btn: { x: 24, y: 360, w: 150, h: 46 },
+  plans: { x: 24, y: 428, w: 432, h: 74 },
 };
 const PLAN_W = (R.plans.w - 20) / 3;
 const SWATCHES = ["#e8492a", "#a78bfa", "#22d3ee", INK];
@@ -410,9 +410,9 @@ const RS = { x: 880, y: 20, w: 260, h: 560 };
 /** component tiles (left sidebar, bottom section): the sources the button and cards fly out of */
 const tile = (i: number) => ({
   x: LS.x + 16 + (i % 2) * 118,
-  y: LS.y + 464 + Math.floor(i / 2) * 44,
+  y: LS.y + 438 + Math.floor(i / 2) * 48,
   w: 110,
-  h: 36,
+  h: 40,
 });
 /** hairline between sidebar sections */
 const Hr = ({ y }: { y: number }) => <i className="absolute inset-x-0 h-px bg-white/[0.07]" style={{ top: y }} />;
@@ -518,7 +518,7 @@ function DesignStage({ s }: { s: number }) {
       [2.12, grab(at(R.btn)).x, grab(at(R.btn)).y],
       [2.24, swatch(0).x, swatch(0).y],
       [2.5, swatch(3).x, swatch(3).y],
-      [3, swatch(3).x + 20, swatch(3).y + 26],
+      [3, swatch(3).x + 34, swatch(3).y - 22],
     ]);
   const cPin = s > 2.22 && s < 2.5 ? grab(flyRect(planFly(0), tile(1), planDst(0))) : null;
   const cPos =
@@ -532,7 +532,7 @@ function DesignStage({ s }: { s: number }) {
       [2.18, grab(tile(1)).x, grab(tile(1)).y],
       [2.22, grab(tile(1)).x, grab(tile(1)).y],
       [2.5, grab(planDst(0)).x, grab(planDst(0)).y],
-      [3, grab(planDst(0)).x + 30, grab(planDst(0)).y + 40],
+      [3, grab(planDst(1)).x + 20, grab(planDst(1)).y - 46],
     ]);
   const pinAt = { x: AB.x + 330, y: AB.y + R.btn.y - 34 };
   const gPos = along(s, [
@@ -547,18 +547,7 @@ function DesignStage({ s }: { s: number }) {
     <>
       {/* left sidebar: tools · pages · layers · components, one panel with hairline sections (Figma-like) */}
       <div className="tool overflow-hidden" style={{ ...box(LS.x, LS.y, LS.w, LS.h), ...fly(pan(0), -160, 0) }}>
-        <div className="absolute inset-x-4 flex items-center gap-1" style={{ top: 12 }}>
-          {TOOLS.map((Ic, i) => (
-            <span
-              key={i}
-              className={`grid size-8 place-items-center rounded-lg transition-colors duration-300 ${i === tool ? "bg-violet text-white" : "text-grey"}`}
-            >
-              <Ic size={16} />
-            </span>
-          ))}
-        </div>
-        <Hr y={56} />
-        <div className="absolute inset-x-4" style={{ top: 70, ...fly(pan(1), -20, 0, 4) }}>
+        <div className="absolute inset-x-4" style={{ top: 16, ...fly(pan(1), -20, 0, 4) }}>
           <p className={`${label} flex h-5 items-center justify-between`}>
             {D.pagesLabel}
             <span className="flex -space-x-1.5">
@@ -582,10 +571,10 @@ function DesignStage({ s }: { s: number }) {
             ))}
           </ul>
         </div>
-        <Hr y={190} />
-        <div className="absolute inset-x-4" style={{ top: 204, ...fly(pan(2), -20, 0, 4) }}>
+        <Hr y={138} />
+        <div className="absolute inset-x-4" style={{ top: 152, ...fly(pan(2), -20, 0, 4) }}>
           <p className={`${label} flex h-4 items-center`}>{D.layersLabel}</p>
-          <ul className="mt-1.5 flex flex-col gap-px">
+          <ul className="mt-1.5 flex flex-col gap-0.5">
             {D.layers.map((l, i) => {
               const at0 = [0.4, 1.02, 1.3, 1.46, 1.78, 1.85, 2.22][i];
               const on = expo(seg(s, at0, at0 + 0.25));
@@ -593,7 +582,7 @@ function DesignStage({ s }: { s: number }) {
               return (
                 <li
                   key={l}
-                  className={`flex h-[26px] items-center gap-2 rounded-md px-2 text-[13px] ${i === rowV || i === rowC ? "text-fg" : "text-body"}`}
+                  className={`flex h-[28px] items-center gap-2 rounded-md px-2 text-[13px] ${i === rowV || i === rowC ? "text-fg" : "text-body"}`}
                   style={{
                     ...fly(on, -12, 0, 4),
                     paddingLeft: i ? 24 : 8,
@@ -608,8 +597,8 @@ function DesignStage({ s }: { s: number }) {
             })}
           </ul>
         </div>
-        <Hr y={428} />
-        <p className={`${label} absolute inset-x-4 flex h-4 items-center`} style={{ top: 442, ...fly(pan(3), -20, 0, 4) }}>
+        <Hr y={400} />
+        <p className={`${label} absolute inset-x-4 flex h-4 items-center`} style={{ top: 414, ...fly(pan(3), -20, 0, 4) }}>
           {D.compLabel}
         </p>
         {D.comps.map((c, i) => {
@@ -631,6 +620,18 @@ function DesignStage({ s }: { s: number }) {
             </div>
           );
         })}
+      </div>
+
+      {/* floating toolbar: bottom centre of the canvas, as in Figma */}
+      <div
+        className="tool z-20 flex items-center gap-1 p-1.5"
+        style={{ ...box(SW / 2 - 112, AB.y + AB.h - 52, 224, 44), ...fly(pan(1), 0, 40, 8), borderRadius: 14 }}
+      >
+        {TOOLS.map((Ic, i) => (
+          <span key={i} className={`grid size-8 place-items-center rounded-lg transition-colors duration-300 ${i === tool ? "bg-violet text-white" : "text-grey"}`}>
+            <Ic size={16} />
+          </span>
+        ))}
       </div>
 
       {/* right sidebar: properties · auto layout · text · fill · effects */}
@@ -1099,7 +1100,7 @@ function CodeStage({ s }: { s: number }) {
       {/* terminal */}
       <div
         className="tool flex items-center gap-4 px-5 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[15px]"
-        style={{ ...box(40, 456, 640, 60), ...fly(term, 0, 40, 12) }}
+        style={{ ...box(40, 520, 640, 60), ...fly(term, 0, 40, 12) }}
       >
         <span className="text-green">~/your-product $</span>
         <span className="text-body">{typed(C.cmd, seg(s, 2.02, 2.2))}</span>
@@ -1114,7 +1115,7 @@ function CodeStage({ s }: { s: number }) {
       <div
         className="overflow-hidden rounded-xl bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-30px_rgb(0_0_0/0.9)]"
         style={{
-          ...box(730, 20, 430, 496),
+          ...box(730, 20, 430, 560),
           ...fly(expo(seg(s, 0.06, 0.6)), 220, 0, 18),
         }}
       >
@@ -1144,7 +1145,7 @@ function CodeStage({ s }: { s: number }) {
             </span>
           </div>
           <div
-            className="relative mt-4 h-[64px] overflow-hidden rounded-xl"
+            className="relative mt-5 h-[104px] overflow-hidden rounded-xl"
             style={fly(expo(lineK(3)), 0, 16, 10)}
           >
             <Visual />
@@ -1187,7 +1188,7 @@ function CodeStage({ s }: { s: number }) {
                   10,
                 )}
               >
-                <div className="relative h-14 overflow-hidden rounded-md">
+                <div className="relative h-16 overflow-hidden rounded-md">
                   <Visual v={k} />
                 </div>
                 <p className="mt-2 truncate text-[11px] font-semibold">
@@ -1231,7 +1232,7 @@ function Field({
         {right}
       </p>
       <div
-        className="mt-1.5 flex h-11 items-center rounded-xl border bg-white/[0.035] text-[15px] text-fg"
+        className="mt-1.5 flex h-10 items-center rounded-xl border bg-white/[0.035] text-[15px] text-fg"
         style={{
           borderColor: `color-mix(in srgb, #22d3ee ${(focus * 100).toFixed(0)}%, rgb(255 255 255 / 0.12))`,
           boxShadow: `0 0 0 ${(focus * 4).toFixed(2)}px rgb(34 211 238 / 0.12)`,
@@ -1294,9 +1295,9 @@ function CmsStage({ s }: { s: number }) {
     <>
       {/* the product form */}
       <div
-        className="tool flex flex-col gap-3 p-6"
+        className="tool flex flex-col gap-2.5 p-5"
         style={{
-          ...box(40, 0, 540, 612),
+          ...box(40, 20, 540, 560),
           ...fly(expo(seg(s, 0.02, 0.55)), -200, 0, 14),
         }}
       >
@@ -1382,7 +1383,7 @@ function CmsStage({ s }: { s: number }) {
         <div style={row(3)}>
           <p className="text-[12px] font-medium text-grey">{M.photo}</p>
           <div
-            className="mt-1.5 flex h-[72px] items-center gap-3.5 rounded-xl border border-dashed px-3"
+            className="mt-1.5 flex h-[62px] items-center gap-3.5 rounded-xl border border-dashed px-3"
             style={{
               borderColor:
                 up > 0 && up < 1
@@ -1457,7 +1458,7 @@ function CmsStage({ s }: { s: number }) {
               </span>
             ))}
           </div>
-          <p className="h-[40px] px-4 py-2 text-[14px] text-body">
+          <p className="h-[36px] px-4 py-1.5 text-[14px] text-body">
             <Typed
               text={M.descVal}
               k={descK}
@@ -1522,7 +1523,7 @@ function CmsStage({ s }: { s: number }) {
       <div
         className="tool flex items-center gap-2 px-4 py-2.5 text-[14px] text-green"
         style={{
-          ...box(604, 40),
+          ...box(604, 20),
           ...fly(expo(seg(s, 2.36, 2.66)), 0, -24, 10),
         }}
       >
@@ -1532,7 +1533,7 @@ function CmsStage({ s }: { s: number }) {
       <div
         className="tool p-4"
         style={{
-          ...box(604, 120, 200),
+          ...box(604, 100, 200),
           ...fly(expo(seg(s, 0.2, 0.75)), 0, 30, 12),
         }}
       >
@@ -1564,7 +1565,7 @@ function CmsStage({ s }: { s: number }) {
       {/* iPhone: the live product page updates */}
       <IPhone
         style={{
-          ...box(830, 0, 290, 610),
+          ...box(846, 20, 266, 560),
           ...fly(expo(seg(s, 0.04, 0.6)), 220, 0, 16),
         }}
       >
@@ -1581,7 +1582,7 @@ function CmsStage({ s }: { s: number }) {
           </span>
         </div>
         <div className="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <div className="relative grid h-40 place-items-center overflow-hidden bg-[#ebe8e2]">
+          <div className="relative grid h-36 place-items-center overflow-hidden bg-[#ebe8e2]">
             <ImageIcon size={30} className="text-black/20" />
             <div
               className="absolute inset-0"
@@ -1628,10 +1629,10 @@ function CmsStage({ s }: { s: number }) {
           </div>
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2.5 opacity-70">
-          <div className="relative h-20 overflow-hidden rounded-xl">
+          <div className="relative h-16 overflow-hidden rounded-xl">
             <Visual v={1} />
           </div>
-          <div className="relative h-20 overflow-hidden rounded-xl">
+          <div className="relative h-16 overflow-hidden rounded-xl">
             <Visual v={2} />
           </div>
         </div>
@@ -1690,18 +1691,18 @@ function IPhone({
 
 /* ---------------- 4 · Launch ---------------- */
 const L = BUILD.launch;
-const BR = { x: 540, y: 95, w: 600, h: 430 };
+const BR = { x: 540, y: 20, w: 600, h: 560 };
 const PIECES = [
   { x: 0, y: 40, w: 600, h: 50, dx: -420, dy: -120, c: "#e6e0d4" },
-  { x: 24, y: 110, w: 552, h: 160, dx: 460, dy: -80, c: "#efe9de" },
-  { x: 24, y: 290, w: 170, h: 116, dx: -480, dy: 160, c: "#efe9de" },
-  { x: 215, y: 290, w: 170, h: 116, dx: 0, dy: 320, c: "#efe9de" },
-  { x: 406, y: 290, w: 170, h: 116, dx: 480, dy: 160, c: "#efe9de" },
+  { x: 24, y: 112, w: 552, h: 236, dx: 460, dy: -80, c: "#efe9de" },
+  { x: 24, y: 364, w: 170, h: 172, dx: -480, dy: 160, c: "#efe9de" },
+  { x: 215, y: 364, w: 170, h: 172, dx: 0, dy: 320, c: "#efe9de" },
+  { x: 406, y: 364, w: 170, h: 172, dx: 480, dy: 160, c: "#efe9de" },
 ];
 /** launch checklist: when each item finishes (beats), its colour and icon */
 const DONE = [1.05, 1.4, 1.75, 2.1];
-/** the checklist spans exactly the browser's height: 16px header + 20px gap + 4 rows of 88 with 14px gaps = 430 */
-const ROW_H = 88;
+/** the checklist spans exactly the browser's height: 16px header + 20px gap + 4 rows of 120 with 14px gaps = 558 */
+const ROW_H = 120;
 const ROW_Y = BR.y + 36;
 const CHECK = [
   { color: "#5aa2ff", icon: ShieldCheck },
@@ -1815,8 +1816,8 @@ function LaunchStage({ s }: { s: number }) {
                 </div>
               )}
               {i === 1 && (
-                <div className="relative h-full overflow-hidden rounded-xl p-6 text-[#1a1714]">
-                  <div className="absolute inset-y-3 right-3 w-[250px] overflow-hidden rounded-lg">
+                <div className="relative flex h-full flex-col justify-center overflow-hidden rounded-xl p-7 text-[#1a1714]">
+                  <div className="absolute inset-y-3 right-3 w-[270px] overflow-hidden rounded-lg">
                     <Visual />
                   </div>
                   <p className="relative text-[30px] font-semibold leading-none tracking-[-0.045em]">
@@ -1825,14 +1826,14 @@ function LaunchStage({ s }: { s: number }) {
                   <p className="relative mt-2.5 text-[13px] text-[#5c564c]">
                     {BUILD.design.sub}
                   </p>
-                  <span className="relative mt-5 inline-grid h-10 place-items-center rounded-full bg-[#1a1714] px-5 text-[13px] font-semibold text-white">
+                  <span className="relative mt-5 inline-grid h-10 self-start place-items-center rounded-full bg-[#1a1714] px-5 text-[13px] font-semibold text-white">
                     {BUILD.design.button}
                   </span>
                 </div>
               )}
               {i >= 2 && (
                 <div className="flex h-full flex-col p-3">
-                  <div className="relative h-[50px] shrink-0 overflow-hidden rounded-lg">
+                  <div className="relative h-[106px] shrink-0 overflow-hidden rounded-lg">
                     <Visual v={i - 2} />
                   </div>
                   <p className="mt-2.5 truncate text-[12px] font-semibold leading-tight text-[#1a1714]">
