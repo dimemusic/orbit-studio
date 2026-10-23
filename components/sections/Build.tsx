@@ -37,7 +37,7 @@ import {
 import { BUILD } from "@/lib/content";
 import { homeNum } from "../home";
 import { Eyebrow } from "../ui/Bits";
-import { Caret, ease, expo, seg, smooth, Typed, typed } from "../process/util";
+import { along, Caret, ease, expo, seg, smooth, Typed, typed } from "../process/util";
 
 /**
  * «Як ми працюємо»: a ~12s film that plays once by itself when the section comes into view.
@@ -407,87 +407,128 @@ const label = "text-[11px] font-semibold uppercase tracking-[0.1em] text-grey";
 const cell =
   "flex items-center gap-2 rounded-lg bg-white/[0.05] px-2.5 py-2 text-[13px] tabular-nums text-body";
 
+const VI = "#a78bfa"; // designer
+const CY = "#22d3ee"; // copywriter
+const GR = "#34d399"; // client
+/** swatch centres in the Fill panel */
+const swatch = (i: number) => ({ x: 902 + i * 42 + 4, y: 528 + 6 });
+/** where a hand holds an element it drags */
+const grab = (r: Rc) => ({ x: r.x + r.w * 0.55, y: r.y + r.h * 0.62 });
+
 function DesignStage({ s }: { s: number }) {
-  // panels arrive first, then the page assembles itself piece by piece (no pointer)
+  // a team in one file: the designer, the copywriter and the client work at the same time, each with their own cursor and selection colour
   const pan = (i: number) => expo(seg(s, 0.02 + i * 0.04, 0.55 + i * 0.04));
   const frame = smooth(seg(s, 0.4, 0.95));
   const nav = expo(seg(s, 0.9, 1.2));
-  const img = expo(seg(s, 1.0, 1.38));
+  const img = expo(seg(s, 1.02, 1.4));
   const badge = expo(seg(s, 1.25, 1.5));
   const signup = expo(seg(s, 1.3, 1.62));
-  const title = seg(s, 1.42, 1.8);
-  const sub = expo(seg(s, 1.74, 2.0));
+  const title = seg(s, 1.46, 1.84);
+  const sub = expo(seg(s, 1.78, 2.04));
   const btnFly = smooth(seg(s, 1.85, 2.12));
   const more = expo(seg(s, 2.0, 2.25));
-  const pick = seg(s, 2.15, 2.42);
-  const planFly = (k: number) =>
-    smooth(seg(s, 2.22 + k * 0.06, 2.5 + k * 0.06));
+  const pick = seg(s, 2.24, 2.5);
+  const planFly = (k: number) => smooth(seg(s, 2.22 + k * 0.03, 2.5 + k * 0.03));
+  const comment = expo(seg(s, 2.32, 2.6));
   const hover = Math.min(3, Math.floor(pick * 4));
-  const btnColor =
-    s >= 2.42 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
+  const btnColor = s >= 2.5 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
 
-  const SEL_AT = [0.4, 1.0, 1.42, 2.0, 2.5];
-  const sel = s < 1.0 ? 0 : s < 1.42 ? 1 : s < 2.0 ? 2 : s < 2.5 ? 3 : 4;
-  const tool = [1, 2, 3, 0, 0][sel];
-  const rowOf = [0, 1, 3, 5, 6][sel];
-  const ROW_AT = [0.4, 1.0, 1.3, 1.42, 1.74, 1.85, 2.22];
   const at = (r: Rc): Rc => ({ x: AB.x + r.x, y: AB.y + r.y, w: r.w, h: r.h });
-  const finals: Rc[] = [
-    { ...AB },
-    at(R.img),
-    at(R.title),
-    at(R.btn),
-    at(R.plans),
-  ];
-  const rects: Rc[] = [
-    { x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame },
-    ...finals.slice(1),
-  ];
-  // glide from the previous element's box to the new one (no jump)
-  const g = sel ? smooth(seg(s, SEL_AT[sel], SEL_AT[sel] + 0.12)) : 1;
-  const from = finals[Math.max(0, sel - 1)];
-  const to = rects[sel];
-  const selBox: Rc = {
-    x: lerp(from.x, to.x, g),
-    y: lerp(from.y, to.y, g),
-    w: lerp(from.w, to.w, g),
-    h: lerp(from.h, to.h, g),
+  const glide = (list: Rc[], times: number[]) => {
+    let i = 0;
+    while (i < times.length - 1 && s >= times[i + 1]) i++;
+    const g = i ? smooth(seg(s, times[i], times[i] + 0.12)) : 1;
+    const from = list[Math.max(0, i - 1)];
+    const to = list[i];
+    return { i, r: { x: lerp(from.x, to.x, g), y: lerp(from.y, to.y, g), w: lerp(from.w, to.w, g), h: lerp(from.h, to.h, g) } };
   };
-  const fillHex =
-    sel === 3 ? btnColor : sel === 2 ? INK : sel === 4 ? "#ffffff" : "#f4f0e8";
+  // designer: frame → photo → button
+  const V = glide([{ x: AB.x, y: AB.y, w: AB.w * frame, h: AB.h * frame }, at(R.img), at(R.btn)], [0.4, 1.02, 2.02]);
+  // copywriter: title → plans
+  const C = glide([at(R.title), at(R.plans)], [1.46, 2.34]);
+  const selBox = V.r;
+  const tool = s < 1.0 ? 1 : s < 1.4 ? 2 : 0;
+  const rowV = [0, 1, 5][V.i];
+  const rowC = s < 1.46 ? -1 : [3, 6][C.i];
+  const titleOn = s > 1.46 && s < 2.34;
+  const fillHex = V.i === 2 ? btnColor : V.i === 1 ? "#efede9" : "#f4f0e8";
 
   // a component instance flies from its tile in the components panel to its place on the artboard
-  const ghost = (
-    k: number,
-    src: Rc,
-    dst: Rc,
-    children: ReactNode,
-    cls: string,
-    bg?: string,
-  ) =>
-    k > 0 && k < 1 ? (
+  const flyRect = (k: number, src: Rc, dst: Rc): Rc => ({
+    x: lerp(src.x, dst.x, k),
+    y: lerp(src.y, dst.y, k) - Math.sin(Math.PI * k) * 40,
+    w: lerp(src.w, dst.w, k),
+    h: lerp(src.h, dst.h, k),
+  });
+  const ghost = (k: number, src: Rc, dst: Rc, children: ReactNode, cls: string, bg?: string) => {
+    if (!(k > 0 && k < 1)) return null;
+    const r = flyRect(k, src, dst);
+    return (
       <div
         className={`pointer-events-none absolute z-10 ${cls}`}
         style={{
-          left: lerp(src.x, dst.x, k),
-          top: lerp(src.y, dst.y, k) - Math.sin(Math.PI * k) * 40,
-          width: lerp(src.w, dst.w, k),
-          height: lerp(src.h, dst.h, k),
+          left: r.x,
+          top: r.y,
+          width: r.w,
+          height: r.h,
           background: bg,
-          filter: `blur(${(Math.sin(Math.PI * k) * 3).toFixed(2)}px)`,
+          filter: `blur(${(Math.sin(Math.PI * k) * 2.5).toFixed(2)}px)`,
           boxShadow: `0 ${20 * Math.sin(Math.PI * k)}px 40px -12px rgb(0 0 0 / 0.6)`,
           willChange: "left, top, width, height, filter",
         }}
       >
         {children}
       </div>
-    ) : null;
-  const planDst = (k: number): Rc => ({
-    x: AB.x + R.plans.x + k * (PLAN_W + 10),
-    y: AB.y + R.plans.y,
-    w: PLAN_W,
-    h: R.plans.h,
-  });
+    );
+  };
+  const planDst = (k: number): Rc => ({ x: AB.x + R.plans.x + k * (PLAN_W + 10), y: AB.y + R.plans.y, w: PLAN_W, h: R.plans.h });
+
+  // cursors: paths between actions, pinned to whatever they are dragging
+  const btnHand = grab(flyRect(btnFly, tile(0), at(R.btn)));
+  const vPin =
+    s > 0.4 && s < 0.95
+      ? { x: AB.x + AB.w * frame, y: AB.y + AB.h * frame }
+      : s > 1.85 && s < 2.12
+        ? btnHand
+        : s > 2.24 && s < 2.5
+          ? { x: lerp(swatch(0).x, swatch(3).x, pick), y: swatch(0).y }
+          : null;
+  const vPos =
+    vPin ??
+    along(s, [
+      [0, 300, 660],
+      [0.38, AB.x, AB.y],
+      [0.95, AB.x + AB.w, AB.y + AB.h],
+      [1.04, AB.x + 250, AB.y + 150],
+      [1.4, AB.x + 300, AB.y + 196],
+      [1.8, grab(tile(0)).x, grab(tile(0)).y],
+      [2.12, grab(at(R.btn)).x, grab(at(R.btn)).y],
+      [2.24, swatch(0).x, swatch(0).y],
+      [2.5, swatch(3).x, swatch(3).y],
+      [3, swatch(3).x + 20, swatch(3).y + 26],
+    ]);
+  const cPin = s > 2.22 && s < 2.5 ? grab(flyRect(planFly(0), tile(1), planDst(0))) : null;
+  const cPos =
+    cPin ??
+    along(s, [
+      [0, 1250, 330],
+      [1.08, 1250, 330],
+      [1.44, AB.x + R.title.x + 6, AB.y + R.title.y + 26],
+      [1.5, AB.x + R.title.x + 6, AB.y + R.title.y + 26],
+      [1.84, AB.x + 210, AB.y + R.title.y + R.title.h + 46],
+      [2.18, grab(tile(1)).x, grab(tile(1)).y],
+      [2.22, grab(tile(1)).x, grab(tile(1)).y],
+      [2.5, grab(planDst(0)).x, grab(planDst(0)).y],
+      [3, grab(planDst(0)).x + 30, grab(planDst(0)).y + 40],
+    ]);
+  const pinAt = { x: AB.x + 330, y: AB.y + R.btn.y - 34 };
+  const gPos = along(s, [
+    [0, 760, 700],
+    [1.92, 760, 700],
+    [2.3, pinAt.x + 6, pinAt.y + 8],
+    [2.36, pinAt.x + 6, pinAt.y + 8],
+    [3, pinAt.x + 60, pinAt.y + 70],
+  ]);
 
   return (
     <>
@@ -510,7 +551,16 @@ function DesignStage({ s }: { s: number }) {
         className="tool p-4"
         style={{ ...box(112, 20, 220), ...fly(pan(0), -180, 0) }}
       >
-        <p className={label}>{D.pagesLabel}</p>
+        <p className={`${label} flex items-center justify-between`}>
+          {D.pagesLabel}
+          <span className="flex -space-x-1.5">
+            {[VI, CY, GR].map((c, i) => (
+              <span key={c} className="grid size-5 place-items-center rounded-full border-2 border-[#0a0d15] text-[9px] font-bold normal-case tracking-normal text-[#05070d]" style={{ background: c }}>
+                {D.team[i].name[0]}
+              </span>
+            ))}
+          </span>
+        </p>
         <ul className="mt-2.5 flex flex-col gap-0.5 text-[13px]">
           {D.pages.map((p, i) => (
             <li
@@ -531,7 +581,7 @@ function DesignStage({ s }: { s: number }) {
         <p className={label}>{D.layersLabel}</p>
         <ul className="mt-2.5 flex flex-col gap-0.5">
           {D.layers.map((l, i) => {
-            const on = expo(seg(s, ROW_AT[i], ROW_AT[i] + 0.25));
+            const on = expo(seg(s, [0.4, 1.02, 1.3, 1.46, 1.78, 1.85, 2.22][i], [0.4, 1.02, 1.3, 1.46, 1.78, 1.85, 2.22][i] + 0.25));
             const Ic = [
               FrameCorners,
               ImageIcon,
@@ -544,8 +594,13 @@ function DesignStage({ s }: { s: number }) {
             return (
               <li
                 key={l}
-                className={`flex items-center gap-2 rounded-lg px-2 py-1 text-[13px] transition-colors duration-300 ${i === rowOf ? "bg-violet/20 text-fg" : "text-body"}`}
-                style={{ ...fly(on, -16, 0, 5), paddingLeft: i ? 26 : 8 }}
+                className={`flex items-center gap-2 rounded-lg px-2 py-1 text-[13px] transition-colors duration-300 ${i === rowV || i === rowC ? "text-fg" : "text-body"}`}
+                style={{
+                  ...fly(on, -16, 0, 5),
+                  paddingLeft: i ? 26 : 8,
+                  background: i === rowV ? "rgb(167 139 250 / 0.2)" : i === rowC ? "rgb(34 211 238 / 0.16)" : undefined,
+                  transition: "background-color .3s",
+                }}
               >
                 <Ic size={13} className="shrink-0 text-grey" />
                 {l}
@@ -563,14 +618,12 @@ function DesignStage({ s }: { s: number }) {
       </div>
       {D.comps.map((c, i) => {
         const r = tile(i);
-        const hot =
-          (i === 0 && btnFly > 0 && btnFly < 1) ||
-          (i === 1 && planFly(0) > 0 && planFly(2) < 1);
+        const hot = i === 0 && btnFly > 0 && btnFly < 1 ? VI : i === 1 && planFly(0) > 0 && planFly(2) < 1 ? CY : null;
         return (
           <div
             key={c}
-            className={`grid place-items-center gap-1 rounded-lg border transition-colors duration-300 ${hot ? "border-violet bg-violet/10" : "border-transparent bg-white/[0.04]"}`}
-            style={{ ...box(r.x, r.y, r.w, r.h), ...fly(pan(2), -180, 0) }}
+            className="grid place-items-center gap-1 rounded-lg border bg-white/[0.04] transition-colors duration-300"
+            style={{ ...box(r.x, r.y, r.w, r.h), ...fly(pan(2), -180, 0), borderColor: hot ?? "transparent" }}
           >
             {i === 0 && <span className="h-3 w-10 rounded-full bg-white/70" />}
             {i === 1 && <span className="h-4 w-10 rounded bg-white/25" />}
@@ -617,7 +670,7 @@ function DesignStage({ s }: { s: number }) {
           </span>
           <span className={cell}>
             <ArrowsOutLineVertical size={13} className="text-grey" />{" "}
-            {sel === 4 ? 10 : 24}
+            24
           </span>
           <span className={cell}>
             <ArrowsOut size={13} className="text-grey" /> 24
@@ -632,7 +685,7 @@ function DesignStage({ s }: { s: number }) {
         <p className={label}>{D.text}</p>
         <div
           className="mt-2.5 flex flex-col gap-2 transition-opacity duration-300"
-          style={{ opacity: sel === 2 ? 1 : 0.55 }}
+          style={{ opacity: titleOn ? 1 : 0.55 }}
         >
           <span className={`${cell} justify-between text-fg`}>
             {D.font} <CaretDown size={12} className="text-grey" />
@@ -642,7 +695,7 @@ function DesignStage({ s }: { s: number }) {
               {D.weight} <CaretDown size={12} className="text-grey" />
             </span>
             <span
-              className={`${cell} ${sel === 2 ? "text-fg ring-1 ring-violet/60" : ""}`}
+              className={`${cell} ${titleOn ? "text-fg ring-1 ring-cyan/60" : ""}`}
             >
               40
             </span>
@@ -672,7 +725,7 @@ function DesignStage({ s }: { s: number }) {
         </div>
         <div className="mt-2.5 flex items-center gap-2.5">
           {SWATCHES.map((c, i) => {
-            const on = pick > 0 && i === (s >= 2.42 ? 3 : hover);
+            const on = pick > 0 && i === (s >= 2.5 ? 3 : hover);
             return (
               <span
                 key={c}
@@ -757,7 +810,7 @@ function DesignStage({ s }: { s: number }) {
           <Typed
             text={D.title}
             k={title}
-            caret={s > 1.42 && s < 1.86}
+            caret={s > 1.46 && s < 1.9}
             color="#1a1714"
           />
         </p>
@@ -832,30 +885,62 @@ function DesignStage({ s }: { s: number }) {
         </Fragment>
       ))}
 
-      {/* selection + size label */}
-      {s > 0.4 && (
-        <div
-          className="pointer-events-none border-[1.5px] border-violet"
-          style={box(selBox.x - 2, selBox.y - 2, selBox.w + 4, selBox.h + 4)}
-        >
-          {[
-            [-5, -5],
-            [selBox.w - 1, -5],
-            [-5, selBox.h - 1],
-            [selBox.w - 1, selBox.h - 1],
-          ].map(([x, y], i) => (
-            <i
-              key={i}
-              className="absolute size-2.5 border-[1.5px] border-violet bg-white"
-              style={{ left: x, top: y }}
-            />
-          ))}
-          <span className="absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-violet px-2 py-0.5 text-[11px] font-semibold tabular-nums text-white">
-            {Math.round(selBox.w)} × {Math.round(selBox.h)}
-          </span>
-        </div>
-      )}
+      {/* selections in each person's colour */}
+      {s > 0.4 && <Sel r={V.r} color={VI} size />}
+      {s > 1.46 && <Sel r={C.r} color={CY} k={expo(seg(s, 1.46, 1.6))} />}
+      {/* client comment */}
+      <div className="absolute flex items-start gap-2" style={{ ...box(pinAt.x, pinAt.y), ...fly(comment, 0, 10, 6) }}>
+        <span className="grid size-7 shrink-0 place-items-center rounded-full rounded-bl-none text-[12px] font-bold text-[#05070d]" style={{ background: GR }}>
+          {D.team[2].name[0]}
+        </span>
+        <span className="whitespace-nowrap rounded-xl bg-white px-3 py-2 text-[12px] font-medium text-[#1a1714] shadow-[0_10px_30px_-10px_rgb(0_0_0/0.6)]">{D.comment}</span>
+      </div>
+      {/* the team */}
+      <Mate x={vPos.x} y={vPos.y} color={VI} name={D.team[0].name} k={expo(seg(s, 0, 0.3))} down={(s > 0.4 && s < 0.95) || (s > 1.85 && s < 2.12) || (s > 2.46 && s < 2.54)} />
+      <Mate x={cPos.x} y={cPos.y} color={CY} name={D.team[1].name} k={expo(seg(s, 1.08, 1.3))} down={(s > 1.44 && s < 1.5) || (s > 2.22 && s < 2.5)} />
+      <Mate x={gPos.x} y={gPos.y} color={GR} name={D.team[2].name} k={expo(seg(s, 1.92, 2.12))} down={s > 2.3 && s < 2.36} />
     </>
+  );
+}
+
+/** a selection box in one person's colour */
+function Sel({ r, color, size = false, k = 1 }: { r: Rc; color: string; size?: boolean; k?: number }) {
+  return (
+    <div className="pointer-events-none absolute border-[1.5px]" style={{ ...box(r.x - 2, r.y - 2, r.w + 4, r.h + 4), borderColor: color, opacity: k }}>
+      {[
+        [-5, -5],
+        [r.w - 1, -5],
+        [-5, r.h - 1],
+        [r.w - 1, r.h - 1],
+      ].map(([x, y], i) => (
+        <i key={i} className="absolute size-2.5 border-[1.5px] bg-white" style={{ left: x, top: y, borderColor: color }} />
+      ))}
+      {size && (
+        <span className="absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md px-2 py-0.5 text-[11px] font-semibold tabular-nums text-[#05070d]" style={{ background: color }}>
+          {Math.round(r.w)} × {Math.round(r.h)}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** a teammate's cursor, Figma multiplayer style: coloured arrow + name tag; (x, y) is the tip */
+function Mate({ x, y, color, name, down = false, k = 1 }: { x: number; y: number; color: string; name: string; down?: boolean; k?: number }) {
+  return (
+    <div className="pointer-events-none absolute z-30" style={{ left: x, top: y, opacity: k, willChange: "left, top" }}>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        className="absolute -left-[4px] -top-[2px] [filter:drop-shadow(0_2px_4px_rgb(0_0_0/0.45))]"
+        style={{ transformOrigin: "4px 2px", transform: `scale(${down ? 0.88 : 1})`, transition: "transform .12s" }}
+      >
+        <path d="M4 2v17.2l4.1-3.9 2.9 6.6 2.9-1.25-2.85-6.45h5.9z" fill={color} stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+      </svg>
+      <span className="absolute left-[14px] top-[20px] whitespace-nowrap rounded-md rounded-tl-none px-2 py-0.5 text-[11px] font-semibold text-[#05070d] shadow-[0_4px_12px_-4px_rgb(0_0_0/0.5)]" style={{ background: color }}>
+        {name}
+      </span>
+    </div>
   );
 }
 

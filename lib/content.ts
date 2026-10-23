@@ -346,6 +346,9 @@ export const BUILD = {
   // neutral demo theme of the mock site: a generic product page (not a client)
   design: {
     layers: ["Desktop", "Фото", "Форма", "Заголовок", "Опис", "Кнопка", "Тарифи"],
+    /** people working in the file at the same time (roles, not real names) */
+    team: [{ name: "Дизайнер" }, { name: "Редактор" }, { name: "Клієнт" }],
+    comment: "Те, що треба!",
     layersLabel: "Шари",
     pagesLabel: "Сторінки",
     pages: ["Головна", "Каталог", "Про нас"],
