@@ -15,6 +15,37 @@ export const smooth = (k: number) => {
   return x * x * x * (x * (x * 6 - 15) + 10);
 };
 
+/** ease-out expo: quick start, long soft settle (the "expensive" feel) */
+export const expo = (k: number) => {
+  const x = Math.min(1, Math.max(0, k));
+  return x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+};
+
+/** soft typing: letters appear as a short wave (fade + slight blur + rise), not a hard append */
+export function Typed({ text, k, caret = false, color = "#f5f7fa" }: { text: string; k: number; caret?: boolean; color?: string }) {
+  const chars = Array.from(text);
+  const W = 2.4; // wave length in letters
+  const n = (chars.length + W) * Math.min(1, Math.max(0, k));
+  const cut = Math.min(chars.length, Math.ceil(n));
+  return (
+    <>
+      {chars.slice(0, cut).map((ch, i) => {
+        const a = Math.min(1, Math.max(0, (n - i) / W));
+        return (
+          <span
+            key={i}
+            className="inline-block whitespace-pre"
+            style={a < 1 ? { opacity: a, filter: `blur(${((1 - a) * 3).toFixed(2)}px)`, transform: `translateY(${((1 - a) * 0.14).toFixed(3)}em)` } : undefined}
+          >
+            {ch}
+          </span>
+        );
+      })}
+      <Caret on={caret} color={color} />
+    </>
+  );
+}
+
 /** position on a timed path: points are [t, x, y], linear between them with ease */
 export function along(t: number, pts: [number, number, number][]) {
   if (t <= pts[0][0]) return { x: pts[0][1], y: pts[0][2] };

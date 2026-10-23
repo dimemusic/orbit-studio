@@ -1,11 +1,11 @@
 "use client";
 
-import { ArrowRight, CheckCircle, Cursor, FrameCorners, Hand, Image as ImageIcon, Lock, MapPin, PenNib, Square, TextT, UploadSimple } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, CalendarBlank, CheckCircle, Cursor, FrameCorners, Hand, Image as ImageIcon, Lock, MagnifyingGlass, MapPin, PenNib, Square, TextT, UploadSimple, Users } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { BUILD } from "@/lib/content";
 import { homeNum } from "../home";
 import { Eyebrow } from "../ui/Bits";
-import { along, Caret, ease, Pointer, seg, smooth, typed } from "../process/util";
+import { along, Caret, ease, expo, Pointer, seg, smooth, Typed, typed } from "../process/util";
 
 /**
  * «Як ми працюємо»: a ~12s film that plays once by itself when the section comes into view.
@@ -17,7 +17,7 @@ import { along, Caret, ease, Pointer, seg, smooth, typed } from "../process/util
 /** each stage's inner timeline is 3 beats; this is how many real seconds each one gets.
  *  Design (the craft) and the panel (the client's benefit) get more time, code and launch read at a glance. */
 const BEATS = 3;
-const STAGE_SEC = [4.6, 2.8, 3.6, 3.0];
+const STAGE_SEC = [5.0, 3.2, 4.0, 3.4];
 const STAGE_START = STAGE_SEC.map((_, i) => STAGE_SEC.slice(0, i).reduce((a, b) => a + b, 0));
 const TOTAL = STAGE_SEC.reduce((a, b) => a + b, 0);
 const stageAt = (t: number) => {
@@ -33,6 +33,7 @@ const fly = (k: number, dx = 0, dy = 0, px = 14, extra = ""): CSSProperties => (
   transform: `translate3d(${((1 - k) * dx).toFixed(1)}px, ${((1 - k) * dy).toFixed(1)}px, 0) ${extra}`,
   filter: k < 1 ? `blur(${((1 - k) * px).toFixed(2)}px)` : undefined,
   opacity: Math.min(1, k * 1.6),
+  willChange: k < 1 ? "transform, filter, opacity" : undefined,
 });
 
 export function Build() {
@@ -131,18 +132,19 @@ export function Build() {
           const start = STAGE_START[i];
           const len = STAGE_SEC[i];
           if (t < start - 0.15 || (i < BUILD.stages.length - 1 && t > start + len + 0.05)) return null;
-          const enter = i === 0 ? 1 : smooth(seg(t, start - 0.12, start + 0.45));
-          const exitK = i === BUILD.stages.length - 1 ? 0 : seg(t, start + len - 0.4, start + len);
-          const exit = exitK * exitK;
+          const enter = i === 0 ? 1 : expo(seg(t, start - 0.08, start + 0.7));
+          const exitK = i === BUILD.stages.length - 1 ? 0 : seg(t, start + len - 0.32, start + len);
+          const exit = exitK * exitK * exitK;
           const s0 = (Math.max(0, t - start) / len) * BEATS;
           return (
             <div
               key={s.id}
               className="absolute inset-0"
               style={{
-                transform: `translate3d(${((1 - enter) * 340 - exit * 340).toFixed(1)}px, 0, 0)`,
-                filter: enter < 1 || exit > 0 ? `blur(${((1 - enter) * 20 + exit * 20).toFixed(1)}px)` : undefined,
-                opacity: Math.min(1, enter * 1.4) * (1 - exit),
+                transform: `translate3d(${((1 - enter) * 200 - exit * 220).toFixed(1)}px, 0, 0) scale(${(1 - (1 - enter) * 0.03 - exit * 0.03).toFixed(4)})`,
+                filter: enter < 0.995 || exit > 0 ? `blur(${((1 - enter) * 12 + exit * 14).toFixed(1)}px)` : undefined,
+                opacity: Math.min(1, enter * 1.25) * (1 - exit),
+                willChange: "transform, filter, opacity",
               }}
             >
               {i === 0 && <DesignStage s={s0} />}
@@ -163,7 +165,7 @@ function Title({ t }: { t: number }) {
   const st = BUILD.stages[i];
   const end = STAGE_START[i] + STAGE_SEC[i];
   const start = STAGE_START[i] + (i === 0 ? 0.15 : 0.04);
-  const out = i === BUILD.stages.length - 1 ? 0 : smooth(seg(t, end - 0.35, end));
+  const out = i === BUILD.stages.length - 1 ? 0 : seg(t, end - 0.3, end) ** 2;
   const words = st.title;
   let n = 0;
   return (
@@ -171,7 +173,7 @@ function Title({ t }: { t: number }) {
       {words.map((w, wi) => (
         <span key={wi} className="inline-block whitespace-nowrap" style={{ color: wi === words.length - 1 ? st.color : undefined }}>
           {Array.from(w).map((ch, ci) => {
-            const k = smooth(seg(t, start + n * 0.03, start + 0.42 + n * 0.03));
+            const k = expo(seg(t, start + n * 0.022, start + 0.62 + n * 0.022));
             n++;
             return (
               <span
@@ -280,22 +282,22 @@ const D = BUILD.design;
 const AB = { x: 360, y: 20, w: 480, h: 560 };
 /** element rects inside the artboard: drawn AND selected from the same numbers, so the selection always fits */
 const R = {
-  img: { x: 24, y: 64, w: 432, h: 180 },
-  title: { x: 24, y: 272, w: 420, h: 54 },
-  btn: { x: 24, y: 400, w: 150, h: 46 },
+  img: { x: 24, y: 64, w: 432, h: 168 },
+  title: { x: 24, y: 286, w: 420, h: 50 },
+  btn: { x: 24, y: 394, w: 150, h: 46 },
 };
 const SWATCHES = ["#e8492a", "#a78bfa", "#22d3ee", "#3d5a3a"];
 const TOOLS = [Cursor, FrameCorners, Square, TextT, PenNib, Hand];
 
 function DesignStage({ s }: { s: number }) {
   // panels arrive quickly, the drawing itself takes its time
-  const tb = smooth(seg(s, 0.1, 0.45));
-  const ly = smooth(seg(s, 0.2, 0.55));
-  const pr = smooth(seg(s, 0.15, 0.5));
+  const tb = expo(seg(s, 0.06, 0.6));
+  const ly = expo(seg(s, 0.14, 0.68));
+  const pr = expo(seg(s, 0.1, 0.64));
   const frame = smooth(seg(s, 0.5, 1.05));
   const img = smooth(seg(s, 1.2, 1.5));
   const title = seg(s, 1.62, 2.0);
-  const lines = smooth(seg(s, 2.0, 2.1));
+  const lines = expo(seg(s, 1.96, 2.22));
   const btn = smooth(seg(s, 2.1, 2.26));
   const pick = seg(s, 2.36, 2.56);
   const hover = Math.min(3, Math.floor(pick * 4));
@@ -322,8 +324,10 @@ function DesignStage({ s }: { s: number }) {
     [1.05, AB.x + AB.w, AB.y + AB.h],
     [1.2, AB.x + R.img.x + 2, AB.y + R.img.y + 2],
     [1.5, AB.x + R.img.x + R.img.w, AB.y + R.img.y + R.img.h],
-    [1.62, AB.x + R.title.x + 6, AB.y + R.title.y + 28],
-    [2.0, AB.x + R.title.x + 60, AB.y + R.title.y + 70],
+    [1.6, AB.x + R.title.x + 4, AB.y + R.title.y + 26],
+    // click to place the caret, then drift out of the way while the title is typed
+    [1.78, AB.x + R.title.x + 150, AB.y + R.title.y + R.title.h + 44],
+    [2.0, AB.x + R.title.x + 120, AB.y + R.title.y + R.title.h + 56],
     [2.1, AB.x + R.btn.x + 2, AB.y + R.btn.y + 2],
     [2.26, AB.x + R.btn.x + R.btn.w, AB.y + R.btn.y + R.btn.h],
     [2.36, 930, 444],
@@ -397,38 +401,56 @@ function DesignStage({ s }: { s: number }) {
         </div>
       </div>
       {/* artboard: the site being drawn (children use the same rects as the selection) */}
-      <div className="overflow-hidden rounded-md bg-[#f4f0e8] text-[#1a1714]" style={{ ...box(AB.x, AB.y, AB.w, AB.h), clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)` }}>
+      <div className="overflow-hidden rounded-md bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-40px_rgb(0_0_0/0.9)]" style={{ ...box(AB.x, AB.y, AB.w, AB.h), clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)` }}>
         <div className="absolute inset-x-6 top-5 flex items-center justify-between">
           <span className="text-[17px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
           <span className="flex items-center gap-4 text-[12px] font-medium text-[#5c564c]">
             {D.nav.map((n) => (
               <span key={n}>{n}</span>
             ))}
+            <span className="rounded-full bg-[#1a1714] px-3 py-1.5 text-[11px] font-semibold text-[#f4f0e8]">{D.login}</span>
           </span>
         </div>
         {s > 1.2 && (
           <div className="absolute overflow-hidden rounded-xl bg-[#e3d8c6]" style={box(R.img.x, R.img.y, R.img.w * imgK, R.img.h * imgK)}>
-            <div className="absolute left-0 top-0" style={{ width: R.img.w, height: R.img.h, opacity: smooth(seg(s, 1.3, 1.5)) }}>
+            <div className="absolute left-0 top-0" style={{ width: R.img.w, height: R.img.h, opacity: expo(seg(s, 1.28, 1.6)) }}>
               <Mountains />
-              <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-[#1a1714]" style={{ opacity: smooth(seg(s, 1.45, 1.56)) }}>
+              <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-[#1a1714]" style={fly(expo(seg(s, 1.42, 1.7)), -10, 0, 4)}>
                 <MapPin size={12} weight="fill" /> {D.place}
               </span>
             </div>
           </div>
         )}
+        {/* booking bar floating over the photo */}
+        <div
+          className="absolute flex items-center gap-1 rounded-2xl bg-white p-1.5 shadow-[0_12px_30px_-12px_rgb(40_30_20/0.45)]"
+          style={{ ...box(R.img.x + 16, R.img.y + R.img.h - 24, R.img.w - 32, 48), ...fly(expo(seg(s, 1.5, 1.85)), 0, 18, 8) }}
+        >
+          {D.book.map(([l, v], k) => (
+            <span key={l} className={`flex flex-1 items-center gap-2 px-2.5 ${k ? "border-l border-black/10" : ""}`}>
+              {[CalendarBlank, CalendarBlank, Users].map((Ic, j) => j === k && <Ic key={j} size={15} className="shrink-0 text-[#7a7368]" />)}
+              <span className="leading-tight">
+                <span className="block text-[10px] text-[#7a7368]">{l}</span>
+                <span className="block whitespace-nowrap text-[12px] font-semibold">{v}</span>
+              </span>
+            </span>
+          ))}
+          <span className="flex h-full items-center gap-1.5 rounded-xl bg-[#1a1714] px-3.5 text-[12px] font-semibold text-[#f4f0e8]">
+            <MagnifyingGlass size={13} weight="bold" /> {D.find}
+          </span>
+        </div>
         <p className="absolute flex items-center whitespace-nowrap text-[40px] font-semibold leading-none tracking-[-0.045em]" style={box(R.title.x, R.title.y, R.title.w, R.title.h)}>
-          {typed(D.title, title)}
-          <Caret on={s > 1.62 && s < 2.04} color="#1a1714" />
+          <Typed text={D.title} k={title} caret={s > 1.62 && s < 2.04} color="#1a1714" />
         </p>
-        <p className="absolute text-[15px] text-[#5c564c]" style={{ ...box(R.title.x, R.title.y + R.title.h + 8, R.title.w), ...fly(lines, 0, 8, 6) }}>
+        <p className="absolute text-[15px] text-[#5c564c]" style={{ ...box(R.title.x, R.title.y + R.title.h + 8, R.title.w), ...fly(lines, 0, 10, 6) }}>
           {D.sub}
         </p>
-        <span className="absolute flex items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold text-[#1a1714]" style={{ ...box(R.btn.x + R.btn.w + 22, R.btn.y, undefined, R.btn.h), opacity: smooth(seg(s, 2.2, 2.32)) }}>
+        <span className="absolute flex items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold text-[#1a1714]" style={{ ...box(R.btn.x + R.btn.w + 22, R.btn.y, undefined, R.btn.h), ...fly(expo(seg(s, 2.18, 2.45)), -12, 0, 5) }}>
           {D.more} <ArrowRight size={14} />
         </span>
-        <div className="absolute grid grid-cols-3 gap-2.5" style={box(R.img.x, 474, R.img.w)}>
+        <div className="absolute grid grid-cols-3 gap-2.5" style={box(R.img.x, 470, R.img.w)}>
           {D.houses.map((h, k) => (
-            <div key={h.name} className="flex items-center gap-2.5 rounded-xl bg-white p-2 shadow-[0_1px_2px_rgb(0_0_0/0.06)]" style={fly(smooth(seg(s, 2.0 + k * 0.06, 2.16 + k * 0.06)), 0, 14, 6)}>
+            <div key={h.name} className="flex items-center gap-2.5 rounded-xl bg-white p-2 shadow-[0_1px_2px_rgb(0_0_0/0.06)]" style={fly(expo(seg(s, 1.98 + k * 0.07, 2.3 + k * 0.07)), 0, 16, 6)}>
               <span className="relative size-11 shrink-0 overflow-hidden rounded-lg">
                 <Mountains v={k} />
               </span>
@@ -486,6 +508,7 @@ const LINES: Tok[][] = [
   [["      <", PU], ["h1", TG], [">", PU], [C.h1, TX], ["</", PU], ["h1", TG], [">", PU]],
   [["      <", PU], ["p", TG], [">", PU], [C.p, TX], ["</", PU], ["p", TG], [">", PU]],
   [["      <", PU], ["Button", TG], [">", PU], [C.btn, TX], ["</", PU], ["Button", TG], [">", PU]],
+  [["      <", PU], ["Booking", TG], [" dates guests", AT], [" />", PU]],
   [["    </", PU], ["Hero", TG], [">", PU]],
   [["    <", PU], ["Houses", TG], [" items", AT], ["=", PU], ["{", PU], ["houses", TX], ["}", PU], [" />", PU]],
   [["  );", PU]],
@@ -503,12 +526,12 @@ function CodeStage({ s }: { s: number }) {
     const before = LINES[line].slice(0, tok).reduce((a, [x]) => a + x.length, 0);
     return typed(LINES[line][tok][0], (chars - START[line] - before) / LINES[line][tok][0].length);
   };
-  const term = ease(seg(s, 1.92, 2.1));
+  const term = expo(seg(s, 1.9, 2.2));
 
   return (
     <>
       {/* code written straight on the background */}
-      <div className="border-l-2 border-[#5aa2ff]/40 pl-6 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[19px] leading-[38px]" style={box(40, 20, 640)}>
+      <div className="border-l-2 border-[#5aa2ff]/40 pl-6 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[18px] leading-[34px]" style={box(40, 20, 640)}>
         {LINES.map((line, i) => {
           let left = chars - START[i];
           const k = ease(Math.min(1, lineK(i) * 4));
@@ -535,12 +558,12 @@ function CodeStage({ s }: { s: number }) {
       <div className="tool flex items-center gap-4 px-5 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[15px]" style={{ ...box(40, 456, 640, 60), ...fly(term, 0, 40, 12) }}>
         <span className="text-green">~/your-site $</span>
         <span className="text-body">{typed(C.cmd, seg(s, 2.02, 2.2))}</span>
-        <span className="ml-auto flex items-center gap-2 text-green" style={fly(ease(seg(s, 2.24, 2.36)), 20, 0, 8)}>
+        <span className="ml-auto flex items-center gap-2 text-green" style={fly(expo(seg(s, 2.22, 2.45)), 20, 0, 8)}>
           <CheckCircle size={17} weight="fill" /> {C.ok}
         </span>
       </div>
       {/* live preview building as the code is written */}
-      <div className="overflow-hidden rounded-xl bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-30px_rgb(0_0_0/0.9)]" style={{ ...box(730, 20, 430, 496), ...fly(ease(seg(s, 0.1, 0.5)), 220, 0, 18) }}>
+      <div className="overflow-hidden rounded-xl bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-30px_rgb(0_0_0/0.9)]" style={{ ...box(730, 20, 430, 496), ...fly(expo(seg(s, 0.06, 0.6)), 220, 0, 18) }}>
         <div className="flex h-8 items-center gap-1.5 bg-[#e6e0d4] px-3">
           <i className="size-2 rounded-full bg-black/20" />
           <i className="size-2 rounded-full bg-black/20" />
@@ -548,27 +571,38 @@ function CodeStage({ s }: { s: number }) {
           <span className="ml-2 rounded bg-white/70 px-2 text-[11px] text-[#5c564c]">localhost:3000</span>
         </div>
         <div className="p-5">
-          <div className="flex items-center justify-between" style={fly(ease(lineK(2)), 0, -16, 8)}>
-            <span className="text-[16px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
-            <span className="flex gap-2">
-              <i className="h-1.5 w-9 rounded-full bg-black/20" />
-              <i className="h-1.5 w-9 rounded-full bg-black/20" />
+          <div className="flex items-center justify-between" style={fly(expo(lineK(2)), 0, -16, 8)}>
+            <span className="text-[15px] font-semibold tracking-[-0.03em]">{BUILD.brand}</span>
+            <span className="flex items-center gap-3 text-[10px] font-medium text-[#5c564c]">
+              {BUILD.design.nav.map((n) => (
+                <span key={n}>{n}</span>
+              ))}
+              <span className="rounded-full bg-[#1a1714] px-2 py-1 text-[9px] font-semibold text-[#f4f0e8]">{BUILD.design.login}</span>
             </span>
           </div>
-          <div className="relative mt-5 h-[76px] overflow-hidden rounded-xl" style={fly(ease(lineK(3)), 0, 16, 10)}>
+          <div className="relative mt-4 h-[64px] overflow-hidden rounded-xl" style={fly(expo(lineK(3)), 0, 16, 10)}>
             <Mountains />
           </div>
-          <div className="pt-4">
-            <p className="min-h-[30px] text-[28px] font-semibold leading-none tracking-[-0.045em]">{textOf(4, 3)}</p>
-            <p className="mt-2 min-h-[20px] text-[14px] text-[#5c564c]">{textOf(5, 3)}</p>
-            <span className="mt-4 inline-grid h-10 min-w-[110px] place-items-center rounded-full bg-[#3d5a3a] px-5 text-[13px] font-semibold text-white" style={fly(ease(Math.min(1, lineK(6) * 2.5)), 0, 12, 8)}>
+          <div className="pt-3">
+            <p className="min-h-[28px] text-[26px] font-semibold leading-none tracking-[-0.045em]">{textOf(4, 3)}</p>
+            <p className="mt-1.5 min-h-[18px] text-[13px] text-[#5c564c]">{textOf(5, 3)}</p>
+            <span className="mt-3 inline-grid h-9 min-w-[110px] place-items-center rounded-full bg-[#3d5a3a] px-5 text-[12px] font-semibold text-white" style={fly(expo(Math.min(1, lineK(6) * 2.5)), 0, 12, 8)}>
               {textOf(6, 3) || " "}
             </span>
           </div>
-          <div className="mt-5 grid grid-cols-3 gap-2.5">
+          <div className="mt-3 flex items-center gap-1 rounded-xl bg-white p-1 shadow-[0_6px_16px_-10px_rgb(40_30_20/0.5)]" style={fly(expo(Math.min(1, lineK(7) * 2)), 0, 14, 8)}>
+            {BUILD.design.book.map(([l, v], k) => (
+              <span key={l} className={`flex-1 px-2 leading-tight ${k ? "border-l border-black/10" : ""}`}>
+                <span className="block text-[9px] text-[#7a7368]">{l}</span>
+                <span className="block whitespace-nowrap text-[11px] font-semibold">{v}</span>
+              </span>
+            ))}
+            <span className="grid h-8 place-items-center rounded-lg bg-[#1a1714] px-2.5 text-[11px] font-semibold text-[#f4f0e8]">{BUILD.design.find}</span>
+          </div>
+          <div className="mt-4 grid grid-cols-3 gap-2.5">
             {[0, 1, 2].map((k) => (
-              <div key={k} className="rounded-lg bg-white p-2" style={fly(ease(seg(lineK(8), k * 0.25, k * 0.25 + 0.5)), 0, 40, 12)}>
-                <div className="relative h-16 overflow-hidden rounded-md">
+              <div key={k} className="rounded-lg bg-white p-2" style={fly(expo(seg(lineK(9), k * 0.2, k * 0.2 + 0.6)), 0, 30, 10)}>
+                <div className="relative h-14 overflow-hidden rounded-md">
                   <Mountains v={k} />
                 </div>
                 <p className="mt-2 truncate text-[11px] font-semibold">{BUILD.design.houses[k].name}</p>
@@ -593,7 +627,9 @@ function CmsStage({ s }: { s: number }) {
   const stock = s > 2.05;
   const pressed = s > 2.2 && s < 2.35;
   const pub = s > 2.35;
-  const card = (k: number) => fly(ease(seg(s, 0.1 + k * 0.1, 0.5 + k * 0.1)), -260, 0, 16);
+  const card = (k: number) => fly(expo(seg(s, 0.06 + k * 0.07, 0.6 + k * 0.07)), -200, 0, 14);
+  const photoK = expo(seg(s, 1.88, 2.1));
+  const stockK = expo(seg(s, 2.05, 2.3));
   const path: [number, number, number][] = [
     [0, 620, 560],
     [0.38, 460, 82],
@@ -614,21 +650,22 @@ function CmsStage({ s }: { s: number }) {
     <>
       <div className="tool p-5" style={{ ...box(60, 30, 480), ...card(0) }}>
         <p className="text-[13px] text-grey">{M.name}</p>
-        <p className={`${input} ${s > 0.4 && s < 1.1 ? "border-cyan" : "border-white/15"}`}>
-          {name}
-          <Caret on={s > 0.4 && s < 1.1} color="#22d3ee" />
+        <p className={`${input} transition-colors duration-300 ${s > 0.4 && s < 1.1 ? "border-cyan" : "border-white/15"}`}>
+          <Typed text={M.nameVal} k={seg(s, 0.45, 1.05)} caret={s > 0.4 && s < 1.1} color="#22d3ee" />
         </p>
       </div>
       <div className="tool p-5" style={{ ...box(60, 150, 230), ...card(1) }}>
         <p className="text-[13px] text-grey">{M.price}</p>
-        <p className={`${input} tabular-nums ${s > 1.12 && s < 1.45 ? "border-cyan" : "border-white/15"}`}>
-          {price}
-          <Caret on={s > 1.12 && s < 1.45} color="#22d3ee" />
+        <p className={`${input} tabular-nums transition-colors duration-300 ${s > 1.12 && s < 1.45 ? "border-cyan" : "border-white/15"}`}>
+          <Typed text={M.priceVal} k={seg(s, 1.15, 1.4)} caret={s > 1.12 && s < 1.45} color="#22d3ee" />
         </p>
       </div>
       <div className="tool flex items-center gap-4 p-5" style={{ ...box(60, 270, 480, 104), ...card(2) }}>
         <span className="relative grid size-16 shrink-0 place-items-center overflow-hidden rounded-xl bg-white/[0.06]">
-          {photo ? <Mountains /> : <ImageIcon size={24} className="text-grey" />}
+          <ImageIcon size={24} className="text-grey" />
+          <span className="absolute inset-0" style={{ opacity: photoK, transform: `scale(${1.15 - photoK * 0.15})` }}>
+            <Mountains />
+          </span>
         </span>
         <div className="flex-1">
           <p className="flex items-center gap-2 text-[15px] text-body">
@@ -642,8 +679,8 @@ function CmsStage({ s }: { s: number }) {
       </div>
       <div className="tool flex items-center justify-between px-5" style={{ ...box(60, 396, 480, 64), ...card(3) }}>
         <span className="text-[16px] text-fg">{M.stock}</span>
-        <span className={`relative h-7 w-12 rounded-full transition-colors duration-300 ${stock ? "bg-green" : "bg-white/15"}`}>
-          <span className={`absolute top-1 size-5 rounded-full bg-white transition-all duration-300 ${stock ? "left-6" : "left-1"}`} />
+        <span className="relative h-7 w-12 rounded-full" style={{ background: `color-mix(in srgb, #34d399 ${(stockK * 100).toFixed(0)}%, rgb(255 255 255 / 0.15))` }}>
+          <span className="absolute left-1 top-1 size-5 rounded-full bg-white shadow" style={{ transform: `translateX(${(stockK * 20).toFixed(1)}px)` }} />
         </span>
       </div>
       <span
@@ -654,11 +691,38 @@ function CmsStage({ s }: { s: number }) {
         {pub ? M.published : M.publish}
       </span>
       {/* toast */}
-      <div className="tool flex items-center gap-2 px-4 py-2.5 text-[14px] text-green" style={{ ...box(600, 40), ...fly(ease(seg(s, 2.4, 2.6)), 0, -30, 12) }}>
+      <div className="tool flex items-center gap-2 px-4 py-2.5 text-[14px] text-green" style={{ ...box(580, 40), ...fly(expo(seg(s, 2.4, 2.7)), 0, -24, 10) }}>
         <CheckCircle size={16} weight="fill" /> {M.toast}
       </div>
+      {/* availability calendar: the free dates light up when «Вільно» is on */}
+      <div className="tool p-4" style={{ ...box(580, 150, 220), ...fly(expo(seg(s, 0.2, 0.75)), 0, 30, 12) }}>
+        <p className="flex items-center justify-between text-[13px] font-semibold text-fg">
+          {M.cal} <CalendarBlank size={15} className="text-grey" />
+        </p>
+        <div className="mt-3 grid grid-cols-7 gap-1 text-center text-[11px] tabular-nums">
+          {Array.from({ length: 28 }, (_, d) => {
+            const day = d + 1;
+            const booked = day >= 12 && day <= 14;
+            const free = !booked && day % 7 >= 5;
+            const k = free ? stockK : 0;
+            return (
+              <span
+                key={d}
+                className="grid h-6 place-items-center rounded-md"
+                style={{
+                  background: booked ? "rgb(255 255 255 / 0.14)" : `rgb(52 211 153 / ${(0.22 * k).toFixed(3)})`,
+                  color: booked ? "#f5f7fa" : k > 0.5 ? "#34d399" : "#8b919c",
+                }}
+              >
+                {day}
+              </span>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-[11px] text-grey">{M.calNote}</p>
+      </div>
       {/* iPhone: the live site updates */}
-      <IPhone style={{ ...box(830, 0, 290, 610), ...fly(ease(seg(s, 0.05, 0.45)), 260, 0, 18) }}>
+      <IPhone style={{ ...box(830, 0, 290, 610), ...fly(expo(seg(s, 0.04, 0.6)), 220, 0, 16) }}>
         <div className="flex items-center justify-between px-1">
           <span className="text-[15px] font-semibold">{BUILD.brand}</span>
           <span className={`flex items-center gap-1.5 text-[11px] font-semibold ${pub ? "text-[#1f8f5f]" : "text-black/30"}`}>
@@ -667,19 +731,26 @@ function CmsStage({ s }: { s: number }) {
           </span>
         </div>
         <div className="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <div className="relative grid h-40 place-items-center bg-[#ebe5da]">
+          <div className="relative grid h-40 place-items-center overflow-hidden bg-[#ebe5da]">
             <ImageIcon size={30} className="text-black/20" />
-            <div className="absolute inset-0 transition-opacity duration-500" style={{ opacity: photo ? 1 : 0 }}>
+            <div className="absolute inset-0" style={{ opacity: photoK, transform: `scale(${1.12 - photoK * 0.12})` }}>
               <Mountains />
             </div>
           </div>
           <div className="p-4">
-            <p className="min-h-[44px] text-[17px] font-semibold leading-tight">{name || " "}</p>
+            <p className="min-h-[22px] text-[17px] font-semibold leading-tight">{name || " "}</p>
             <div className="mt-2 flex items-center justify-between">
               <span className="text-[18px] font-semibold tabular-nums">{price}</span>
-              <span className="rounded-full bg-[#1f8f5f]/15 px-2.5 py-1 text-[11px] font-semibold text-[#1f8f5f]" style={fly(stock ? 1 : 0, 10, 0, 6)}>
+              <span className="rounded-full bg-[#1f8f5f]/15 px-2.5 py-1 text-[11px] font-semibold text-[#1f8f5f]" style={fly(stockK, 10, 0, 6)}>
                 {M.stock}
               </span>
+            </div>
+            <div className="mt-3 flex gap-1.5">
+              {M.amen.map((a) => (
+                <span key={a} className="rounded-full bg-[#f1ece2] px-2 py-0.5 text-[10px] font-medium text-[#5c564c]">
+                  {a}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -746,11 +817,11 @@ const PIECES = [
   { x: 406, y: 290, w: 170, h: 116, dx: 480, dy: 160, c: "#efe9de" },
 ];
 function LaunchStage({ s }: { s: number }) {
-  const shell = ease(seg(s, 0.05, 0.4));
+  const shell = expo(seg(s, 0.03, 0.55));
   const url = typed(L.url, seg(s, 1.25, 1.65));
   const deploy = ease(seg(s, 1.6, 2.0));
   const sweep = seg(s, 2.0, 2.45);
-  const online = ease(seg(s, 2.0, 2.25));
+  const online = expo(seg(s, 2.0, 2.35));
   const lift = ease(seg(s, 2.0, 2.4));
   const cx = BR.x + BR.w / 2;
   return (
@@ -785,7 +856,7 @@ function LaunchStage({ s }: { s: number }) {
           />
         )}
         {PIECES.map((p, i) => {
-          const k = ease(seg(s, 0.35 + i * 0.12, 0.8 + i * 0.12));
+          const k = expo(seg(s, 0.3 + i * 0.1, 0.95 + i * 0.1));
           return (
             <div
               key={i}
@@ -839,7 +910,7 @@ function LaunchStage({ s }: { s: number }) {
       </div>
       <ul className="flex justify-center gap-3" style={box(BR.x - 60, 536, BR.w + 120)}>
         {L.checks.map((c, i) => (
-          <li key={c} className="tool flex items-center gap-2 px-4 py-2.5 text-[15px] text-fg" style={fly(ease(seg(s, 2.3 + i * 0.1, 2.6 + i * 0.1)), 0, 30, 12)}>
+          <li key={c} className="tool flex items-center gap-2 px-4 py-2.5 text-[15px] text-fg" style={fly(expo(seg(s, 2.25 + i * 0.08, 2.65 + i * 0.08)), 0, 24, 10)}>
             <CheckCircle size={17} weight="fill" className="text-green" /> {c}
           </li>
         ))}
