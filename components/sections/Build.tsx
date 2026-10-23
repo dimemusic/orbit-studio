@@ -1724,6 +1724,9 @@ const PIECES = [
 ];
 /** launch checklist: when each item finishes (beats), its colour and icon */
 const DONE = [1.05, 1.4, 1.75, 2.1];
+/** the checklist spans exactly the browser's height: 16px header + 20px gap + 4 rows of 88 with 14px gaps = 430 */
+const ROW_H = 88;
+const ROW_Y = BR.y + 36;
 const CHECK = [
   { color: "#5aa2ff", icon: ShieldCheck },
   { color: "#a78bfa", icon: ChartLineUp },
@@ -1750,7 +1753,7 @@ function LaunchStage({ s }: { s: number }) {
             0,
             60,
             18,
-            `scale(${0.9 + shell * 0.1 + lift * 0.015}) translateY(${-lift * 6}px)`,
+            shell < 1 ? `scale(${0.9 + shell * 0.1})` : "",
           ),
           borderColor: `rgb(52 211 153 / ${0.15 + lift * 0.45})`,
           boxShadow: "0 50px 110px -30px rgb(0 0 0 / 0.95)",
@@ -1871,7 +1874,7 @@ function LaunchStage({ s }: { s: number }) {
       {/* launch checklist: every item has its own icon and its own little motion */}
       <div
         className="flex items-center justify-between"
-        style={{ ...box(40, 90, 430), ...fly(expo(seg(s, 0.02, 0.5)), -40, 0, 8) }}
+        style={{ ...box(40, BR.y, 430, 16), ...fly(expo(seg(s, 0.02, 0.5)), -40, 0, 8) }}
       >
         <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">{L.listLabel}</span>
         <span className="text-[13px] font-semibold tabular-nums text-fg">
@@ -1888,7 +1891,7 @@ function LaunchStage({ s }: { s: number }) {
             key={it.t}
             className="tool flex items-center gap-4 px-4"
             style={{
-              ...box(40, 124 + i * 106, 430, 92),
+              ...box(40, ROW_Y + i * (ROW_H + 14), 430, ROW_H),
               ...fly(expo(seg(s, 0.06 + i * 0.07, 0.62 + i * 0.07)), -80, 0, 12),
             }}
           >
