@@ -60,6 +60,9 @@ const STAGE_START = STAGE_SEC.map((_, i) =>
   STAGE_SEC.slice(0, i).reduce((a, b) => a + b, 0),
 );
 const TOTAL = STAGE_SEC.reduce((a, b) => a + b, 0);
+/** the final frame is held this long, then the film starts again */
+const HOLD = 5;
+const CYCLE = TOTAL + HOLD;
 const stageAt = (t: number) => {
   let i = 0;
   while (i < STAGE_SEC.length - 1 && t >= STAGE_START[i + 1]) i++;
@@ -85,31 +88,47 @@ const fly = (
 
 export function Build() {
   const ref = useRef<HTMLElement>(null);
-  const [t, setT] = useState(0);
+  // `time` runs 0..CYCLE in a loop: the film (0..TOTAL), then the final frame is held for HOLD seconds
+  const [time, setTime] = useState(0);
+  const [lap, setLap] = useState(0);
 
-  // play once when the section is in view
+  // loop while the section is on screen; pause (and resume from the same spot) when it is not
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setT(TOTAL);
+      setTime(TOTAL);
       return;
     }
     let raf = 0;
-    let start = 0;
+    let last = 0;
+    let acc = 0;
+    let laps = 0;
+    let on = false;
     const tick = (now: number) => {
-      if (!start) start = now;
-      const v = Math.min(TOTAL, (now - start) / 1000);
-      setT(v);
-      if (v < TOTAL) raf = requestAnimationFrame(tick);
+      if (last) acc += Math.min(0.1, (now - last) / 1000);
+      last = now;
+      if (acc >= CYCLE) {
+        acc -= CYCLE;
+        laps++;
+        setLap(laps);
+      }
+      setTime(acc);
+      raf = requestAnimationFrame(tick);
     };
     const io = new IntersectionObserver(
       ([e]) => {
-        if (!e.isIntersecting) return;
-        io.disconnect();
-        raf = requestAnimationFrame(tick);
+        const vis = e.intersectionRatio >= 0.45;
+        if (vis && !on) {
+          on = true;
+          last = 0;
+          raf = requestAnimationFrame(tick);
+        } else if (!vis && on) {
+          on = false;
+          cancelAnimationFrame(raf);
+        }
       },
-      { threshold: 0.45 },
+      { threshold: [0, 0.45] },
     );
     io.observe(el);
     return () => {
@@ -118,10 +137,14 @@ export function Build() {
     };
   }, []);
 
+  const t = Math.min(time, TOTAL);
+  /** 0 → 1 over the last 0.4s of the hold: the launch stage whips out before the next lap */
+  const fin = seg(time, CYCLE - 0.4, CYCLE);
   const cur = stageAt(t);
   const st = BUILD.stages[cur];
-  const gridH = ease(seg(t, 0, 0.7));
-  const gridV = ease(seg(t, 0.15, 0.85));
+  // the grid draws only on the first lap
+  const gridH = lap ? 1 : ease(seg(t, 0, 0.7));
+  const gridV = lap ? 1 : ease(seg(t, 0.15, 0.85));
 
   return (
     <section
@@ -161,7 +184,7 @@ export function Build() {
         <h2 id="build-title" className="sr-only">
           {BUILD.label}: {BUILD.stages.map((s) => s.title.join(" ")).join(" ")}
         </h2>
-        <Title t={t} />
+        <Title t={t} fin={fin} />
         <div
           className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3"
           aria-hidden="true"
@@ -202,10 +225,11 @@ export function Build() {
             (i < BUILD.stages.length - 1 && t > start + len + 0.05)
           )
             return null;
-          const enter = i === 0 ? 1 : expo(seg(t, start - 0.08, start + 0.7));
+          // first lap: design is simply there; next laps: it whips in like the other stages
+          const enter = i === 0 && !lap ? 1 : expo(seg(t, start - 0.08, start + 0.7));
           const exitK =
             i === BUILD.stages.length - 1
-              ? 0
+              ? fin
               : seg(t, start + len - 0.32, start + len);
           const exit = exitK * exitK * exitK;
           const s0 = (Math.max(0, t - start) / len) * BEATS;
@@ -238,12 +262,12 @@ export function Build() {
 }
 
 /** stage title, letter by letter with blur in and blur out */
-function Title({ t }: { t: number }) {
+function Title({ t, fin }: { t: number; fin: number }) {
   const i = stageAt(t);
   const st = BUILD.stages[i];
   const end = STAGE_START[i] + STAGE_SEC[i];
   const start = STAGE_START[i] + (i === 0 ? 0.15 : 0.04);
-  const out = i === BUILD.stages.length - 1 ? 0 : seg(t, end - 0.3, end) ** 2;
+  const out = i === BUILD.stages.length - 1 ? fin ** 2 : seg(t, end - 0.3, end) ** 2;
   const words = st.title;
   let n = 0;
   return (
