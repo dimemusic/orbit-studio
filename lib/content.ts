@@ -27,7 +27,10 @@ export const CTA = {
 };
 
 // sections are being rebuilt one by one: only the live ones are linked
-export const NAV = [{ href: "/#process", label: "Як ми працюємо" }];
+export const NAV = [
+  { href: "/#process", label: "Як ми працюємо" },
+  { href: "/#work", label: "Наші роботи" },
+];
 
 export const HERO = {
   /** line 1 · plain start of line 2 · gradient end of line 2 */
@@ -46,13 +49,18 @@ export type Case = {
   id: string;
   name: string;
   kind: string;
-  /** one line on the card */
+  /** 1–2 lines under the name in the Work list */
   text: string;
   tags: string[];
+  /** cover screenshot (case window, light spill) */
   media: string;
+  /** screens the laptop cycles through while the case is active, sorted by name; one shot = slow vertical scroll */
+  shots: string[];
   /** live project link, null when there is none (yet) */
   url: string | null;
   status: string;
+  /** DRAFT: measurable result of the project */
+  result: string;
   color: string;
   accent: Accent;
   /** case window */
@@ -62,8 +70,17 @@ export type Case = {
 };
 
 export const WORK = {
-  label: "Роботи",
-  title: ["Роботи, якими", "ми пишаємось."],
+  label: "Наші роботи",
+  /** plain start · accent end (in the active case's colour) */
+  title: ["З чим ми", "працюємо."],
+  listLabel: "Проєкти",
+  /** closing row of the list */
+  next: {
+    name: "Тут може бути ваш сайт",
+    kind: "Ваш проєкт",
+    text: "Розкажіть про ідею, і ми запропонуємо рішення під ваш бізнес.", // DRAFT
+    cta: "Обговорити проєкт",
+  },
   open: "Деталі проєкту",
   cta: "Хочу схожий",
   visit: "Відкрити сайт",
@@ -75,11 +92,13 @@ export const WORK = {
       id: "maina",
       name: "Maina by Rivka",
       kind: "Магазин напівфабрикатів",
-      text: "Сайт магазину з каталогом і панеллю керування: товари, ціни й фото власниця змінює сама.",
+      text: "Магазин напівфабрикатів і готової їжі з доставкою по Україні. Асортимент і ціни клієнт оновлює сам в адмінці.", // DRAFT
       tags: ["Дизайн", "Next.js", "Sanity"],
       media: "/cases/maina.webp",
+      shots: ["/cases/maina.webp"],
       url: null,
       status: "Живий проєкт",
+      result: "[РЕЗУЛЬТАТ]",
       color: "#4fe3c1",
       accent: "green",
       // DRAFT: case texts
@@ -91,33 +110,16 @@ export const WORK = {
       ],
     },
     {
-      id: "biganskiy",
-      name: "BIGANSKIY",
-      kind: "Архітектурне бюро",
-      text: "Сайт бюро, що проєктує футуристичні будинки.",
-      tags: ["Дизайн", "Next.js"],
-      media: "/cases/biganskiy.webp",
-      url: "https://biganskiy-site.vercel.app",
-      status: "Концепт",
-      color: "#a78bfa",
-      accent: "violet",
-      // DRAFT: case texts
-      task: "Показати проєкти бюро так, щоб з першого екрана було відчуття «вау» і бажання замовити консультацію.",
-      done: ["Відео на першому екрані", "Галерея проєктів", "Сторінка послуг", "Форма заявки"],
-      facts: [
-        { label: "Термін", value: "1 тиждень" },
-        { label: "Тип", value: "Концепт сайту" },
-      ],
-    },
-    {
       id: "cloud-sphere",
       name: "Cloud Sphere",
       kind: "SaaS-лендинг",
-      text: "Лендинг хмарного сховища з інтерактивною 3D-сценою на фоні.",
+      text: "SaaS-лендинг з інтерактивним 3D-фоном із частинок.", // DRAFT
       tags: ["Дизайн", "Next.js", "three.js"],
       media: "/cases/cloudsphere.webp",
+      shots: ["/cases/cloudsphere.webp"],
       url: null,
       status: "Концепт",
+      result: "[РЕЗУЛЬТАТ]",
       color: "#3d8bff",
       accent: "blue",
       // DRAFT: case texts
@@ -129,14 +131,37 @@ export const WORK = {
       ],
     },
     {
+      id: "biganskiy",
+      name: "BIGANSKIY",
+      kind: "Архітектурне бюро",
+      text: "Стильне архітектурне бюро футуристичних будинків: сайт-портфоліо з ефектною подачею проєктів.", // DRAFT
+      tags: ["Дизайн", "Next.js"],
+      media: "/cases/biganskiy.webp",
+      shots: ["/cases/biganskiy.webp"],
+      url: "https://biganskiy-site.vercel.app",
+      status: "Концепт",
+      result: "[РЕЗУЛЬТАТ]",
+      color: "#a78bfa",
+      accent: "violet",
+      // DRAFT: case texts
+      task: "Показати проєкти бюро так, щоб з першого екрана було відчуття «вау» і бажання замовити консультацію.",
+      done: ["Відео на першому екрані", "Галерея проєктів", "Сторінка послуг", "Форма заявки"],
+      facts: [
+        { label: "Термін", value: "1 тиждень" },
+        { label: "Тип", value: "Концепт сайту" },
+      ],
+    },
+    {
       id: "krendel",
       name: "Крендель",
       kind: "Кав'ярня-пекарня",
-      text: "Теплий мультяшний лендинг кав'ярні з власною пекарнею.",
+      text: "Лендинг домашньої пекарні: меню, замовлення, теплий мультяшний стиль.", // DRAFT
       tags: ["Дизайн", "Лендинг"],
       media: "/cases/krendel.webp",
+      shots: ["/cases/krendel.webp"],
       url: null,
       status: "Концепт",
+      result: "[РЕЗУЛЬТАТ]",
       color: "#22d3ee",
       accent: "cyan",
       // DRAFT: case texts
@@ -439,4 +464,5 @@ export const PRIVACY = {
 export const HOME_SECTIONS = [
   { id: "top", label: "Головна" },
   { id: "process", label: BUILD.label },
+  { id: "work", label: WORK.label },
 ] as const;
