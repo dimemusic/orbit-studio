@@ -21,10 +21,6 @@ function validate(v: { name: string; contact: string; needs: Set<string> }) {
   return e;
 }
 
-// brand panel: blue → violet mesh inside the glass
-const MESH =
-  "radial-gradient(90% 70% at 0% 0%, rgb(61 139 255 / 0.26), transparent 70%), radial-gradient(80% 70% at 100% 100%, rgb(139 92 246 / 0.24), transparent 70%)";
-
 const inputCls =
   "h-12 w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 text-[16px] text-fg outline-none transition-[border-color,background-color] duration-300 " +
   "placeholder:text-faint hover:border-white/25 focus:border-blue focus-visible:outline-offset-2 aria-[invalid=true]:border-[#fb7185]";
@@ -56,13 +52,51 @@ export function FinalCta() {
       aria-labelledby="contact-title"
       className="snap-section relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-[clamp(24px,4.5vh,48px)] pt-[clamp(88px,12vh,128px)]"
     >
-      <header className="relative z-[1] flex w-full min-w-0 flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
-        <h2 id="contact-title" className="legible text-mega font-semibold">
-          <RevealWords text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="aurora" />
-        </h2>
-        <p className="legible text-lead text-body">{CONTACT.lead}</p>
-      </header>
-      <div className="relative z-[1] w-full min-w-0 pt-[clamp(32px,5vh,56px)]">
+      <div className="relative z-[1] grid w-full min-w-0 items-center gap-x-[clamp(48px,7vw,140px)] gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,40rem)]">
+        {/* left: the invitation + direct contacts */}
+        <div className="min-w-0">
+          <h2 id="contact-title" className="legible text-mega font-semibold">
+            <RevealWords text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="aurora" stack />
+          </h2>
+          <p className="legible mt-6 max-w-[40ch] text-lead text-body">{CONTACT.lead}</p>
+
+          <div data-reveal style={{ ["--d" as string]: "120ms" }} className="mt-[clamp(32px,6vh,64px)]">
+            <p className="text-[14px] text-grey">{CONTACT.or}</p>
+            <ul className="mt-4 flex flex-col gap-3">
+              <li>
+                <a
+                  href={BRAND.telegramUrl}
+                  className="group inline-flex items-center gap-3 rounded-full py-1 text-[clamp(18px,1.6vw,22px)] font-medium tracking-[-0.02em] text-fg"
+                >
+                  <span className="grid size-11 place-items-center rounded-full bg-blue/12 text-blue">
+                    <TelegramLogo size={20} weight="light" aria-hidden="true" />
+                  </span>
+                  <span className="underline decoration-white/20 underline-offset-4 transition-colors group-hover:decoration-fg">{BRAND.telegram}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`mailto:${BRAND.email}`}
+                  className="group inline-flex items-center gap-3 rounded-full py-1 text-[clamp(18px,1.6vw,22px)] font-medium tracking-[-0.02em] text-fg"
+                >
+                  <span className="grid size-11 place-items-center rounded-full bg-violet/12 text-violet-soft">
+                    <EnvelopeSimple size={20} weight="light" aria-hidden="true" />
+                  </span>
+                  <span className="underline decoration-white/20 underline-offset-4 transition-colors group-hover:decoration-fg">{BRAND.email}</span>
+                </a>
+              </li>
+            </ul>
+            <p className="mt-6 flex items-center gap-2.5 text-[14px] text-body">
+              <span className="relative grid size-2 place-items-center" aria-hidden="true">
+                <span className="absolute size-2 animate-ping rounded-full bg-green/60 motion-reduce:hidden" />
+                <span className="size-2 rounded-full bg-green" />
+              </span>
+              {CONTACT.availability}
+            </p>
+          </div>
+        </div>
+
+        {/* right: the form */}
         <ContactForm />
       </div>
     </section>
@@ -150,44 +184,10 @@ function ContactForm() {
   }
 
   return (
-    <div data-reveal className="w-full">
-      <div className="card grid overflow-hidden text-left lg:grid-cols-[2fr_3fr]">
-        {/* direct contacts */}
-        <div className="flex flex-col justify-between gap-10 border-b border-white/[0.07] p-7 sm:p-10 lg:border-b-0 lg:border-r" style={{ background: MESH }}>
-          <div>
-            <p className="text-[13px] text-grey">{CONTACT.or}</p>
-            <ul className="mt-5 flex flex-col gap-3">
-              <li>
-                <a
-                  href={BRAND.telegramUrl}
-                  className="group inline-flex items-center gap-3 rounded-full py-1 text-[clamp(18px,1.6vw,22px)] font-medium tracking-[-0.02em] text-fg"
-                >
-                  <span className="grid size-10 place-items-center rounded-full bg-blue/12 text-blue">
-                    <TelegramLogo size={20} weight="light" aria-hidden="true" />
-                  </span>
-                  <span className="underline decoration-white/20 underline-offset-4 transition-colors group-hover:decoration-fg">{BRAND.telegram}</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`mailto:${BRAND.email}`}
-                  className="group inline-flex items-center gap-3 rounded-full py-1 text-[clamp(18px,1.6vw,22px)] font-medium tracking-[-0.02em] text-fg"
-                >
-                  <span className="grid size-10 place-items-center rounded-full bg-violet/12 text-violet-soft">
-                    <EnvelopeSimple size={20} weight="light" aria-hidden="true" />
-                  </span>
-                  <span className="underline decoration-white/20 underline-offset-4 transition-colors group-hover:decoration-fg">{BRAND.email}</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-          <p className="text-[14px] text-body">
-            <span translate="no">{BRAND.name}</span> · {BRAND.city}
-          </p>
-        </div>
-
+    <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0">
+      <div className="card overflow-hidden text-left">
         {/* form and thanks state share one grid cell, so the card never jumps */}
-        <div className="grid p-7 sm:p-10">
+        <div className="grid p-6 sm:p-9">
           <form
             noValidate
             onSubmit={onSubmit}
@@ -293,7 +293,7 @@ function ContactForm() {
               <Err id={`${uid}-needs-err`}>{shown("needs")}</Err>
             </fieldset>
 
-            <Button type="submit" disabled={busy} className="mt-1 w-full disabled:cursor-progress disabled:opacity-80 sm:w-auto sm:self-start">
+            <Button type="submit" disabled={busy} className="mt-1 w-full disabled:cursor-progress disabled:opacity-80">
               {busy ? CONTACT.sending : CONTACT.submit}
             </Button>
             {failed && (
@@ -301,7 +301,6 @@ function ContactForm() {
                 {CONTACT.errSend}
               </p>
             )}
-            <p className="text-[14px] text-grey">{CONTACT.availability}</p>
           </form>
 
           <div

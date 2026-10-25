@@ -7,7 +7,8 @@ import { G, type Tone } from "./Bits";
  * keeps the wrapper itself still and animates only the words. Settled words carry no transform / filter.
  * `accent` words get the gradient (one <G> per word, so the clip survives the per-word transform).
  */
-export function RevealWords({ text, accent, tone = "aurora" }: { text: string; accent?: string; tone?: Tone }) {
+/** `stack`: the accent words start on a new line */
+export function RevealWords({ text, accent, tone = "aurora", stack = false }: { text: string; accent?: string; tone?: Tone; stack?: boolean }) {
   const plain = text.split(" ").filter(Boolean);
   const hot = accent ? accent.split(" ").filter(Boolean) : [];
   const words = [...plain.map((w) => ({ w, hot: false })), ...hot.map((w) => ({ w, hot: true }))];
@@ -15,7 +16,7 @@ export function RevealWords({ text, accent, tone = "aurora" }: { text: string; a
     <span data-reveal data-words className="block">
       {words.map(({ w, hot }, i) => (
         <Fragment key={i}>
-          {i > 0 && " "}
+          {i > 0 && (stack && hot && i === plain.length ? <br /> : " ")}
           <span className="rw" style={{ ["--i" as string]: i }}>
             {hot ? <G tone={tone}>{w}</G> : w}
           </span>
