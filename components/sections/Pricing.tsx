@@ -103,7 +103,7 @@ export function Pricing() {
                               onClick={() => toggle(s.id)}
                               tabIndex={on ? 0 : -1}
                               aria-label={`${SERVICES.remove}: ${s.name}`}
-                              className="-mr-1.5 grid size-7 place-items-center rounded-full text-grey transition-colors duration-200 hover:bg-white/[0.08] hover:text-fg"
+                              className="grid size-7 shrink-0 place-items-center rounded-full text-grey transition-colors duration-200 hover:bg-white/[0.08] hover:text-fg"
                             >
                               <X size={13} weight="bold" aria-hidden="true" />
                             </button>
