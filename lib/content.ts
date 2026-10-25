@@ -200,7 +200,7 @@ export type Service = {
 export const SERVICES = {
   label: "Послуги",
   /** plain start · accent end */
-  title: ["Що ми", "робимо."],
+  title: ["Наш", "прайс-лист."],
   lead: "Можна окремо, вигідніше під ключ.",
   pricePrefix: "від",
   currency: "₴",
