@@ -31,6 +31,7 @@ export const NAV = [
   { href: "/#process", label: "Як ми працюємо" },
   { href: "/#work", label: "Наші роботи" },
   { href: "/#services", label: "Послуги" },
+  { href: "/#contact", label: "Контакти" },
 ];
 
 export const HERO = {
@@ -362,7 +363,7 @@ export const CONTACT = {
   message: "Коротко про проєкт",
   messagePh: "Наприклад: сайт для кав'ярні з меню й доставкою",
   needs: "Що потрібно",
-  chips: ["Все під ключ", "Дизайн", "Сайт", "Панель керування"],
+  chips: ["Все під ключ", "Дизайн", "Розробка", "Адмінка"],
   submit: "Надіслати",
   availability: "Зараз приймаємо проєкти на листопад", // DRAFT
   sending: "Надсилаємо…",
@@ -488,4 +489,5 @@ export const HOME_SECTIONS = [
   { id: "process", label: BUILD.label },
   { id: "work", label: WORK.label },
   { id: "services", label: SERVICES.label },
+  { id: "contact", label: CONTACT.label },
 ] as const;

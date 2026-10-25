@@ -2,7 +2,8 @@
 
 import { Check, Plus } from "@phosphor-icons/react/dist/ssr";
 import { useState, type CSSProperties } from "react";
-import { CTA, SERVICES, type Service } from "@/lib/content";
+import { CONTACT, CTA, SERVICES, type Service } from "@/lib/content";
+import { PACKAGE_PICK } from "../home";
 import { ACCENT } from "../ui/accent";
 import { IconTile, Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
@@ -127,7 +128,15 @@ export function Pricing() {
                   )}
                 </div>
 
-                <Button href="#contact" className="mt-auto w-full">
+                <Button
+                  href="#contact"
+                  className="mt-auto w-full"
+                  onClick={() =>
+                    window.dispatchEvent(
+                      new CustomEvent(PACKAGE_PICK, { detail: all ? [CONTACT.chips[0]] : chosen.map((c) => c.name) }),
+                    )
+                  }
+                >
                   {CTA.primary}
                 </Button>
               </div>
