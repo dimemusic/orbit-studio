@@ -377,12 +377,18 @@ export default function IvyScene() {
   useEffect(() => {
     if (!setup) return;
     let r2 = 0;
+    let t = 0;
     const r1 = requestAnimationFrame(() => {
-      r2 = requestAnimationFrame(() => document.documentElement.classList.remove("booting"));
+      r2 = requestAnimationFrame(() => {
+        // the intro title card holds the boot until it lifts away
+        const wait = Math.max(0, ((window as { __introEnd?: number }).__introEnd ?? 0) - performance.now());
+        t = window.setTimeout(() => document.documentElement.classList.remove("booting"), wait);
+      });
     });
     return () => {
       cancelAnimationFrame(r1);
       cancelAnimationFrame(r2);
+      clearTimeout(t);
     };
   }, [setup]);
   const setupRef = useRef<Setup | null>(null);

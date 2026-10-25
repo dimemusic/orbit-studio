@@ -802,3 +802,75 @@ html {
     opacity: 0.5;
   }
 }
+
+/* intro: «MaxArt Digital» title card on the first load of a tab session (html.intro, set in the head script).
+   0.15s letters rise out of a blur (45ms apart) · 0.75s underline draws · 1.75s the word lifts away ·
+   1.9s the screen fades (the boot releases the site at 2.0s underneath) · 2.6s html.intro removed. */
+.intro-screen {
+  display: none;
+}
+.intro .intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding-inline: var(--gutter);
+  background: #05070d;
+  animation: intro-out 0.7s cubic-bezier(0.65, 0, 0.35, 1) 1.9s forwards;
+}
+.intro body {
+  overflow: hidden;
+}
+.intro-word {
+  position: relative;
+  white-space: nowrap;
+  animation: intro-lift 0.6s cubic-bezier(0.65, 0, 0.35, 1) 1.75s forwards;
+}
+.intro-l {
+  display: inline-block;
+  opacity: 0;
+  animation: intro-l 0.8s cubic-bezier(0.16, 1, 0.3, 1) calc(0.15s + var(--i) * 45ms) forwards;
+}
+.intro-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.18em;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #3d8bff, #22d3ee);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: intro-line 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.75s forwards;
+}
+@keyframes intro-l {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes intro-line {
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes intro-lift {
+  to {
+    opacity: 0;
+    transform: translateY(-0.25em) scale(0.97);
+    filter: blur(8px);
+  }
+}
+@keyframes intro-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
