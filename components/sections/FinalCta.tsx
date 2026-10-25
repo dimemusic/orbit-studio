@@ -25,7 +25,7 @@ const inputCls =
   "h-12 w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 text-[16px] text-fg outline-none transition-[border-color,background-color] duration-300 " +
   "placeholder:text-faint hover:border-white/25 focus:border-blue focus-visible:outline-offset-2 aria-[invalid=true]:border-[#fb7185]";
 
-const labelCls = "text-[13px] text-body";
+const labelCls = "text-[14px] text-body";
 
 /** rendered only when there is a message, so an untouched form shows no error rows */
 function Err({ id, children }: { id: string; children?: string }) {
@@ -197,6 +197,47 @@ function ContactForm() {
               done ? "pointer-events-none translate-y-2 opacity-0" : ""
             }`}
           >
+            <fieldset className="flex flex-col gap-2.5" aria-describedby={`${uid}-needs-err`}>
+              <legend className="mb-3 text-[16px] font-medium text-fg">{CONTACT.needs}</legend>
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-[1.4fr_1fr_1fr_1fr]">
+                {CONTACT.chips.map((chip, i) => {
+                  const on = needs.has(chip);
+                  return (
+                    <label key={chip} className={`min-w-0 cursor-pointer ${i === 0 ? "col-span-3 sm:col-span-1" : ""}`}>
+                      <input
+                        ref={i === 0 ? refs.needs : undefined}
+                        type="checkbox"
+                        name="needs"
+                        value={chip}
+                        checked={on}
+                        onChange={() => {
+                          toggle(chip);
+                          setTouched((t) => ({ ...t, needs: true }));
+                        }}
+                        className="peer sr-only"
+                      />
+                      <span
+                        className={`flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border px-2 text-[14px] sm:px-3 sm:text-[15px] font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
+                          on ? "border-blue bg-blue/12 text-fg" : "border-white/15 text-body hover:border-white/30 hover:text-fg"
+                        }`}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`size-4 shrink-0 place-items-center rounded-full transition-colors duration-300 ${i === 0 ? "grid" : "hidden sm:grid"} ${on ? "bg-blue text-white" : "border border-white/25"}`}
+                        >
+                          {on && <Check size={10} weight="bold" />}
+                        </span>
+                        {chip}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+              <Err id={`${uid}-needs-err`}>{shown("needs")}</Err>
+            </fieldset>
+
+            <div className="h-px bg-white/[0.08]" aria-hidden="true" />
+
             <div className="grid gap-5 sm:grid-cols-2">
               <div className="flex flex-col gap-1.5">
                 <label htmlFor={`${uid}-name`} className={labelCls}>
@@ -245,7 +286,7 @@ function ContactForm() {
               <textarea
                 id={`${uid}-message`}
                 name="message"
-                rows={3}
+                rows={2}
                 maxLength={1500}
                 placeholder={CONTACT.messagePh}
                 value={message}
@@ -254,48 +295,18 @@ function ContactForm() {
               />
             </div>
 
-            <fieldset className="flex flex-col gap-2.5" aria-describedby={`${uid}-needs-err`}>
-              <legend className={`${labelCls} mb-2.5`}>{CONTACT.needs}</legend>
-              <div className="flex flex-wrap gap-2">
-                {CONTACT.chips.map((chip, i) => {
-                  const on = needs.has(chip);
-                  return (
-                    <label key={chip} className="cursor-pointer">
-                      <input
-                        ref={i === 0 ? refs.needs : undefined}
-                        type="checkbox"
-                        name="needs"
-                        value={chip}
-                        checked={on}
-                        onChange={() => {
-                          toggle(chip);
-                          setTouched((t) => ({ ...t, needs: true }));
-                        }}
-                        className="peer sr-only"
-                      />
-                      <span
-                        className={`inline-flex h-11 items-center gap-2 rounded-full border px-4 text-[15px] font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
-                          on ? "border-blue bg-blue/12 text-fg" : "border-white/15 text-body hover:border-white/30 hover:text-fg"
-                        }`}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className={`grid size-4 place-items-center rounded-full transition-colors duration-300 ${on ? "bg-blue text-white" : "border border-white/25"}`}
-                        >
-                          {on && <Check size={10} weight="bold" />}
-                        </span>
-                        {chip}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-              <Err id={`${uid}-needs-err`}>{shown("needs")}</Err>
-            </fieldset>
 
-            <Button type="submit" disabled={busy} className="mt-1 w-full disabled:cursor-progress disabled:opacity-80">
+            <div className="h-px bg-white/[0.08]" aria-hidden="true" />
+
+            <Button type="submit" disabled={busy} className="w-full disabled:cursor-progress disabled:opacity-80">
               {busy ? CONTACT.sending : CONTACT.submit}
             </Button>
+            <p className="-mt-1 text-center text-[13px] leading-snug text-grey">
+              {CONTACT.consent}{" "}
+              <a href={BRAND.privacyHref} className="text-body underline decoration-white/20 underline-offset-2 transition-colors hover:text-fg">
+                {CONTACT.consentLink}
+              </a>
+            </p>
             {failed && (
               <p role="alert" className="text-[14px] leading-snug text-[#fb7185]">
                 {CONTACT.errSend}
