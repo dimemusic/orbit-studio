@@ -30,6 +30,7 @@ export const CTA = {
 export const NAV = [
   { href: "/#process", label: "Як ми працюємо" },
   { href: "/#work", label: "Наші роботи" },
+  { href: "/#services", label: "Послуги" },
 ];
 
 export const HERO = {
@@ -187,8 +188,8 @@ export type Service = {
   id: string;
   name: string;
   blurb: string;
-  /** DRAFT: price in USD, "від" */
-  price: number;
+  /** placeholder until real prices: shown after «від» */
+  price: string;
   color: Accent;
   icon: IconKey;
   features: string[];
@@ -196,49 +197,55 @@ export type Service = {
 
 export const SERVICES = {
   label: "Послуги",
-  title: ["Беріть частину", "або все під ключ."],
-  lead: "Оберіть, що потрібно, і побачите орієнтовну ціну.",
+  /** plain start · accent end */
+  title: ["Що ми", "робимо."],
+  lead: "Можна окремо, вигідніше під ключ.",
   pricePrefix: "від",
-  currency: "$",
   add: "Додати",
-  added: "Обрано",
-  summaryLabel: "Орієнтовно",
-  summaryEmpty: "Оберіть хоча б одну послугу",
-  summaryNote: "Точну ціну фіксуємо після брифу.",
+  added: "Додано",
+  /** live summary under the cards */
+  summaryLabel: "Обрано:",
+  summaryEmpty: "Оберіть послуги, які вам потрібні",
+  summaryPrice: "[ЦІНА]",
+  /** all three picked: the summary points to the turnkey card */
+  summaryAll: "Усі три разом вигідніше «Під ключ»",
   items: [
     {
       id: "design",
       name: "Дизайн",
       blurb: "Макет, що виглядає дорого й веде до заявки.",
-      price: 300, // DRAFT
+      price: "[ЦІНА]",
       color: "violet",
       icon: "design",
-      features: ["Структура й прототип", "Десктоп + мобайл", "Анімації й інтерактив"],
+      features: ["Структура й прототип", "Десктоп + мобайл", "UI-кіт і стилі", "Анімації й інтерактив"], // DRAFT
     },
     {
       id: "dev",
       name: "Розробка",
       blurb: "Швидкий адаптивний сайт на сучасному стеку.",
-      price: 400, // DRAFT
+      price: "[ЦІНА]",
       color: "blue",
       icon: "code",
-      features: ["Next.js + TypeScript", "Швидкість і SEO-основа", "Домен і хостинг"],
+      features: ["Next.js + TypeScript", "Адаптив під усі екрани", "Швидкість і SEO-основа", "Домен і хостинг"], // DRAFT
     },
     {
       id: "cms",
-      name: "Панель керування",
+      name: "Адмінка",
       blurb: "Тексти, ціни, фото й товари змінюєте самі.",
-      price: 200, // DRAFT
+      price: "[ЦІНА]",
       color: "cyan",
       icon: "cms",
-      features: ["Sanity CMS", "Схеми під ваш контент", "Навчання команди"],
+      features: ["Sanity CMS", "Схеми під ваш контент", "Редагування з телефона", "Навчання команди"], // DRAFT
     },
   ] satisfies Service[],
   turnkey: {
     name: "Під ключ",
-    price: 750, // DRAFT
-    blurb: "Усі три послуги одним проєктом, з фіксованою ціною.",
-    save: "економія",
+    blurb: "Дизайн + розробка + адмінка",
+    perks: ["Одна команда від брифу до запуску", "Фіксована ціна після брифу", "[N] раундів правок", "Навчання і підтримка після запуску"],
+    price: "[ЦІНА]",
+    save: "[X]% вигідніше, ніж окремо",
+    /** pill on the card while all three services are picked */
+    best: "Ваш вибір",
   },
 };
 
@@ -473,4 +480,5 @@ export const HOME_SECTIONS = [
   { id: "top", label: "Головна" },
   { id: "process", label: BUILD.label },
   { id: "work", label: WORK.label },
+  { id: "services", label: SERVICES.label },
 ] as const;

@@ -187,6 +187,11 @@ p {
       linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
+    transition: padding 0.5s var(--ease);
+  }
+  /* turnkey picked (all three services chosen): the gradient ring gets thicker */
+  .card-pro[data-hot]::before {
+    padding: 2px;
   }
   @media (prefers-reduced-transparency: reduce) {
     .card {
