@@ -41,8 +41,6 @@ import {
   type ReactNode,
 } from "react";
 import { BUILD } from "@/lib/content";
-import { homeNum } from "../home";
-import { Eyebrow } from "../ui/Bits";
 import { along, Caret, ease, expo, seg, smooth, Typed, typed } from "../process/util";
 
 /**
@@ -177,10 +175,6 @@ export function Build() {
       </div>
 
       <header className="relative z-[1] flex flex-col items-center px-gutter pt-[clamp(88px,12vh,128px)] text-center">
-        <Eyebrow color="violet">
-          <span className="tabular-nums">{homeNum("process")} · </span>
-          {BUILD.label}
-        </Eyebrow>
         <h2 id="build-title" className="sr-only">
           {BUILD.label}: {BUILD.stages.map((s) => s.title.join(" ")).join(" ")}
         </h2>

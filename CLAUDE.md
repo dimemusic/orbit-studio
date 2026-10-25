@@ -28,7 +28,7 @@ The visual language is the Cloud Sphere one and does not change: layout, the 3D 
 - Dark only.
 
 ### Banned
-HUD / mono / coordinate labels, glowing or animated borders, coloured glow blobs, grey-filled or fully transparent cards, any surface utility other than `.card`, light beams, scanlines, noise, grid or dot backgrounds, corner brackets, fake terminal UI, white buttons, em dashes in copy.
+eyebrow pills above headings («NN · Назва секції», `Eyebrow`; removed site-wide Oct 2026, never add them back), HUD / mono / coordinate labels, glowing or animated borders, coloured glow blobs, grey-filled or fully transparent cards, any surface utility other than `.card`, light beams, scanlines, noise, grid or dot backgrounds, corner brackets, fake terminal UI, white buttons, em dashes in copy.
 
 ### Tokens (app/globals.css)
 - Colours: bg `#05070d` (= scene clear colour), fg `#f5f7fa`, **body `#c4cad4`** (paragraphs over the scene), grey `#8b919c` (small meta inside surfaces), faint `#5b616c`, hairline `rgba(255,255,255,.09)`.

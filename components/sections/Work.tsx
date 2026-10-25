@@ -4,8 +4,7 @@ import { ArrowRight, ArrowUpRight, CheckCircle, Plus, X } from "@phosphor-icons/
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { WORK, type Case } from "@/lib/content";
-import { homeNum } from "../home";
-import { Eyebrow, G, Tag } from "../ui/Bits";
+import { G, Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { DeviceShot } from "../ui/DeviceShot";
 
@@ -44,25 +43,22 @@ export function Work() {
       className="snap-section relative flex min-h-[100dvh] w-full flex-col md:h-[100dvh]"
     >
       <header className="relative z-[1] w-full min-w-0 px-gutter pt-[clamp(88px,12vh,128px)]">
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-          <Eyebrow color="green">
-            <span className="tabular-nums">{homeNum("work")} · </span>
-            {WORK.label}
-          </Eyebrow>
+        {/* title left, link to the form right on the same baseline (no eyebrow pills on the site) */}
+        <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+          <h2
+            id="work-title"
+            className="legible text-[clamp(44px,7.4vw,116px)] font-semibold leading-[1] tracking-[-0.05em]"
+          >
+            {WORK.title[0]} <G tone="aurora">{WORK.title[1]}</G>
+          </h2>
           <a
             href="#contact"
-            className="group/more inline-flex items-center gap-2 rounded-full py-2 text-[15px] font-medium text-blue transition-colors hover:text-fg"
+            className="group/more mb-[0.4em] inline-flex items-center gap-2 rounded-full py-2 text-[15px] font-medium text-blue transition-colors hover:text-fg"
           >
             {WORK.more}
             <ArrowRight size={18} aria-hidden="true" className="transition-transform duration-300 group-hover/more:translate-x-1" />
           </a>
         </div>
-        <h2
-          id="work-title"
-          className="legible mt-5 text-[clamp(44px,7.4vw,116px)] font-semibold leading-[1] tracking-[-0.05em]"
-        >
-          {WORK.title[0]} <G tone="aurora">{WORK.title[1]}</G>
-        </h2>
       </header>
 
       <ul
