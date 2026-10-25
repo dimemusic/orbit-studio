@@ -188,8 +188,10 @@ export type Service = {
   id: string;
   name: string;
   blurb: string;
-  /** placeholder until real prices: shown after «від» */
-  price: string;
+  /** «від» price in UAH */
+  price: number;
+  /** term in days: [min, max] */
+  days: [number, number];
   color: Accent;
   icon: IconKey;
   features: string[];
@@ -201,51 +203,54 @@ export const SERVICES = {
   title: ["Що ми", "робимо."],
   lead: "Можна окремо, вигідніше під ключ.",
   pricePrefix: "від",
+  currency: "₴",
   add: "Додати",
   added: "Додано",
-  /** live summary under the cards */
-  summaryLabel: "Обрано:",
-  summaryEmpty: "Оберіть послуги, які вам потрібні",
-  summaryPrice: "[ЦІНА]",
-  /** all three picked: the summary points to the turnkey card */
-  summaryAll: "Усі три разом вигідніше «Під ключ»",
+  listLabel: "Послуги",
+  /** the package card on the right */
+  package: "Ваш пакет",
+  total: "Разом",
+  term: "Термін:",
+  empty: "Оберіть послуги зліва",
+  save: "економія",
   items: [
     {
       id: "design",
       name: "Дизайн",
       blurb: "Макет, що виглядає дорого й веде до заявки.",
-      price: "[ЦІНА]",
+      price: 12000, // DRAFT
+      days: [5, 7], // DRAFT
       color: "violet",
       icon: "design",
-      features: ["Структура й прототип", "Десктоп + мобайл", "UI-кіт і стилі", "Анімації й інтерактив"], // DRAFT
+      features: ["Структура й прототип", "Десктоп + мобайл", "UI-кіт і стилі", "Анімації"], // DRAFT
     },
     {
       id: "dev",
       name: "Розробка",
       blurb: "Швидкий адаптивний сайт на сучасному стеку.",
-      price: "[ЦІНА]",
+      price: 18000, // DRAFT
+      days: [7, 10], // DRAFT
       color: "blue",
       icon: "code",
-      features: ["Next.js + TypeScript", "Адаптив під усі екрани", "Швидкість і SEO-основа", "Домен і хостинг"], // DRAFT
+      features: ["Next.js", "Адаптив", "Швидкість і SEO", "Домен і хостинг"], // DRAFT
     },
     {
       id: "cms",
       name: "Адмінка",
       blurb: "Тексти, ціни, фото й товари змінюєте самі.",
-      price: "[ЦІНА]",
+      price: 8000, // DRAFT
+      days: [3, 5], // DRAFT
       color: "cyan",
       icon: "cms",
-      features: ["Sanity CMS", "Схеми під ваш контент", "Редагування з телефона", "Навчання команди"], // DRAFT
+      features: ["Sanity CMS", "Редагування з телефона", "Схеми під ваш контент", "Навчання"], // DRAFT
     },
   ] satisfies Service[],
+  /** all three picked */
   turnkey: {
     name: "Під ключ",
-    blurb: "Дизайн + розробка + адмінка",
-    perks: ["Одна команда від брифу до запуску", "Фіксована ціна після брифу", "[N] раундів правок", "Навчання і підтримка після запуску"],
-    price: "[ЦІНА]",
-    save: "[X]% вигідніше, ніж окремо",
-    /** pill on the card while all three services are picked */
-    best: "Ваш вибір",
+    price: 32000, // DRAFT
+    term: "від 2 тижнів", // DRAFT
+    perks: ["3 раунди правок", "Підтримка 1 місяць після запуску"], // DRAFT
   },
 };
 

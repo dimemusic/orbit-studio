@@ -285,6 +285,50 @@ p {
   transform: none;
 }
 
+/* RevealWords: the wrapper stays put, each word rises 0.4em out of a 10px blur, 70ms apart.
+   Settled words end on transform: none / filter: none (sharpness rule). */
+.js [data-reveal][data-words] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+.rw {
+  display: inline-block;
+}
+.js [data-words] .rw {
+  opacity: 0;
+  transform: translateY(0.4em);
+  filter: blur(10px);
+  transition:
+    opacity 0.9s var(--ease),
+    transform 0.9s var(--ease),
+    filter 0.9s var(--ease);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.js [data-words][data-in] .rw {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* reveal around a .card (package card): the wrapper only moves (no opacity: it would kill the glass),
+   the card's content fades instead */
+.js [data-reveal][data-lift] {
+  opacity: 1;
+  transform: translate3d(0, 24px, 0) scale(0.98);
+}
+.js [data-reveal][data-lift][data-in] {
+  transform: none;
+}
+.js [data-lift] .lift-fade {
+  opacity: 0;
+  transition: opacity 1.1s var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+.js [data-lift][data-in] .lift-fade {
+  opacity: 1;
+}
+
 /* soft fade for content that changes in place (quotes, prices) */
 @keyframes quote-in {
   from {
@@ -356,9 +400,12 @@ p {
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
-  .js [data-reveal] {
+  .js [data-reveal],
+  .js [data-words] .rw,
+  .js [data-lift] .lift-fade {
     opacity: 1;
     transform: none;
+    filter: none;
   }
 }
 
@@ -689,6 +736,23 @@ html {
 .js.booting [data-reveal][data-in] {
   opacity: 0;
   transform: translate3d(0, 24px, 0);
+}
+/* word headings and the lifted package card hide their content, never the wrapper (glass, see .card rules) */
+.js.booting [data-reveal][data-words][data-in] {
+  opacity: 1;
+  transform: none;
+}
+.js.booting [data-words] .rw {
+  opacity: 0;
+  transform: translateY(0.4em);
+  filter: blur(10px);
+}
+.js.booting [data-reveal][data-lift][data-in] {
+  opacity: 1;
+  transform: translate3d(0, 24px, 0) scale(0.98);
+}
+.js.booting [data-lift] .lift-fade {
+  opacity: 0;
 }
 .plate::before {
   transition: opacity 0.9s var(--ease);

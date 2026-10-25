@@ -7,6 +7,7 @@ import { WORK, type Case } from "@/lib/content";
 import { G, Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { DeviceShot } from "../ui/DeviceShot";
+import { RevealWords } from "../ui/RevealWords";
 
 const CASES = WORK.cases;
 /** ms per screenshot on the hovered row's thumbnail */
@@ -49,7 +50,7 @@ export function Work() {
             id="work-title"
             className="legible text-mega font-semibold"
           >
-            {WORK.title[0]} <G tone="aurora">{WORK.title[1]}</G>
+            <RevealWords text={WORK.title[0]} accent={WORK.title[1]} tone="aurora" />
           </h2>
           <a
             href="#contact"
