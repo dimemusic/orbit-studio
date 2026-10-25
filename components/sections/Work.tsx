@@ -13,16 +13,18 @@ const CASES = WORK.cases;
 /** ms per screenshot on the hovered row's thumbnail */
 const SHOT_MS = 900;
 
-/** one row = [thumbnail | name + kind | what we did | arrow]; phones drop the «did» column into the text block */
+/** one row = [thumbnail | name + kind | what we did | arrow]; below lg the «did» items move into the text block */
 const GRID =
-  "grid w-full grid-cols-[6rem_minmax(0,1fr)_2.75rem] items-center gap-x-4 md:grid-cols-[clamp(96px,min(11vw,16dvh),180px)_minmax(0,1.6fr)_minmax(0,1fr)_auto] md:gap-x-[clamp(20px,2.6vw,44px)]";
-/** the row's own surface: hairline-free, only a faint tint on hover (fine pointers) */
+  "grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 lg:grid-cols-[auto_minmax(0,1fr)_17.5rem_auto] md:gap-x-[clamp(20px,2.4vw,40px)]";
+/** the row's own surface: only a soft tint on hover (fine pointers); content stays inside the row, nothing bleeds out */
 const ROW =
-  "group/row relative py-4 text-left transition-colors duration-300 md:-mx-5 md:w-[calc(100%+2.5rem)] md:rounded-2xl md:px-5 md:py-0 md:hover:bg-white/[0.03] md:h-full";
+  "group/row relative w-full min-w-0 py-4 text-left transition-colors duration-300 md:h-full md:rounded-2xl md:py-0 md:pl-3 md:pr-2 md:hover:bg-white/[0.03]";
+/** thumbnail width: up to 280px, but never taller than the row can hold (5 rows share the screen height) */
+const THUMB_W = "w-24 md:w-[min(clamp(200px,16vw,280px),17dvh)]";
 /** content that mutes while another row is hovered; the hovered row keeps full strength */
 const DIM = "transition-opacity duration-300 md:group-hover/list:opacity-50 md:group-hover/row:opacity-100!";
-const NAME = "block text-[28px] font-semibold leading-[1.05] tracking-[-0.04em] text-fg/90 transition-colors duration-300 group-hover/row:text-fg md:text-[clamp(32px,4.2vw,64px)] md:leading-none";
-const KIND = "mt-1.5 block text-[13px] leading-snug text-grey md:mt-2";
+const NAME = "block text-[clamp(26px,2.8vw,42px)] font-medium leading-tight tracking-[-0.03em] text-fg";
+const KIND = "mt-1.5 block text-[14px] leading-snug text-grey";
 
 /**
  * Work: one full screen, a table of projects. Header (eyebrow + Build-size title, link to the form on the right),
@@ -41,7 +43,7 @@ export function Work() {
       aria-labelledby="work-title"
       className="snap-section relative flex min-h-[100dvh] w-full flex-col md:h-[100dvh]"
     >
-      <header className="relative z-[1] px-gutter pt-[clamp(88px,12vh,128px)]">
+      <header className="relative z-[1] w-full min-w-0 px-gutter pt-[clamp(88px,12vh,128px)]">
         <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
           <Eyebrow color="green">
             <span className="tabular-nums">{homeNum("work")} · </span>
@@ -65,14 +67,14 @@ export function Work() {
 
       <ul
         aria-label={WORK.listLabel}
-        className="group/list relative z-[1] mt-[clamp(20px,3.5vh,40px)] flex flex-col px-gutter pb-[clamp(24px,4.5vh,48px)] md:min-h-0 md:flex-1"
+        className="group/list relative z-[1] w-full min-w-0 mt-[clamp(20px,3.5vh,40px)] flex flex-col px-gutter pb-[clamp(24px,4.5vh,48px)] md:min-h-0 md:flex-1"
       >
         {CASES.map((c, i) => (
           <li
             key={c.id}
             data-reveal
             style={{ "--d": `${i * 80}ms` } as CSSProperties}
-            className="flex border-t border-white/[0.09] md:min-h-0 md:flex-1"
+            className="flex min-w-0 border-t border-white/[0.09] md:min-h-0 md:flex-1"
           >
             <CaseRow
               c={c}
@@ -86,13 +88,13 @@ export function Work() {
         <li
           data-reveal
           style={{ "--d": `${CASES.length * 80}ms` } as CSSProperties}
-          className="flex border-y border-white/[0.09] md:min-h-0 md:flex-1"
+          className="flex min-w-0 border-y border-white/[0.09] md:min-h-0 md:flex-1"
         >
           <a href="#contact" aria-label={`${WORK.next.name}. ${WORK.next.kind}`} className={`${ROW} ${GRID}`}>
-            <span className="card grid aspect-[16/10] w-full place-items-center rounded-xl text-fg">
+            <span className={`card grid aspect-[16/10] place-items-center rounded-xl text-fg ${THUMB_W}`}>
               <Plus size={28} weight="light" aria-hidden="true" />
             </span>
-            <span className="min-w-0 md:col-span-2">
+            <span className="min-w-0 lg:col-span-2">
               <span className={NAME}>{WORK.next.name}</span>
               <span className={KIND}>{WORK.next.kind}</span>
             </span>
@@ -125,12 +127,12 @@ function CaseRow({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void }) 
           {c.name}
         </span>
         <span className={KIND}>{c.kind}</span>
-        <span className="mt-2 block text-[12px] leading-snug text-grey md:hidden">{c.did.join(" · ")}</span>
+        <span className="mt-2 block text-[13px] leading-snug text-grey lg:hidden">{c.did.join(" · ")}</span>
       </span>
-      <ul className={`hidden gap-x-6 gap-y-2 md:grid lg:grid-flow-col lg:grid-cols-2 lg:grid-rows-2 ${DIM}`}>
+      <ul className={`hidden min-w-0 gap-x-5 gap-y-1.5 lg:grid lg:grid-flow-col lg:grid-cols-[auto_auto] lg:grid-rows-2 lg:justify-start ${DIM}`}>
         {c.did.map((d) => (
-          <li key={d} className="flex items-center gap-2 text-[13px] leading-snug text-body">
-            <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full" style={{ background: c.color }} />
+          <li key={d} className="flex min-w-0 items-center gap-2 whitespace-nowrap text-[13px] leading-snug text-grey">
+            <span aria-hidden="true" className="size-1 shrink-0 rounded-full" style={{ background: c.color }} />
             {d}
           </li>
         ))}
@@ -155,15 +157,15 @@ function Thumb({ c, hot }: { c: Case; hot: boolean }) {
   }, [hot, n]);
 
   return (
-    <span aria-hidden="true" className={`relative block aspect-[16/10] w-full overflow-hidden rounded-xl border border-white/[0.09] bg-bg ${DIM}`}>
-      <span className="absolute inset-0 transition-[scale] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:group-hover/row:scale-[1.06]">
+    <span aria-hidden="true" className={`relative block aspect-[16/10] overflow-hidden rounded-xl border border-white/[0.09] bg-bg ${THUMB_W} ${DIM}`}>
+      <span className="absolute inset-0 transition-[scale] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:group-hover/row:scale-[1.04]">
         {c.shots.map((src, k) => (
           <Image
             key={src}
             src={src}
             alt=""
             fill
-            sizes="(min-width: 768px) 180px, 96px"
+            sizes="(min-width: 768px) 280px, 96px"
             className="object-cover object-top transition-opacity duration-500"
             style={{ opacity: k === i ? 1 : 0 }}
           />
@@ -173,14 +175,14 @@ function Thumb({ c, hot }: { c: Case; hot: boolean }) {
   );
 }
 
-/** round hairline button at the row's end: arrow slides 6px, the button fills with the accent while the row is hovered */
+/** fixed 48px round button at the row's end: it never moves, on hover it fills with the accent and only the arrow inside shifts 3px */
 function ArrowButton() {
   return (
     <span
       aria-hidden="true"
-      className={`grid size-11 place-items-center justify-self-end rounded-full border border-white/[0.18] text-fg transition-colors duration-300 md:size-[clamp(48px,4vw,60px)] md:group-hover/row:border-blue md:group-hover/row:bg-blue md:group-hover/row:text-white`}
+      className="grid size-12 shrink-0 place-items-center rounded-full border border-white/[0.18] text-fg transition-colors duration-300 md:group-hover/row:border-blue md:group-hover/row:bg-blue md:group-hover/row:text-white"
     >
-      <ArrowRight size={28} weight="light" className="size-6 transition-transform duration-300 md:size-7 md:group-hover/row:translate-x-[6px]" />
+      <ArrowRight size={24} weight="light" className="transition-transform duration-300 md:group-hover/row:translate-x-[3px]" />
     </span>
   );
 }
