@@ -18,11 +18,11 @@ const GRID =
   "grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 lg:grid-cols-[auto_minmax(0,1fr)_21rem_auto] md:gap-x-[clamp(20px,2.4vw,40px)]";
 /** the row's own surface: only a soft tint on hover (fine pointers); content stays inside the row, nothing bleeds out */
 const ROW =
-  "group/row relative w-full min-w-0 py-4 text-left transition-colors duration-300 md:h-full md:rounded-2xl md:py-0 md:px-5 md:hover:bg-white/[0.03]";
+  "work-row group/row relative w-full min-w-0 py-4 text-left transition-colors duration-300 md:h-full md:rounded-2xl md:py-0 md:px-5 md:hover:bg-white/[0.03]";
 /** thumbnail width: up to 280px, but never taller than the row can hold (5 rows share the screen height) */
 const THUMB_W = "w-24 md:w-[min(clamp(200px,16vw,280px),17dvh)]";
 /** content that mutes while another row is hovered; the hovered row keeps full strength */
-const DIM = "transition-opacity duration-300 md:group-hover/list:opacity-50 md:group-hover/row:opacity-100!";
+const DIM = "work-dim transition-opacity duration-300";
 const NAME = "block text-[clamp(26px,2.8vw,42px)] font-medium leading-tight tracking-[-0.03em] text-fg";
 const KIND = "mt-1.5 block text-[14px] leading-snug text-grey";
 
@@ -67,7 +67,7 @@ export function Work() {
 
       <ul
         aria-label={WORK.listLabel}
-        className="group/list relative z-[1] w-full min-w-0 mt-[clamp(20px,3.5vh,40px)] flex flex-col px-gutter pb-[clamp(24px,4.5vh,48px)] md:min-h-0 md:flex-1"
+        className="work-list group/list relative z-[1] w-full min-w-0 mt-[clamp(20px,3.5vh,40px)] flex flex-col px-gutter pb-[clamp(24px,4.5vh,48px)] md:min-h-0 md:flex-1"
       >
         {CASES.map((c, i) => (
           <li

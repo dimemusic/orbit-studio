@@ -691,3 +691,10 @@ html {
 .booting .plate::before {
   opacity: 0;
 }
+
+/* Work list: mute the other rows only while a ROW is hovered (not the gaps / hairlines between rows) */
+@media (hover: hover) and (pointer: fine) and (min-width: 48rem) {
+  .work-list:has(.work-row:hover) .work-row:not(:hover) .work-dim {
+    opacity: 0.5;
+  }
+}
