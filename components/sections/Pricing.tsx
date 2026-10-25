@@ -157,10 +157,14 @@ function Row({ s, on, onToggle }: { s: Service; on: boolean; onToggle: () => voi
       <div className="min-w-0">
         <h3 className="text-[clamp(22px,2vw,30px)] font-medium leading-tight tracking-[-0.03em] text-fg">{s.name}</h3>
         <p className="mt-1 text-[15px] leading-snug text-body">{s.blurb}</p>
-        <ul className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
+        {/* what's included: tinted pills in the service colour, one line where it fits */}
+        <ul className="mt-3.5 flex flex-wrap gap-2">
           {s.features.map((f) => (
-            <li key={f} className="flex min-w-0 items-center gap-2 text-[15px] leading-snug text-body">
-              <Check size={14} weight="bold" aria-hidden="true" className={`shrink-0 ${a.text}`} />
+            <li
+              key={f}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium leading-none text-fg/90 ${a.border} ${a.tint}`}
+            >
+              <Check size={12} weight="bold" aria-hidden="true" className={`shrink-0 ${a.text}`} />
               {f}
             </li>
           ))}
