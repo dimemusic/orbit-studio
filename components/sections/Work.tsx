@@ -213,9 +213,9 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
               type="button"
               onClick={hide}
               aria-label={WORK.close}
-              className="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-[rgb(6_8_14/0.75)] text-fg transition-colors hover:bg-[rgb(6_8_14/0.95)]"
+              className="group/x absolute right-4 top-4 grid size-11 place-items-center rounded-full border border-white/10 bg-[rgb(6_8_14/0.75)] text-body transition-[background-color,border-color,color] duration-200 hover:border-white/25 hover:bg-white/[0.12] hover:text-fg"
             >
-              <X size={18} aria-hidden="true" />
+              <X size={18} aria-hidden="true" className="transition-transform duration-300 ease-[var(--ease)] group-hover/x:rotate-90" />
             </button>
           </div>
           <div className="grid gap-8 p-6 sm:p-9 md:grid-cols-[1.3fr_1fr]">
@@ -256,8 +256,8 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
                   </div>
                 ))}
               </dl>
-              <div className="mt-auto flex flex-wrap items-center gap-4">
-                <Button href="#contact" onClick={onClose}>
+              <div className="mt-auto flex flex-col items-center gap-4">
+                <Button href="#contact" onClick={onClose} className="w-full">
                   {WORK.cta}
                 </Button>
                 {c.url && (

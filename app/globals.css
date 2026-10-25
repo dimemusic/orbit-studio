@@ -583,6 +583,11 @@ html {
   overflow-y: auto;
   overscroll-behavior: contain;
   border-radius: 16px;
+  /* still scrollable on short screens, but no scrollbar flashing while the panel rises in */
+  scrollbar-width: none;
+}
+.case-dialog::-webkit-scrollbar {
+  display: none;
 }
 .case-dialog::backdrop {
   background: rgb(5 7 13 / 0.72);
