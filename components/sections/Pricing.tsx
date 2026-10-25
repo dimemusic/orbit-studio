@@ -195,7 +195,7 @@ function Row({ s, on, onToggle }: { s: Service; on: boolean; onToggle: () => voi
           ))}
         </ul>
       </div>
-      <div className="col-span-2 flex items-center justify-between gap-5 md:col-span-1 md:self-center">
+      <div className="col-span-2 flex items-center justify-between gap-5 md:col-span-1 md:gap-8 md:self-center">
         <p className="md:text-right">
           <span className="block text-[22px] font-semibold leading-none tracking-[-0.03em] text-fg tabular-nums">
             {SERVICES.pricePrefix} {money(s.price)}
