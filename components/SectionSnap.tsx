@@ -10,8 +10,8 @@ import { useEffect } from "react";
  * <html> gets scroll-behavior: auto, otherwise the CSS smooth scroll would turn every per-frame scrollTo into its
  * own smooth animation and the two would fight (stutter).
  */
-const QUIET = 220; // ms without wheel events that ends a gesture
-const MOVE = 850; // ms a section move takes
+const QUIET = 150; // ms without wheel events that ends a gesture
+const MOVE = 600; // ms a section move takes (was 850: felt slow and slippery)
 
 export function SectionSnap() {
   useEffect(() => {
@@ -20,7 +20,8 @@ export function SectionSnap() {
     let lockUntil = 0;
     let raf = 0;
     const root = document.documentElement;
-    const inOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    // ease-out quart: the page responds at once and settles softly (an in-out curve waited before moving)
+    const inOut = (x: number) => 1 - Math.pow(1 - x, 4);
     const stop = () => {
       if (!raf) return;
       cancelAnimationFrame(raf);
