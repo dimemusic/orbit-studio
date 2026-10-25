@@ -86,13 +86,6 @@ export function FinalCta() {
                 </a>
               </li>
             </ul>
-            <p className="mt-6 flex items-center gap-2.5 text-[14px] text-body">
-              <span className="relative grid size-2 place-items-center" aria-hidden="true">
-                <span className="absolute size-2 animate-ping rounded-full bg-green/60 motion-reduce:hidden" />
-                <span className="size-2 rounded-full bg-green" />
-              </span>
-              {CONTACT.availability}
-            </p>
           </div>
         </div>
 
@@ -286,7 +279,7 @@ function ContactForm() {
               <textarea
                 id={`${uid}-message`}
                 name="message"
-                rows={2}
+                rows={4}
                 maxLength={1500}
                 placeholder={CONTACT.messagePh}
                 value={message}

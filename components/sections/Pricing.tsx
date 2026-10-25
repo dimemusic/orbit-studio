@@ -27,10 +27,10 @@ const days = (n: number) => {
  * Services as a package builder: one full screen (lg+). Big word-by-word title + one line on the right, then
  * 3 service rows on hairlines (whole row toggles, picked = colour stripe + faint tint) and the «Ваш пакет» card
  * (.card-pro, sticky): picked services with prices, counting total, term; all three = the turnkey offer.
- * Everything picked by default. Phones: rows stacked, the package card under them, section may be taller.
+ * Nothing picked by default. Phones: rows stacked, the package card under them, section may be taller.
  */
 export function Pricing() {
-  const [picked, setPicked] = useState<Set<string>>(() => new Set(ITEMS.map((s) => s.id)));
+  const [picked, setPicked] = useState<Set<string>>(() => new Set());
   const chosen = ITEMS.filter((s) => picked.has(s.id));
   const all = chosen.length === ITEMS.length;
   const total = useTween(all ? TURNKEY.price : chosen.reduce((t, s) => t + s.price, 0), 600);
@@ -201,11 +201,11 @@ function Row({ s, on, onToggle }: { s: Service; on: boolean; onToggle: () => voi
             e.stopPropagation();
             onToggle();
           }}
-          className={`inline-flex h-11 w-[7.5rem] shrink-0 items-center justify-center gap-1.5 rounded-full border text-[14px] font-semibold transition-[background-color,border-color,color] duration-300 ${
+          className={`inline-flex h-[52px] w-[9rem] shrink-0 items-center justify-center gap-2 rounded-full border text-[16px] font-semibold transition-[background-color,border-color,color] duration-300 ${
             on ? `border-transparent ${a.tint} ${a.text}` : "border-white/[0.18] text-fg hover:border-white/40 hover:bg-white/[0.07]"
           }`}
         >
-          {on ? <Check size={14} weight="bold" aria-hidden="true" /> : <Plus size={14} aria-hidden="true" />}
+          {on ? <Check size={16} weight="bold" aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
           {on ? SERVICES.added : SERVICES.add}
         </button>
       </div>
