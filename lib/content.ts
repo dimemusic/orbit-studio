@@ -379,6 +379,8 @@ export const CONTACT = {
 /** «Як ми працюємо»: one self-playing ~12s film right after the hero. Demo labels are illustrative. */
 export const BUILD = {
   label: "Як ми працюємо",
+  /** title card before the film (last word gets the accent) */
+  intro: ["Що", "ми", "робимо?"],
   /** neutral demo brand shown inside the mock site */
   brand: "Your product",
   stages: [

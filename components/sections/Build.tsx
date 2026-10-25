@@ -42,6 +42,7 @@ import {
   type ReactNode,
 } from "react";
 import { BUILD } from "@/lib/content";
+import { G } from "../ui/Bits";
 import { along, Caret, ease, expo, seg, smooth, Typed, typed } from "../process/util";
 
 /**
@@ -61,7 +62,9 @@ const STAGE_START = STAGE_SEC.map((_, i) =>
 const TOTAL = STAGE_SEC.reduce((a, b) => a + b, 0);
 /** the final frame is held this long, then the film starts again */
 const HOLD = 5;
-const CYCLE = TOTAL + HOLD;
+/** each lap opens with a title card in the middle of the screen («Що ми робимо?»), then the film starts */
+const INTRO = 1.9;
+const CYCLE = INTRO + TOTAL + HOLD;
 const stageAt = (t: number) => {
   let i = 0;
   while (i < STAGE_SEC.length - 1 && t >= STAGE_START[i + 1]) i++;
@@ -106,7 +109,7 @@ export function Build() {
     if (!el) return;
     MB = window.devicePixelRatio <= 1.5 && (navigator.hardwareConcurrency ?? 8) > 4;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setTime(TOTAL);
+      setTime(INTRO + TOTAL);
       return;
     }
     let raf = 0;
@@ -146,14 +149,16 @@ export function Build() {
     };
   }, []);
 
-  const t = Math.min(time, TOTAL);
+  const t = Math.min(Math.max(0, time - INTRO), TOTAL);
+  // the film layer fades in as the title card leaves
+  const film = smooth(seg(time, INTRO - 0.25, INTRO + 0.2));
   /** 0 → 1 over the last 0.4s of the hold: the launch stage whips out before the next lap */
   const fin = seg(time, CYCLE - 0.4, CYCLE);
   const cur = stageAt(t);
   const st = BUILD.stages[cur];
   // the grid draws only on the first lap
-  const gridH = lap ? 1 : ease(seg(t, 0, 0.7));
-  const gridV = lap ? 1 : ease(seg(t, 0.15, 0.85));
+  const gridH = lap ? 1 : ease(seg(time, 0, 0.7));
+  const gridV = lap ? 1 : ease(seg(time, 0.15, 0.85));
 
   return (
     <section
@@ -185,6 +190,8 @@ export function Build() {
         />
       </div>
 
+      <IntroCard time={time} />
+      <div className="relative z-[1] flex min-h-0 flex-1 flex-col" style={film < 1 ? { opacity: film } : undefined}>
       <header className="relative z-[1] flex flex-col items-center px-gutter pt-[clamp(88px,12vh,128px)] text-center">
         <h2 id="build-title" className="sr-only">
           {BUILD.label}: {BUILD.stages.map((s) => s.title.join(" ")).join(" ")}
@@ -231,7 +238,7 @@ export function Build() {
           )
             return null;
           // first lap: design is simply there; next laps: it whips in like the other stages
-          const enter = i === 0 && !lap ? 1 : expo(seg(t, start - 0.08, start + 0.7));
+          const enter = expo(seg(t, start - 0.08, start + 0.7));
           const exitK =
             i === BUILD.stages.length - 1
               ? fin
@@ -262,7 +269,32 @@ export function Build() {
           );
         })}
       </StageBox>
+      </div>
     </section>
+  );
+}
+
+/** title card before every lap: words rise out of a blur in the middle of the screen, then lift away */
+function IntroCard({ time }: { time: number }) {
+  if (time >= INTRO + 0.05) return null;
+  const out = seg(time, INTRO - 0.45, INTRO) ** 2;
+  const words = BUILD.intro;
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[2] grid place-items-center px-gutter">
+      <p className="text-center text-mega font-semibold">
+        {words.map((w, i) => {
+          const k = expo(seg(time, 0.12 + i * 0.12, 0.85 + i * 0.12));
+          const moving = k < 0.999 || out > 0;
+          const word = i === words.length - 1 ? <G tone="aurora">{w}</G> : w;
+          return (
+            <span key={i} className="inline-block" style={moving ? { transform: `translateY(${((1 - k) * 0.35 - out * 0.25).toFixed(3)}em)`, filter: `blur(${((1 - k) * 12 + out * 14).toFixed(1)}px)`, opacity: Math.min(1, k * 1.4) * (1 - out) } : undefined}>
+              {word}
+              {i < words.length - 1 && "\u00a0"}
+            </span>
+          );
+        })}
+      </p>
+    </div>
   );
 }
 
