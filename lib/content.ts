@@ -51,6 +51,8 @@ export type Case = {
   kind: string;
   /** 1–2 lines under the name in the Work list */
   text: string;
+  /** four short items in the Work list row («що зробили») */
+  did: string[];
   tags: string[];
   /** cover screenshot (case window, light spill) */
   media: string;
@@ -74,10 +76,12 @@ export const WORK = {
   /** plain start · accent end (in the active case's colour) */
   title: ["З чим ми", "працюємо."],
   listLabel: "Проєкти",
+  /** link in the section header */
+  more: "Обговорити проєкт",
   /** closing row of the list */
   next: {
     name: "Тут може бути ваш сайт",
-    kind: "Ваш проєкт",
+    kind: "Обговорімо ваш проєкт", // DRAFT
     text: "Розкажіть про ідею, і ми запропонуємо рішення під ваш бізнес.", // DRAFT
     cta: "Обговорити проєкт",
   },
@@ -91,7 +95,8 @@ export const WORK = {
     {
       id: "maina",
       name: "Maina by Rivka",
-      kind: "Магазин напівфабрикатів",
+      kind: "Магазин напівфабрикатів і готової їжі", // DRAFT
+      did: ["UX і структура", "UI-дизайн", "Розробка Next.js", "Адмінка Sanity"], // DRAFT
       text: "Магазин напівфабрикатів і готової їжі з доставкою по Україні. Асортимент і ціни клієнт оновлює сам в адмінці.", // DRAFT
       tags: ["Дизайн", "Next.js", "Sanity"],
       media: "/cases/maina.webp",
@@ -113,6 +118,7 @@ export const WORK = {
       id: "cloud-sphere",
       name: "Cloud Sphere",
       kind: "SaaS-лендинг",
+      did: ["UI-дизайн", "3D-фон з частинок", "Анімації", "Розробка Next.js"], // DRAFT
       text: "SaaS-лендинг з інтерактивним 3D-фоном із частинок.", // DRAFT
       tags: ["Дизайн", "Next.js", "three.js"],
       media: "/cases/cloudsphere.webp",
@@ -133,7 +139,8 @@ export const WORK = {
     {
       id: "biganskiy",
       name: "BIGANSKIY",
-      kind: "Архітектурне бюро",
+      kind: "Архітектурне бюро (концепт)", // DRAFT
+      did: ["Арт-дирекшн", "UI-дизайн", "Анімації", "Розробка"], // DRAFT
       text: "Стильне архітектурне бюро футуристичних будинків: сайт-портфоліо з ефектною подачею проєктів.", // DRAFT
       tags: ["Дизайн", "Next.js"],
       media: "/cases/biganskiy.webp",
@@ -154,7 +161,8 @@ export const WORK = {
     {
       id: "krendel",
       name: "Крендель",
-      kind: "Кав'ярня-пекарня",
+      kind: "Лендинг домашньої пекарні", // DRAFT
+      did: ["Ілюстративний стиль", "UI-дизайн", "Адаптив", "Розробка"], // DRAFT
       text: "Лендинг домашньої пекарні: меню, замовлення, теплий мультяшний стиль.", // DRAFT
       tags: ["Дизайн", "Лендинг"],
       media: "/cases/krendel.webp",
