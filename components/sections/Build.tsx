@@ -63,7 +63,7 @@ const TOTAL = STAGE_SEC.reduce((a, b) => a + b, 0);
 /** the final frame is held this long, then the film starts again */
 const HOLD = 5;
 /** each lap opens with a title card in the middle of the screen («Що ми робимо?»), then the film starts */
-const INTRO = 1.5;
+const INTRO = 1.3;
 const CYCLE = INTRO + TOTAL + HOLD;
 const stageAt = (t: number) => {
   let i = 0;
@@ -283,7 +283,7 @@ function IntroCard({ time }: { time: number }) {
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[2] grid place-items-center px-gutter">
       <p className="text-center text-mega font-semibold">
         {words.map((w, i) => {
-          const k = expo(seg(time, 0.12 + i * 0.12, 0.85 + i * 0.12));
+          const k = expo(seg(time, 0.08 + i * 0.1, 0.7 + i * 0.1));
           const moving = k < 0.999 || out > 0;
           const word = i === words.length - 1 ? <G tone="aurora">{w}</G> : w;
           return (
