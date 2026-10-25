@@ -15,10 +15,10 @@ const SHOT_MS = 900;
 
 /** one row = [thumbnail | name + kind | what we did | arrow]; below lg the «did» items move into the text block */
 const GRID =
-  "grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 lg:grid-cols-[auto_minmax(0,1fr)_17.5rem_auto] md:gap-x-[clamp(20px,2.4vw,40px)]";
+  "grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-4 lg:grid-cols-[auto_minmax(0,1fr)_21rem_auto] md:gap-x-[clamp(20px,2.4vw,40px)]";
 /** the row's own surface: only a soft tint on hover (fine pointers); content stays inside the row, nothing bleeds out */
 const ROW =
-  "group/row relative w-full min-w-0 py-4 text-left transition-colors duration-300 md:h-full md:rounded-2xl md:py-0 md:pl-3 md:pr-2 md:hover:bg-white/[0.03]";
+  "group/row relative w-full min-w-0 py-4 text-left transition-colors duration-300 md:h-full md:rounded-2xl md:py-0 md:px-5 md:hover:bg-white/[0.03]";
 /** thumbnail width: up to 280px, but never taller than the row can hold (5 rows share the screen height) */
 const THUMB_W = "w-24 md:w-[min(clamp(200px,16vw,280px),17dvh)]";
 /** content that mutes while another row is hovered; the hovered row keeps full strength */
@@ -127,11 +127,11 @@ function CaseRow({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void }) 
           {c.name}
         </span>
         <span className={KIND}>{c.kind}</span>
-        <span className="mt-2 block text-[13px] leading-snug text-grey lg:hidden">{c.did.join(" · ")}</span>
+        <span className="mt-2 block text-[14px] leading-snug text-body lg:hidden">{c.did.join(" · ")}</span>
       </span>
       <ul className={`hidden min-w-0 gap-x-5 gap-y-1.5 lg:grid lg:grid-flow-col lg:grid-cols-[auto_auto] lg:grid-rows-2 lg:justify-start ${DIM}`}>
         {c.did.map((d) => (
-          <li key={d} className="flex min-w-0 items-center gap-2 whitespace-nowrap text-[13px] leading-snug text-grey">
+          <li key={d} className="flex min-w-0 items-center gap-2.5 whitespace-nowrap text-[15px] leading-snug text-body">
             <span aria-hidden="true" className="size-1 shrink-0 rounded-full" style={{ background: c.color }} />
             {d}
           </li>
@@ -182,7 +182,7 @@ function ArrowButton() {
       aria-hidden="true"
       className="grid size-12 shrink-0 place-items-center rounded-full border border-white/[0.18] text-fg transition-colors duration-300 md:group-hover/row:border-blue md:group-hover/row:bg-blue md:group-hover/row:text-white"
     >
-      <ArrowRight size={24} weight="light" className="transition-transform duration-300 md:group-hover/row:translate-x-[3px]" />
+      <ArrowRight size={24} weight="light" />
     </span>
   );
 }
