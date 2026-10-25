@@ -146,9 +146,14 @@ function Row({ s, on, onToggle }: { s: Service; on: boolean; onToggle: () => voi
     <div
       onClick={onToggle}
       className={`relative grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-5 pl-4 pr-4 transition-colors lg:flex-1 lg:content-center duration-300 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-x-6 md:px-5 ${
-        on ? "bg-white/[0.025]" : "md:hover:bg-white/[0.015]"
+        on ? "" : "md:hover:bg-white/[0.012]"
       }`}
     >
+      {/* picked: faint tint that fades out to the right, so the row has no hard edge */}
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-0 -z-10 bg-linear-to-r from-white/[0.035] via-white/[0.018] to-transparent transition-opacity duration-300 ${on ? "opacity-100" : "opacity-0"}`}
+      />
       {/* picked: a thin stripe in the service colour */}
       <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-[2px] transition-opacity duration-300 ${a.dot} ${on ? "opacity-100" : "opacity-0"}`} />
       <IconTile color={s.color}>
