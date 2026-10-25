@@ -47,7 +47,7 @@ export function Pricing() {
     <section
       id="services"
       aria-labelledby="services-title"
-      className="snap-section relative flex min-h-[100dvh] w-full flex-col px-gutter pb-[clamp(24px,4.5vh,48px)] pt-[clamp(88px,12vh,128px)] lg:h-[100dvh]"
+      className="snap-section relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-[clamp(24px,4.5vh,48px)] pt-[clamp(88px,12vh,128px)] lg:h-[100dvh]"
     >
       <header className="relative z-[1] flex w-full min-w-0 flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
         <h2 id="services-title" className="legible text-mega font-semibold">
@@ -56,7 +56,7 @@ export function Pricing() {
         <p className="legible text-lead text-body">{SERVICES.lead}</p>
       </header>
 
-      <div className="relative z-[1] flex w-full min-w-0 flex-1 items-center py-[clamp(24px,4vh,44px)] lg:min-h-0 lg:items-stretch lg:pb-0 lg:pt-[clamp(28px,5vh,56px)]">
+      <div className="relative z-[1] flex w-full min-w-0 py-[clamp(24px,4vh,44px)] lg:pb-0 lg:pt-[clamp(32px,5vh,56px)]">
         <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_400px]">
           <ul aria-label={SERVICES.listLabel} className="min-w-0 lg:flex lg:flex-col">
             {ITEMS.map((s, i) => (
