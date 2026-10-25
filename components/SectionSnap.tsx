@@ -11,7 +11,7 @@ import { useEffect } from "react";
  * own smooth animation and the two would fight (stutter).
  */
 const QUIET = 150; // ms without wheel events that ends a gesture
-const MOVE = 600; // ms a section move takes (was 850: felt slow and slippery)
+const MOVE = 720; // ms a section move takes (850 in-out cubic felt slow, 600 out-quart felt abrupt)
 
 export function SectionSnap() {
   useEffect(() => {
@@ -20,8 +20,8 @@ export function SectionSnap() {
     let lockUntil = 0;
     let raf = 0;
     const root = document.documentElement;
-    // ease-out quart: the page responds at once and settles softly (an in-out curve waited before moving)
-    const inOut = (x: number) => 1 - Math.pow(1 - x, 4);
+    // ease-in-out sine: soft start and soft landing, but without the long wait of a cubic in-out
+    const inOut = (x: number) => -(Math.cos(Math.PI * x) - 1) / 2;
     const stop = () => {
       if (!raf) return;
       cancelAnimationFrame(raf);
