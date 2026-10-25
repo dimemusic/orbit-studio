@@ -35,7 +35,7 @@ eyebrow pills above headings («NN · Назва секції», `Eyebrow`; remo
 - Accents: **blue `#3d8bff`** primary (buttons, links). Category colours: **cyan `#22d3ee`**, **violet `#8b5cf6`** (small text `violet-soft #a78bfa`), **green `#34d399`**. Class map in `components/ui/accent.ts`.
 - Type scale: `text-mega` (clamp(44px, 6vw, 104px)) for the hero AND every big section title (Build stage titles, Work title; one size for all H1-level headings, Oct 2026) · `text-section` smaller home headings (max 2 lines) · `text-display` inner pages · `text-headline` · `text-title` · `text-lead`.
 - Key words in headings: 1–2 per heading with `<G tone="…">` (`.text-gradient`). Hero / contact use the brand aurora; each section keeps its own tone (work aurora, about mind, services fresh, admin calm, process ice, team warm, guarantees shield, FAQ soft). Do not unify them.
-- Surfaces: **one `.card` utility for every card and panel** (dark frosted glass, `backdrop-filter: blur(40px) saturate(140%)`, 1px `rgba(255,255,255,.08)` border, radius 16px). `.card-nav` navbar variant. `.card-pro` = blue → cyan gradient border (used for the turnkey package).
+- Surfaces: **one `.card` utility for every card and panel** (dark frosted glass, `backdrop-filter: blur(24px) saturate(140%)` + `contain: paint`, glass only outside `<main>` (navbar), cards in `<main>` keep the tint without backdrop-filter, 1px `rgba(255,255,255,.08)` border, radius 16px). `.card-nav` navbar variant. `.card-pro` = blue → cyan gradient border (used for the turnkey package).
 - Pills / badges / tags / eyebrows: ≥12px, padding 6px 12px, coloured text on a 12% tint.
 - Readability: every heading + intro on particles sits in a **`.plate`** and uses `.legible`.
 - Buttons (`components/ui/Button.tsx`): **primary** blue, 64px tall (lg) / 48px (nav); **secondary** transparent + hairline. Every CTA is «Обговорити проєкт» → `#contact`.
@@ -51,12 +51,12 @@ Scene code: `components/IvyScene.tsx`, `lib/ivy.ts` (generator), `lib/ivyShaders
 - Fixed full-screen canvas behind content (`z-0`, `pointer-events: none`, listeners on `window`), additive blending, rendered `linear flat`.
 - Generated after layout (fonts + one frame, regenerated once when the page height settles), regenerates on width changes > 20%, one ivy per route.
 - Camera follows scroll 1:1; growth front just below the bottom edge, one-way. Hero dust field morphs into the ivy roots over the first screen.
-- Hover brightens nearby particles (no displacement). Click on background sends an impulse wave. Gentle sway, pointer tilt, twinkle. Reduced motion: no sway, instant growth. DPR capped at 2.
+- Hover brightens nearby particles (no displacement). Click on background sends an impulse wave. Gentle sway, pointer tilt, twinkle. Reduced motion: no sway, instant growth. DPR capped at 1.5.
 - Ivy look = 1px quiet lines, brightness carried by the particles. Don't brighten or thicken the lines.
 - **Case nodes** (fine pointers only): `Work` places 4 `[data-case-node]` anchors in its side margins; IvyScene snaps each to the nearest ivy particle (branch depth ≤ 2), projects it to the screen every frame and moves a DOM marker (`CaseNodes`, fixed overlay `z-[3]`, `aria-hidden`). Cursor within 40px → glass preview of that case; click → scrolls to its card. Hovering a case card dispatches `CASE_HOVER` (`components/home.ts`) and lights its node; the shown case gets `data-hot` on its card. Nodes appear only where the side margin is ≥ ~70px (≈ ≥1264px wide); the Work cards carry the same info accessibly.
 
 ## Background decision (Oct 2026, overrides the ivy notes above)
-The ivy / neurons are OFF site-wide. `IvyScene` only renders the hero dust field as stars (morph locked at 0, no ivy points/lines, no case nodes). The star field is the WHOLE page background: the camera stays put, the stars themselves scroll with the page (`uScroll` in the field vertex shader, nearer stars faster = parallax) and wrap vertically so they never run out; below the hero the canvas gets blurred (up to 7px) and slightly dimmed. Below the hero the calm `Ambient` layer shows: page colour + two very soft drifting colour washes whose tint follows the section on screen (`components/Ambient.tsx`, `.ambient` in globals.css). This replaces the "no coloured glow" rule for the background only.
+The ivy / neurons are OFF site-wide. `IvyScene` only renders the hero dust field as stars (morph locked at 0, no ivy points/lines, no case nodes). The star field is the WHOLE page background: the camera stays put, the stars themselves scroll with the page (`uScroll` in the field vertex shader, nearer stars faster = parallax) and wrap vertically so they never run out; below the hero the stars go out of focus in the shader (`uDefocus`: bigger, fainter sprites) and the canvas wrapper is slightly dimmed. Below the hero the calm `Ambient` layer shows: page colour + two very soft colour washes (two `.amb-wash` layers drifting by transform) whose tint follows the section on screen (`components/Ambient.tsx`, `.ambient` in globals.css). This replaces the "no coloured glow" rule for the background only.
 
 ## Rebuild in progress (Oct 2026, overrides the section table below)
 The home page is being rebuilt section by section. It currently renders ONLY: Hero → `Build` («Як ми працюємо», `components/sections/Build.tsx`, id `process`) → `Work` («Наші роботи», `components/sections/Work.tsx`, id `work`) → `Pricing` («Послуги», `components/sections/Pricing.tsx`, id `services`).
@@ -69,6 +69,14 @@ About / Faq / FinalCta stay in `components/sections/` but are not rendered; brin
 
 ## Structure decision (Oct 2026)
 About, the admin-panel demo, Team and Guarantees were removed on purpose: too much decoration, too little information. Do not bring them back unless asked. Icons: one glyph per idea via `components/ui/icons.tsx` (`Icon name="brief|design|code|cms|launch"`) inside `IconTile`.
+
+## Performance rules (Oct 2026)
+- No CSS `filter` / `backdrop-filter` on full-screen layers (canvas wrapper, ambient, section backgrounds). Defocus the stars in the shader; dim with opacity.
+- Background motion is transform-only on separate layers (`will-change: transform` allowed there), never an animated gradient / `@property` position.
+- WebGL: DPR ≤ 1.5, render loop paused while the tab is hidden, no allocations (`new Vector3` etc.) inside `useFrame`.
+- Motion blur only on big moving elements (Build stage whips, title letters, fly-ins with px ≥ `BIG_BLUR`); small pieces move with translate + opacity. Build turns motion blur off entirely when DPR > 1.5 or ≤ 4 CPU cores (`MB`).
+- Static parts of per-frame scenes are `memo`ised (`Visual`, `PlanBody`, iPhone chrome) so the rAF re-render only touches what moves.
+- Programmatic scroll (SectionSnap) = one rAF tween with `scroll-behavior: auto` on <html> while it runs; never stack it on CSS smooth scroll.
 
 ## App structure
 - `app/layout.tsx`: `Scene`, `Nav`, `<main id="main">`, `Footer`, `RevealRoot`, `CardFx`. Pages render only their sections.

@@ -120,6 +120,8 @@ uniform float uDPR;
 uniform float uScroll;
 uniform float uFieldH;
 uniform float uCamZ;
+/** 0 in the hero → 1 below it: stars go softly out of focus (bigger, dimmer sprites) instead of a CSS blur */
+uniform float uDefocus;
 attribute vec3 aTarget;
 attribute vec3 aColor;
 attribute float aDepth;
@@ -161,11 +163,16 @@ void main() {
 
   float sizeField = 18.0 + aStagger * 24.0 + hov * 14.0;
   float sizeIvy = 20.0 + aSeed * 28.0 + hot * 16.0 + hov * 14.0; // = ivy particle size
-  gl_PointSize = mix(sizeField, sizeIvy, m) * uDPR / -mv.z;
+  // defocus (≈ the old 7px CSS blur, without a full-screen filter): the sprite grows by up to 14 CSS px and
+  // its alpha drops with the area, so the same light spreads into a faint soft glow
+  float s0 = mix(sizeField, sizeIvy, m) * uDPR / -mv.z;
+  float s1 = s0 + uDefocus * 14.0 * uDPR;
+  gl_PointSize = s1;
+  float spread = (s0 * s0) / (s1 * s1);
 
   float aField = (0.45 + 0.55 * smoothstep(-5.0, 2.5, w.z)) * 1.25 * (1.0 + hov * 1.6);
   float aIvy = twinkle * (0.55 + 0.55 * smoothstep(-3.0, 2.0, w.z)) * (1.0 + hov * 1.6) * aMult; // = ivy particle alpha
-  vA = mix(aField, aIvy, m);
+  vA = mix(aField, aIvy, m) * spread;
 
   // dust takes a soft tint of the ivy colour it will become (half brand blue, half its own hue)
   vec3 tint = mix(FIELD_COL, min(aColor * 1.85, vec3(1.0)), 0.55);

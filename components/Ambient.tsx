@@ -7,6 +7,7 @@ import { HOME_SECTIONS } from "@/lib/content";
  * Calm background below the hero: the page colour with two very soft, slowly drifting colour washes.
  * Their tint follows the section on screen (the hero stars canvas fades out on top of this layer).
  * Colours are written to CSS variables on <html>; `@property` in globals.css makes them transition smoothly.
+ * The drift is a transform on each wash layer (compositor only), never an animated gradient position.
  */
 const TINTS: Record<string, [string, string]> = {
   top: ["rgb(61 139 255 / 0.10)", "rgb(139 92 246 / 0.08)"],
@@ -40,5 +41,10 @@ export function Ambient() {
     return () => io.disconnect();
   }, []);
 
-  return <div aria-hidden="true" className="ambient pointer-events-none fixed inset-0 z-0" />;
+  return (
+    <div aria-hidden="true" className="ambient pointer-events-none fixed inset-0 z-0">
+      <div className="amb-wash a" />
+      <div className="amb-wash b" />
+    </div>
+  );
 }

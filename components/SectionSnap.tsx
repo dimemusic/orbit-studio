@@ -6,6 +6,9 @@ import { useEffect } from "react";
  * Full-screen sections (`.snap-section`): one wheel / key step moves exactly one whole section, landing it
  * flush on the screen. Past the last section (footer) the page scrolls normally. Desktop with a fine pointer only;
  * touch keeps native scrolling. Trackpad inertia is swallowed until the gesture goes quiet.
+ * The move is our own tween on ONE requestAnimationFrame loop (a new move cancels the running one). While it runs,
+ * <html> gets scroll-behavior: auto, otherwise the CSS smooth scroll would turn every per-frame scrollTo into its
+ * own smooth animation and the two would fight (stutter).
  */
 const QUIET = 220; // ms without wheel events that ends a gesture
 const MOVE = 850; // ms a section move takes
@@ -15,11 +18,38 @@ export function SectionSnap() {
     if (!window.matchMedia("(min-width: 48rem) and (hover: hover) and (pointer: fine)").matches) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let lockUntil = 0;
+    let raf = 0;
+    const root = document.documentElement;
+    const inOut = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    const stop = () => {
+      if (!raf) return;
+      cancelAnimationFrame(raf);
+      raf = 0;
+      root.style.scrollBehavior = "";
+    };
 
     const tops = () => Array.from(document.querySelectorAll<HTMLElement>(".snap-section")).map((el) => el.getBoundingClientRect().top + window.scrollY);
     const go = (y: number) => {
       lockUntil = performance.now() + MOVE;
-      window.scrollTo({ top: y, behavior: reduced ? "auto" : "smooth" });
+      stop();
+      root.style.scrollBehavior = "auto";
+      if (reduced) {
+        window.scrollTo(0, y);
+        root.style.scrollBehavior = "";
+        return;
+      }
+      const from = window.scrollY;
+      const t0 = performance.now();
+      const tick = (now: number) => {
+        const k = Math.min(1, (now - t0) / MOVE);
+        window.scrollTo(0, from + (y - from) * inOut(k));
+        if (k < 1) raf = requestAnimationFrame(tick);
+        else {
+          raf = 0;
+          root.style.scrollBehavior = "";
+        }
+      };
+      raf = requestAnimationFrame(tick);
     };
 
     /** returns true when the step was handled (native scroll must be prevented) */
@@ -84,11 +114,16 @@ export function SectionSnap() {
       if (step(down ? 1 : -1)) e.preventDefault();
     };
 
+    // grabbing the scrollbar (or any pointer press) hands the scroll back to the user at once
+    const onDown = () => stop();
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onDown);
     return () => {
+      stop();
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onDown);
     };
   }, []);
   return null;

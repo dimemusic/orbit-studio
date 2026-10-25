@@ -79,6 +79,8 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
       uScroll: { value: 0 },
       uFieldH: { value: visH + 0.8 },
       uCamZ: { value: camZ },
+      /** 0 in the hero → 1 below it (shader-side defocus, see ivyFieldVertex) */
+      uDefocus: { value: 0 },
     }),
     [reduce, visH, camZ],
   );
@@ -285,6 +287,9 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
     const scrollTarget = (window.scrollY / window.innerHeight) * visH;
     u.uScroll.value = reduce ? scrollTarget : u.uScroll.value + (scrollTarget - u.uScroll.value) * Math.min(1, dt * 10);
     u.uPulse.value = Math.max(0, u.uPulse.value - dt * 0.55);
+    // below the hero the stars go softly out of focus (same curve as the wrapper's dimming)
+    const vh = window.innerHeight;
+    u.uDefocus.value = Math.min(1, Math.max(0, (window.scrollY - vh * 0.25) / (vh * 0.65)));
 
     // the ivy is attached to the page: camera follows scroll 1:1
     const targetY = 0; // the star field is the whole page background: it stays put while the page scrolls
@@ -469,7 +474,16 @@ export default function IvyScene() {
     };
   }, []);
 
-  // stars are the page background: sharp in the hero, blurred (and a bit dimmer) below it
+  const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    const on = () => setVisible(document.visibilityState === "visible");
+    on();
+    document.addEventListener("visibilitychange", on);
+    return () => document.removeEventListener("visibilitychange", on);
+  }, []);
+
+  // stars are the page background: sharp in the hero, a bit dimmer below it (the defocus itself is in the shader:
+  // a CSS filter on this full-screen layer cost a full-screen blur every frame)
   const wrap = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = wrap.current;
@@ -478,7 +492,6 @@ export default function IvyScene() {
       const h = window.innerHeight;
       // below the hero the same stars stay, softly out of focus
       const k = Math.min(1, Math.max(0, (window.scrollY - h * 0.25) / (h * 0.65)));
-      el.style.filter = k > 0.01 ? `blur(${(k * 7).toFixed(2)}px)` : "";
       el.style.opacity = String(1 - k * 0.35);
     };
     onScroll();
@@ -498,7 +511,9 @@ export default function IvyScene() {
           // linear + flat: no colour management / tone mapping, matching the r128 prototype's colours
           linear
           flat
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
+          // the stars twinkle and drift every frame, so the loop stays continuous, but only while the tab is visible
+          frameloop={visible ? "always" : "never"}
           camera={{ fov: 45, near: 0.1, far: 100, position: [0, 0, 10] }}
           gl={{ antialias: true, powerPreference: "high-performance" }}
           onCreated={({ gl }) => gl.setClearColor("#05070d", 1)}

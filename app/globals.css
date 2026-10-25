@@ -136,10 +136,14 @@ p {
       rgba(6, 8, 14, 0.72);
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
-    -webkit-backdrop-filter: blur(40px) saturate(140%);
-    backdrop-filter: blur(40px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    backdrop-filter: blur(24px) saturate(140%);
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
     transition: --spot 0.45s var(--ease);
+    /* own paint layer: hover / spotlight repaints stay inside the card. The clip margin keeps the 1px rings
+       (::after spotlight, .card-pro::before) that sit on the border, outside the padding box */
+    contain: paint;
+    overflow-clip-margin: 2px;
   }
   /* border lights up near the cursor: masked 1px ring */
   .card:not(.card-nav)::after {
@@ -156,6 +160,13 @@ p {
       linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
+  }
+  /* every card in <main> sits below the hero, where the stars are already defocused and dimmed: the glass blur
+     made no visible difference there (A/B checked Oct 2026), so they keep the same tint without backdrop-filter.
+     The navbar (outside <main>, over the sharp hero stars) keeps its glass. */
+  main .card {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
   /* large cards only: CardFx writes --rx / --ry (max 4°) */
   [data-tilt] {
@@ -514,24 +525,48 @@ html {
     --amb-a 1.6s var(--ease),
     --amb-b 1.6s var(--ease);
 }
+/* the page colour + two washes; each wash is its own layer that drifts with transform only
+   (a drifting gradient position repainted the whole screen every frame). The tint still eases via --amb-a / --amb-b. */
 .ambient {
-  background:
-    radial-gradient(60% 55% at var(--amb-x, 18%) 30%, var(--amb-a), transparent 70%),
-    radial-gradient(55% 50% at calc(100% - var(--amb-x, 18%)) 75%, var(--amb-b), transparent 70%),
-    var(--bg, #05070d);
-  animation: amb-drift 26s ease-in-out infinite alternate;
+  overflow: hidden;
+  background: var(--bg, #05070d);
 }
-@property --amb-x {
-  syntax: "<percentage>";
-  inherits: false;
-  initial-value: 18%;
+.amb-wash {
+  position: absolute;
+  will-change: transform;
 }
-@keyframes amb-drift {
+/* wash A: radius 60vw × 55vh around (18%, 30%), drifts 12% → 34% */
+.amb-wash.a {
+  left: -42vw;
+  top: -25vh;
+  width: 120vw;
+  height: 110vh;
+  background: radial-gradient(closest-side, var(--amb-a), transparent 70%);
+  animation: amb-drift-a 26s ease-in-out infinite alternate;
+}
+/* wash B: radius 55vw × 50vh around (82%, 75%), mirrors A */
+.amb-wash.b {
+  left: 27vw;
+  top: 25vh;
+  width: 110vw;
+  height: 100vh;
+  background: radial-gradient(closest-side, var(--amb-b), transparent 70%);
+  animation: amb-drift-b 26s ease-in-out infinite alternate;
+}
+@keyframes amb-drift-a {
   from {
-    --amb-x: 12%;
+    transform: translate3d(-6vw, 0, 0);
   }
   to {
-    --amb-x: 34%;
+    transform: translate3d(16vw, 0, 0);
+  }
+}
+@keyframes amb-drift-b {
+  from {
+    transform: translate3d(6vw, 0, 0);
+  }
+  to {
+    transform: translate3d(-16vw, 0, 0);
   }
 }
 
@@ -573,7 +608,7 @@ html {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ambient,
+  .amb-wash,
   .case-dialog[open] .case-panel,
   .case-dialog[open]::backdrop {
     animation: none;

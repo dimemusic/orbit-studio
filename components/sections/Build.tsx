@@ -34,6 +34,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import {
   Fragment,
+  memo,
   useEffect,
   useRef,
   useState,
@@ -69,6 +70,15 @@ const stageAt = (t: number) => {
 const SW = 1200;
 const SH = 620;
 
+/**
+ * Motion blur budget. Blur only on big moving things (stage whips, title letters, panels with px ≥ BIG_BLUR);
+ * small pieces move with translate + opacity only. Off entirely on dense / weak devices (DPR > 1.5 or ≤ 4 cores),
+ * where a filter per frame on a scaled stage costs more than it shows. Set once on mount (see Build).
+ */
+let MB = true;
+const BIG_BLUR = 10;
+const blur = (px: number) => (MB && px > 0.05 ? `blur(${px.toFixed(2)}px)` : undefined);
+
 /** motion-blur style for an element that flies in: k = 0 (start) → 1 (settled) */
 const fly = (
   k: number,
@@ -79,9 +89,9 @@ const fly = (
 ): CSSProperties => ({
   // settled elements get no transform / filter / will-change, so the browser rasterises them sharp at the final scale
   transform: k < 1 ? `translate(${((1 - k) * dx).toFixed(1)}px, ${((1 - k) * dy).toFixed(1)}px) ${extra}` : extra || undefined,
-  filter: k < 0.999 ? `blur(${((1 - k) * px).toFixed(2)}px)` : undefined,
+  filter: k < 0.999 && px >= BIG_BLUR ? blur((1 - k) * px) : undefined,
   opacity: Math.min(1, k * 1.6),
-  willChange: k < 1 ? "transform, filter, opacity" : undefined,
+  willChange: k < 1 ? (MB && px >= BIG_BLUR ? "transform, filter, opacity" : "transform, opacity") : undefined,
 });
 
 export function Build() {
@@ -94,6 +104,7 @@ export function Build() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    MB = window.devicePixelRatio <= 1.5 && (navigator.hardwareConcurrency ?? 8) > 4;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setTime(TOTAL);
       return;
@@ -236,9 +247,9 @@ export function Build() {
                 enter < 0.999 || exit > 0
                   ? {
                       transform: `translate(${((1 - enter) * 200 - exit * 220).toFixed(1)}px, 0) scale(${(1 - (1 - enter) * 0.03 - exit * 0.03).toFixed(4)})`,
-                      filter: `blur(${((1 - enter) * 12 + exit * 14).toFixed(1)}px)`,
+                      filter: blur((1 - enter) * 12 + exit * 14),
                       opacity: Math.min(1, enter * 1.25) * (1 - exit),
-                      willChange: "transform, filter, opacity",
+                      willChange: MB ? "transform, filter, opacity" : "transform, opacity",
                     }
                   : undefined
               }
@@ -286,7 +297,7 @@ function Title({ t, fin }: { t: number; fin: number }) {
                   k < 0.999 || out > 0
                     ? {
                         transform: `translate(${(-out * 40).toFixed(1)}px, ${((1 - k) * 0.35).toFixed(3)}em)`,
-                        filter: `blur(${((1 - k) * 12 + out * 14).toFixed(1)}px)`,
+                        filter: blur((1 - k) * 12 + out * 14),
                         opacity: Math.min(1, k * 1.5) * (1 - out),
                       }
                     : undefined
@@ -357,7 +368,8 @@ const VIS = [
   ["#e9ecf0", "#c8ced7"],
   ["#f1ebe5", "#d9cbbf"],
 ];
-function Visual({ v = 0 }: { v?: number }) {
+/** static artwork: memoised, it re-rendered every animation frame with the stage */
+const Visual = memo(function Visual({ v = 0 }: { v?: number }) {
   const [a, b] = VIS[v % VIS.length];
   const id = `vis${v % VIS.length}`;
   return (
@@ -406,7 +418,7 @@ function Visual({ v = 0 }: { v?: number }) {
       <circle cx="368" cy="126" r="24" fill={`url(#${id}ball)`} />
     </svg>
   );
-}
+});
 
 /* ---------------- 1 · Design ---------------- */
 const D = BUILD.design;
@@ -503,9 +515,8 @@ function DesignStage({ s }: { s: number }) {
           width: r.w,
           height: r.h,
           background: bg,
-          filter: `blur(${(Math.sin(Math.PI * k) * 2.5).toFixed(2)}px)`,
           boxShadow: `0 ${20 * Math.sin(Math.PI * k)}px 40px -12px rgb(0 0 0 / 0.6)`,
-          willChange: "left, top, width, height, filter",
+          willChange: "left, top, width, height",
         }}
       >
         {children}
@@ -948,7 +959,7 @@ function Mate({ x, y, color, name, down = false, k = 1 }: { x: number; y: number
   );
 }
 
-function PlanBody({ i }: { i: number }) {
+const PlanBody = memo(function PlanBody({ i }: { i: number }) {
   const p = D.plans[i];
   return (
     <>
@@ -963,7 +974,7 @@ function PlanBody({ i }: { i: number }) {
       </span>
     </>
   );
-}
+});
 
 /* ---------------- 2 · Code ---------------- */
 const C = BUILD.code;
@@ -1092,8 +1103,9 @@ function CodeStage({ s }: { s: number }) {
               <span
                 className="whitespace-pre"
                 style={
+                  // small: the typed line only fades in (no per-line blur)
                   chars > START[i] && k < 1
-                    ? { filter: `blur(${((1 - k) * 4).toFixed(1)}px)` }
+                    ? { opacity: 0.35 + 0.65 * k }
                     : undefined
                 }
               >
@@ -1658,14 +1670,37 @@ function IPhone({
 }) {
   return (
     <div style={style}>
-      {/* side buttons */}
+      <PhoneButtons />
+      <div className="relative h-full rounded-[54px] bg-[linear-gradient(145deg,#4a4e57,#1d1f24_35%,#2b2e35_70%,#121317)] p-[3px] shadow-[0_50px_100px_-30px_rgb(0_0_0/0.95)]">
+        <div className="relative h-full rounded-[51px] bg-black p-[9px]">
+          <div className="relative h-full overflow-hidden rounded-[43px] bg-[#f4f0e8] text-[#1a1714]">
+            <PhoneStatus />
+            <div className="px-4 pt-2">{children}</div>
+            {/* home indicator */}
+            <i className="absolute bottom-2 left-1/2 h-[5px] w-[110px] -translate-x-1/2 rounded-full bg-[#1a1714]/80" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** iPhone side buttons: static, memoised */
+const PhoneButtons = memo(function PhoneButtons() {
+  return (
+    <>
       <i className="absolute -left-[3px] top-[108px] h-7 w-[3px] rounded-l bg-[#3a3d44]" />
       <i className="absolute -left-[3px] top-[156px] h-12 w-[3px] rounded-l bg-[#3a3d44]" />
       <i className="absolute -left-[3px] top-[216px] h-12 w-[3px] rounded-l bg-[#3a3d44]" />
       <i className="absolute -right-[3px] top-[172px] h-[72px] w-[3px] rounded-r bg-[#3a3d44]" />
-      <div className="relative h-full rounded-[54px] bg-[linear-gradient(145deg,#4a4e57,#1d1f24_35%,#2b2e35_70%,#121317)] p-[3px] shadow-[0_50px_100px_-30px_rgb(0_0_0/0.95)]">
-        <div className="relative h-full rounded-[51px] bg-black p-[9px]">
-          <div className="relative h-full overflow-hidden rounded-[43px] bg-[#f4f0e8] text-[#1a1714]">
+    </>
+  );
+});
+
+/** iPhone status bar + Dynamic Island: static, memoised */
+const PhoneStatus = memo(function PhoneStatus() {
+  return (
+    <>
             {/* status bar */}
             <div className="flex h-[46px] items-center justify-between px-7 pt-1 text-[13px] font-semibold">
               <span>9:41</span>
@@ -1686,15 +1721,9 @@ function IPhone({
             </div>
             {/* Dynamic Island */}
             <i className="absolute left-1/2 top-[11px] h-[30px] w-[96px] -translate-x-1/2 rounded-full bg-black" />
-            <div className="px-4 pt-2">{children}</div>
-            {/* home indicator */}
-            <i className="absolute bottom-2 left-1/2 h-[5px] w-[110px] -translate-x-1/2 rounded-full bg-[#1a1714]/80" />
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   );
-}
+});
 
 /* ---------------- 4 · Launch ---------------- */
 const L = BUILD.launch;
@@ -1782,9 +1811,9 @@ function LaunchStage({ s }: { s: number }) {
             className="pointer-events-none absolute inset-y-0 z-[3] w-40 -skew-x-12"
             style={{
               left: `${-30 + sweep * 130}%`,
+              // soft edges come from the gradient itself (was a blur(6px) filter on a moving layer)
               background:
-                "linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent)",
-              filter: "blur(6px)",
+                "linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12) 25%, rgb(255 255 255 / 0.5) 50%, rgb(255 255 255 / 0.12) 75%, transparent)",
             }}
           />
         )}
