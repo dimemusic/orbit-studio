@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Plus } from "@phosphor-icons/react/dist/ssr";
+import { Check, Plus, X } from "@phosphor-icons/react/dist/ssr";
 import { useState, type CSSProperties } from "react";
 import { CONTACT, CTA, SERVICES, type Service } from "@/lib/content";
 import { PACKAGE_PICK } from "../home";
@@ -94,8 +94,19 @@ export function Pricing() {
                             <span aria-hidden="true" className={`size-1.5 rounded-full ${ACCENT[s.color].dot}`} />
                             {s.name}
                           </span>
-                          <span className="tabular-nums text-fg">
-                            {SERVICES.pricePrefix} {money(s.price)}
+                          <span className="flex items-center gap-2">
+                            <span className="tabular-nums text-fg">
+                              {SERVICES.pricePrefix} {money(s.price)}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => toggle(s.id)}
+                              tabIndex={on ? 0 : -1}
+                              aria-label={`${SERVICES.remove}: ${s.name}`}
+                              className="-mr-1.5 grid size-7 place-items-center rounded-full text-grey transition-colors duration-200 hover:bg-white/[0.08] hover:text-fg"
+                            >
+                              <X size={13} weight="bold" aria-hidden="true" />
+                            </button>
                           </span>
                         </span>
                       </li>

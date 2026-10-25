@@ -213,6 +213,7 @@ export const SERVICES = {
   total: "Разом",
   term: "Термін:",
   empty: "Оберіть послуги зліва",
+  remove: "Прибрати",
   save: "економія",
   items: [
     {
