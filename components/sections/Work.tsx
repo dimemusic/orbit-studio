@@ -91,11 +91,11 @@ export function Work() {
           className="flex min-w-0 border-y border-white/[0.09] md:min-h-0 md:flex-1"
         >
           <a href="#contact" aria-label={`${WORK.next.name}. ${WORK.next.kind}`} className={`${ROW} ${GRID}`}>
-            <span className={`card grid aspect-[16/10] place-items-center rounded-xl text-fg ${THUMB_W}`}>
+            <span className={`card grid aspect-[16/10] place-items-center rounded-xl text-grey transition-colors duration-300 md:group-hover/row:text-fg ${THUMB_W}`}>
               <Plus size={28} weight="light" aria-hidden="true" />
             </span>
             <span className="min-w-0 lg:col-span-2">
-              <span className={NAME}>{WORK.next.name}</span>
+              <span className="block text-[clamp(22px,2.2vw,32px)] font-medium leading-tight tracking-[-0.03em] text-grey transition-colors duration-300 md:group-hover/row:text-fg">{WORK.next.name}</span>
               <span className={KIND}>{WORK.next.kind}</span>
             </span>
             <ArrowButton />
