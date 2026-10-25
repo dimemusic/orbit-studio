@@ -36,11 +36,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="uk" className={geologica.variable} suppressHydrationWarning>
       <head>
         {/* lets CSS hide [data-reveal] content only when JS will reveal it */}
-        {/* "booting": hero, nav and stars wait for the star field's first frame, then come in together (safety timeout 3s) */}
+        {/* "booting": hero, nav and stars wait for the star field's first frame, then come in together (safety timeout 1.8s) */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "var d=document.documentElement;d.classList.add('js','booting');setTimeout(function(){d.classList.remove('booting')},3000)",
+              "var d=document.documentElement;d.classList.add('js','booting');setTimeout(function(){d.classList.remove('booting')},1800)",
           }}
         />
       </head>
