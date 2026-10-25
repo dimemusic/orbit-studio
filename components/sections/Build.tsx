@@ -63,7 +63,7 @@ const TOTAL = STAGE_SEC.reduce((a, b) => a + b, 0);
 /** the final frame is held this long, then the film starts again */
 const HOLD = 5;
 /** each lap opens with a title card in the middle of the screen («Що ми робимо?»), then the film starts */
-const INTRO = 1.9;
+const INTRO = 1.5;
 const CYCLE = INTRO + TOTAL + HOLD;
 const stageAt = (t: number) => {
   let i = 0;
