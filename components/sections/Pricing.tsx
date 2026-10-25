@@ -57,18 +57,18 @@ export function Pricing() {
       </header>
 
       <div className="relative z-[1] flex w-full min-w-0 flex-1 items-center py-[clamp(24px,4vh,44px)] lg:min-h-0 lg:py-0">
-        <div className="grid w-full min-w-0 grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_400px]">
-          <ul aria-label={SERVICES.listLabel} className="min-w-0">
+        <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_400px]">
+          <ul aria-label={SERVICES.listLabel} className="min-w-0 lg:flex lg:flex-col">
             {ITEMS.map((s, i) => (
-              <li key={s.id} data-reveal style={delay(i)} className="min-w-0 border-t border-white/[0.09] last:border-b">
+              <li key={s.id} data-reveal style={delay(i)} className="min-w-0 border-t border-white/[0.09] last:border-b lg:flex lg:flex-1 lg:flex-col">
                 <Row s={s} on={picked.has(s.id)} onToggle={() => toggle(s.id)} />
               </li>
             ))}
           </ul>
 
           {/* the wrapper only moves (scale + rise), the card's content fades: no opacity on the glass */}
-          <div data-reveal data-lift style={delay(ITEMS.length)} className="min-w-0 lg:sticky lg:top-28">
-            <aside aria-label={SERVICES.package} className="card card-pro flex flex-col p-7 lg:min-h-[32rem]" data-hot={all ? "" : undefined}>
+          <div data-reveal data-lift style={delay(ITEMS.length)} className="min-w-0 lg:self-stretch">
+            <aside aria-label={SERVICES.package} className="card card-pro flex h-full flex-col p-7" data-hot={all ? "" : undefined}>
               {/* fixed min height (fits the full turnkey state), so toggling never shifts the centred layout */}
               <div className="lift-fade flex flex-1 flex-col" style={delay(ITEMS.length + 1)}>
                 <div className="flex items-center justify-between gap-3">
@@ -145,7 +145,7 @@ function Row({ s, on, onToggle }: { s: Service; on: boolean; onToggle: () => voi
   return (
     <div
       onClick={onToggle}
-      className={`relative grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-5 pl-4 pr-1 transition-colors duration-300 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-x-6 md:pl-5 md:pr-2 ${
+      className={`relative grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-5 pl-4 pr-4 transition-colors lg:flex-1 lg:content-center duration-300 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-x-6 md:px-5 ${
         on ? "bg-white/[0.025]" : "md:hover:bg-white/[0.015]"
       }`}
     >
