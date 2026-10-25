@@ -47,7 +47,7 @@ export function Work() {
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
           <h2
             id="work-title"
-            className="legible text-[clamp(44px,7.4vw,116px)] font-semibold leading-[1] tracking-[-0.05em]"
+            className="legible text-mega font-semibold"
           >
             {WORK.title[0]} <G tone="aurora">{WORK.title[1]}</G>
           </h2>

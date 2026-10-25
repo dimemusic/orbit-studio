@@ -33,7 +33,7 @@ eyebrow pills above headings («NN · Назва секції», `Eyebrow`; remo
 ### Tokens (app/globals.css)
 - Colours: bg `#05070d` (= scene clear colour), fg `#f5f7fa`, **body `#c4cad4`** (paragraphs over the scene), grey `#8b919c` (small meta inside surfaces), faint `#5b616c`, hairline `rgba(255,255,255,.09)`.
 - Accents: **blue `#3d8bff`** primary (buttons, links). Category colours: **cyan `#22d3ee`**, **violet `#8b5cf6`** (small text `violet-soft #a78bfa`), **green `#34d399`**. Class map in `components/ui/accent.ts`.
-- Type scale: `text-mega` home hero only · `text-section` every other home heading (max 2 lines) · `text-display` inner pages · `text-headline` · `text-title` · `text-lead`.
+- Type scale: `text-mega` (clamp(44px, 6vw, 104px)) for the hero AND every big section title (Build stage titles, Work title; one size for all H1-level headings, Oct 2026) · `text-section` smaller home headings (max 2 lines) · `text-display` inner pages · `text-headline` · `text-title` · `text-lead`.
 - Key words in headings: 1–2 per heading with `<G tone="…">` (`.text-gradient`). Hero / contact use the brand aurora; each section keeps its own tone (work aurora, about mind, services fresh, admin calm, process ice, team warm, guarantees shield, FAQ soft). Do not unify them.
 - Surfaces: **one `.card` utility for every card and panel** (dark frosted glass, `backdrop-filter: blur(40px) saturate(140%)`, 1px `rgba(255,255,255,.08)` border, radius 16px). `.card-nav` navbar variant. `.card-pro` = blue → cyan gradient border (used for the turnkey package).
 - Pills / badges / tags / eyebrows: ≥12px, padding 6px 12px, coloured text on a 12% tint.

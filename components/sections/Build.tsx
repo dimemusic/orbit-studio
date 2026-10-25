@@ -267,7 +267,7 @@ function Title({ t, fin }: { t: number; fin: number }) {
   return (
     <p
       aria-hidden="true"
-      className="mt-5 min-h-[1.1em] text-[clamp(44px,7.4vw,116px)] font-semibold leading-[1] tracking-[-0.05em]"
+      className="mt-5 min-h-[1.1em] text-mega font-semibold"
     >
       {words.map((w, wi) => (
         <span
