@@ -15,7 +15,8 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  lg: "h-16 px-10 text-[17px]",
+  // one width for every big button (= the «Ваш пакет» CTA), shrinks only on narrow phones
+  lg: "h-16 min-w-[min(21.25rem,100%)] px-10 text-[17px]",
   nav: "h-12 px-6 text-[15px]",
 };
 
