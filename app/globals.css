@@ -900,3 +900,19 @@ html {
     transform: none !important;
   }
 }
+
+/* Build (phones): the stage note fades up on every stage change */
+.build-note {
+  animation: build-note 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes build-note {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .build-note {
+    animation: none;
+  }
+}

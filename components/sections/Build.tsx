@@ -46,6 +46,7 @@ import {
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
 import { G } from "../ui/Bits";
+import { Button } from "../ui/Button";
 import { along, Caret, ease, expo, seg, smooth, Typed, typed } from "../process/util";
 
 /**
@@ -102,6 +103,7 @@ const fly = (
 
 export function Build() {
   const { BUILD } = useB();
+  const { CTA } = useContent();
   const ref = useRef<HTMLElement>(null);
   // `time` runs 0..CYCLE in a loop: the film (0..TOTAL), then the final frame is held for HOLD seconds
   const [time, setTime] = useState(0);
@@ -232,7 +234,7 @@ export function Build() {
         </p>
       </header>
 
-      <StageBox>
+      <StageBox cur={cur}>
         {BUILD.stages.map((s, i) => {
           const start = STAGE_START[i];
           const len = STAGE_SEC[i];
@@ -273,6 +275,19 @@ export function Build() {
           );
         })}
       </StageBox>
+
+      {/* phones only: what this stage means for the client + the CTA, fills the space under the stage */}
+      <div className="relative z-[1] mx-gutter mb-10 mt-4 flex flex-col gap-5 md:hidden">
+        <p key={cur} className="build-note legible min-h-[4.5em] text-[16px] leading-relaxed text-body">
+          <span className="font-semibold tabular-nums" style={{ color: st.color }}>
+            0{cur + 1} / 0{BUILD.stages.length}
+          </span>{" "}
+          {st.note}
+        </p>
+        <Button href="#contact" className="w-full">
+          {CTA.primary}
+        </Button>
+      </div>
       </div>
     </section>
   );
@@ -371,12 +386,13 @@ const FitCtx = createContext<Fit>({ mobile: false, w: 0, h: 0 });
 /** mobile crop of stage i: transform for its layer (origin 0 0) */
 const cropOf = (i: number, f: Fit) => {
   const r = FOCUS[i];
-  const c = Math.min(f.w / r.w, f.h / r.h);
+  // width decides the scale; the box height follows the current stage (StageBox)
+  const c = f.w / r.w;
   // centred horizontally, pinned to the top so the stage sits right under the stage title
   return { c, tx: (f.w - r.w * c) / 2 - r.x * c, ty: -r.y * c };
 };
 
-function StageBox({ children }: { children: ReactNode }) {
+function StageBox({ cur, children }: { cur: number; children: ReactNode }) {
   const box = useRef<HTMLDivElement>(null);
   const [fit, setFit] = useState<Fit & { k: number }>({ mobile: false, w: 0, h: 0, k: 0 });
   useEffect(() => {
@@ -401,7 +417,8 @@ function StageBox({ children }: { children: ReactNode }) {
     <div
       ref={box}
       aria-hidden="true"
-      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1 max-md:mt-6 max-md:h-[min(118vw,64dvh)] max-md:min-h-0 max-md:flex-none max-md:overflow-visible"
+      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1 max-md:mt-6 max-md:min-h-0 max-md:flex-none max-md:overflow-visible max-md:transition-[height] max-md:duration-500 max-md:ease-[cubic-bezier(0.16,1,0.3,1)]"
+      style={fit.mobile && fit.w ? { height: (FOCUS[cur].h * fit.w) / FOCUS[cur].w } : undefined}
     >
       <FitCtx.Provider value={fit}>
         <div

@@ -213,10 +213,10 @@ export const en: Content = {
     intro: ["What", "we", "do?"],
     brand: "Your product",
     stages: [
-      { id: "design", title: ["We draw", "the design."], step: "Design", days: "3–5 days", color: "#a78bfa" }, // DRAFT: days
-      { id: "code", title: ["We write", "the code."], step: "Development", days: "5–7 days", color: "#5aa2ff" }, // DRAFT: days
-      { id: "cms", title: ["We connect", "the admin."], step: "Admin panel", days: "2–3 days", color: "#22d3ee" }, // DRAFT: days
-      { id: "launch", title: ["We launch", "the site."], step: "Launch", days: "1 day", color: "#34d399" }, // DRAFT: days
+      { id: "design", title: ["We draw", "the design."], step: "Design", days: "3–5 days", color: "#a78bfa", note: "Structure and layouts for phone and desktop. You watch the design live and comment right in Figma." }, // DRAFT: days
+      { id: "code", title: ["We write", "the code."], step: "Development", days: "5–7 days", color: "#5aa2ff", note: "We build a fast responsive site. You follow the progress on a test link from day one." }, // DRAFT: days
+      { id: "cms", title: ["We connect", "the admin."], step: "Admin panel", days: "2–3 days", color: "#22d3ee", note: "We connect the admin panel: you change texts, prices, photos and products yourself, no developer needed." }, // DRAFT: days
+      { id: "launch", title: ["We launch", "the site."], step: "Launch", days: "1 day", color: "#34d399", note: "Domain, SSL, analytics and team training. We stay in touch after launch." }, // DRAFT: days
     ],
     replayNote: "Total: from 2 weeks", // DRAFT
     design: {

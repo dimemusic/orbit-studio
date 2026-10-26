@@ -374,10 +374,10 @@ export const BUILD = {
   /** neutral demo brand shown inside the mock site */
   brand: "Your product",
   stages: [
-    { id: "design", title: ["Малюємо", "дизайн."], step: "Дизайн", days: "3–5 днів", color: "#a78bfa" }, // DRAFT: days
-    { id: "code", title: ["Пишемо", "код."], step: "Верстка", days: "5–7 днів", color: "#5aa2ff" }, // DRAFT: days
-    { id: "cms", title: ["Підключаємо", "панель."], step: "Панель керування", days: "2–3 дні", color: "#22d3ee" }, // DRAFT: days
-    { id: "launch", title: ["Запускаємо", "сайт."], step: "Запуск", days: "1 день", color: "#34d399" }, // DRAFT: days
+    { id: "design", title: ["Малюємо", "дизайн."], step: "Дизайн", days: "3–5 днів", color: "#a78bfa", note: "Структура й макет під телефон і десктоп. Ви бачите дизайн наживо й коментуєте прямо у Figma." }, // DRAFT: days
+    { id: "code", title: ["Пишемо", "код."], step: "Верстка", days: "5–7 днів", color: "#5aa2ff", note: "Верстаємо швидкий адаптивний сайт. Прогрес видно на тестовому посиланні з першого дня." }, // DRAFT: days
+    { id: "cms", title: ["Підключаємо", "панель."], step: "Панель керування", days: "2–3 дні", color: "#22d3ee", note: "Підключаємо адмін-панель: тексти, ціни, фото й товари змінюєте самі, без програміста." }, // DRAFT: days
+    { id: "launch", title: ["Запускаємо", "сайт."], step: "Запуск", days: "1 день", color: "#34d399", note: "Домен, SSL, аналітика й навчання команди. Після запуску лишаємось на зв'язку." }, // DRAFT: days
   ],
   replayNote: "Разом: від 2 тижнів", // DRAFT
   // neutral demo theme of the mock site: a generic product page (not a client)
