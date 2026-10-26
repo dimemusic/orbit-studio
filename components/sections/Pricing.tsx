@@ -15,9 +15,9 @@ const ICON = { card: IdentificationCard, landing: Rocket, shop: ShoppingBag, cor
 const COLOR: Record<Plan["id"], Accent> = { card: "cyan", landing: "violet", shop: "green", corp: "blue" };
 
 /**
- * Pricing by website type: one full screen (lg+). Title + one line on the right, then 4 plan cards
- * (icon, name, who it's for, «від $N», term, 4 included items, «Обрати» → the form with that type picked).
- * The recommended plan is a .card-pro with a badge and a primary button. Under the cards: one line of extras.
+ * Pricing by website type: one full screen (lg+). Title + one line on the right, then 4 plan rows on hairlines
+ * (icon, name + who it's for + included pills, «від $N» + term, «Обрати» → the form with that type picked).
+ * The recommended plan gets a blue stripe, a faint tint, a badge and the primary button. Under the list: one line of extras.
  */
 export function Pricing() {
   const { SERVICES, CONTACT, UI } = useContent();
@@ -36,54 +36,60 @@ export function Pricing() {
         <p className="legible max-w-[34ch] text-lead text-body">{SERVICES.lead}</p>
       </header>
 
-      <ul
-        aria-label={SERVICES.listLabel}
-        className="relative z-[1] mt-[clamp(20px,3.5vh,48px)] grid w-full min-w-0 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-5"
-      >
+      {/* plans as rows on hairlines: icon · name + who it's for + included · price + term · «Обрати» */}
+      <ul aria-label={SERVICES.listLabel} className="relative z-[1] mt-[clamp(20px,3.5vh,48px)] w-full min-w-0">
         {SERVICES.plans.map((p, i) => {
           const a = ACCENT[COLOR[p.id]];
           const Ic = ICON[p.id];
           return (
-            <li key={p.id} data-reveal style={delay(i)} className="flex min-w-0">
+            <li key={p.id} data-reveal style={delay(i)} className="min-w-0 border-t border-white/[0.09] last:border-b">
               <article
                 aria-labelledby={`plan-${p.id}`}
-                className={`card flex w-full flex-col px-[clamp(20px,1.8vw,28px)] py-[clamp(18px,2.6vh,28px)] ${p.hot ? "card-pro" : ""}`}
-                data-hot={p.hot ? "" : undefined}
+                className={`relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-[clamp(14px,2.2vh,24px)] pl-4 pr-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-6 md:px-5 ${
+                  p.hot ? "bg-linear-to-r from-white/[0.035] via-white/[0.015] to-transparent" : ""
+                }`}
               >
-                <div className="flex items-center justify-between gap-3">
-                  <span className={`grid size-11 place-items-center rounded-xl ${a.tint} ${a.text}`}>
-                    <Ic size={22} weight="light" aria-hidden="true" />
-                  </span>
-                  {p.hot && <Tag color="blue">{SERVICES.hot}</Tag>}
+                {/* recommended: a stripe in the plan colour */}
+                {p.hot && <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[2px] bg-blue" />}
+                <span className={`grid size-11 place-items-center self-start rounded-xl md:self-center ${a.tint} ${a.text}`}>
+                  <Ic size={22} weight="light" aria-hidden="true" />
+                </span>
+
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <h3 id={`plan-${p.id}`} className="text-[clamp(22px,2vw,30px)] font-medium leading-tight tracking-[-0.03em] text-fg">
+                      {p.name}
+                    </h3>
+                    {p.hot && <Tag color="blue">{SERVICES.hot}</Tag>}
+                  </div>
+                  <p className="mt-1 text-[15px] leading-snug text-body">{p.for}</p>
+                  <ul className="mt-3 flex flex-wrap gap-2">
+                    {p.features.map((f) => (
+                      <li
+                        key={f}
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium leading-none text-fg/90 ${a.border} ${a.tint}`}
+                      >
+                        <Check size={12} weight="bold" aria-hidden="true" className={a.text} />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <h3 id={`plan-${p.id}`} className="mt-[clamp(12px,2vh,20px)] text-[clamp(20px,1.6vw,24px)] font-semibold leading-tight tracking-[-0.03em] text-fg">
-                  {p.name}
-                </h3>
-                <p className="mt-1.5 text-[14px] leading-snug text-grey">{p.for}</p>
-
-                <p className="mt-[clamp(12px,2vh,20px)] flex items-baseline gap-2">
-                  <span className="text-[14px] text-grey">{SERVICES.pricePrefix}</span>
-                  <span className="text-[clamp(32px,2.6vw,42px)] font-semibold leading-none tracking-[-0.04em] text-fg tabular-nums">
-                    {SERVICES.currency}
-                    {p.price.toLocaleString(UI.locale)}
-                  </span>
-                </p>
-                <p className="mt-2 text-[14px] text-body">
-                  {SERVICES.term} {UI.days(p.days)}
-                </p>
-
-                <ul className="mt-[clamp(12px,2vh,20px)] flex flex-col gap-[clamp(6px,1vh,10px)] border-t border-white/[0.09] pt-[clamp(12px,2vh,20px)]">
-                  {p.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2.5 text-[15px] leading-snug text-body">
-                      <Check size={15} weight="bold" aria-hidden="true" className={`shrink-0 ${a.text}`} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-auto pt-[clamp(14px,2.4vh,24px)]">
-                  <Button href="#contact" size="nav" variant={p.hot ? "primary" : "secondary"} onClick={() => pick(i)} className="w-full">
+                <div className="col-span-2 flex items-center justify-between gap-5 md:col-span-1 md:gap-8">
+                  <p className="md:text-right">
+                    <span className="flex items-baseline gap-1.5 md:justify-end">
+                      <span className="text-[14px] text-grey">{SERVICES.pricePrefix}</span>
+                      <span className="text-[clamp(24px,2vw,30px)] font-semibold leading-none tracking-[-0.03em] text-fg tabular-nums">
+                        {SERVICES.currency}
+                        {p.price.toLocaleString(UI.locale)}
+                      </span>
+                    </span>
+                    <span className="mt-1.5 block text-[14px] text-grey">
+                      {SERVICES.term} {UI.days(p.days)}
+                    </span>
+                  </p>
+                  <Button href="#contact" size="nav" variant={p.hot ? "primary" : "secondary"} onClick={() => pick(i)} className="w-[9rem] shrink-0">
                     {SERVICES.choose}
                   </Button>
                 </div>
@@ -93,7 +99,7 @@ export function Pricing() {
         })}
       </ul>
 
-      {/* extras: one quiet line under the cards */}
+      {/* extras: one quiet line under the list */}
       <p className="legible relative z-[1] mt-[clamp(16px,3vh,28px)] flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px] text-body">
         <span className="text-grey">{SERVICES.extrasLabel}:</span>
         {SERVICES.extras.map((e) => (
