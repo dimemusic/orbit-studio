@@ -1770,7 +1770,7 @@ const PhoneStatus = memo(function PhoneStatus() {
               </span>
             </div>
             {/* Dynamic Island */}
-            <i className="absolute left-1/2 top-[11px] h-[30px] w-[96px] -translate-x-1/2 rounded-full bg-black" />
+            <i className="absolute left-1/2 top-[13px] h-[22px] w-[70px] -translate-x-1/2 rounded-full bg-black" />
     </>
   );
 });
