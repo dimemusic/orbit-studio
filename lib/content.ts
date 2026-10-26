@@ -123,12 +123,12 @@ export const WORK = {
       did: ["UX-структура", "UI-дизайн", "Каталог продукції", "Форма запиту"], // DRAFT
       text: "Сайт виробника сендвіч-панелей, фургонів і причепів.", // DRAFT
       tags: ["UI/UX", "Дизайн"],
-      media: "/cases/avtoban.webp", // TODO: real screenshot
-      shots: ["/cases/avtoban.webp"],
+      media: "/cases/avtoban.webp",
+      shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
       url: "https://avtoban-trailers.vercel.app/",
       status: "UI/UX",
       result: "[РЕЗУЛЬТАТ]",
-      color: "#22d3ee",
+      color: "#e5322d",
       accent: "cyan",
       // DRAFT: case texts
       task: "Зробити зрозумілий сайт для виробника сендвіч-панелей і фургонів: продукція, послуги та швидкий запит на розрахунок.",
