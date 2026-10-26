@@ -117,25 +117,25 @@ export const WORK = {
       ],
     },
     {
-      id: "cloud-sphere",
-      name: "Cloud Sphere",
-      kind: "SaaS-лендинг",
-      did: ["UI-дизайн", "3D-фон з частинок", "Анімації", "Розробка Next.js"], // DRAFT
-      text: "SaaS-лендинг з інтерактивним 3D-фоном із частинок.", // DRAFT
-      tags: ["Дизайн", "Next.js", "three.js"],
-      media: "/cases/cloudsphere.webp",
-      shots: ["/cases/cloudsphere.webp"],
-      url: null,
-      status: "Концепт",
+      id: "avtoban",
+      name: "Автобан Трейлерз",
+      kind: "Сайт виробника",
+      did: ["UX-структура", "UI-дизайн", "Каталог продукції", "Форма запиту"], // DRAFT
+      text: "Сайт виробника сендвіч-панелей, фургонів і причепів.", // DRAFT
+      tags: ["UI/UX", "Дизайн"],
+      media: "/cases/avtoban.webp", // TODO: real screenshot
+      shots: ["/cases/avtoban.webp"],
+      url: "https://avtoban-trailers.vercel.app/",
+      status: "UI/UX",
       result: "[РЕЗУЛЬТАТ]",
-      color: "#3d8bff",
-      accent: "blue",
+      color: "#22d3ee",
+      accent: "cyan",
       // DRAFT: case texts
-      task: "Зробити лендинг SaaS-продукту, який запам'ятовується і пояснює продукт за кілька секунд.",
-      done: ["3D-фон із частинок, що реагує на курсор", "Анімації на скролі", "Тарифи й FAQ", "Адаптив під телефони"],
+      task: "Зробити зрозумілий сайт для виробника сендвіч-панелей і фургонів: продукція, послуги та швидкий запит на розрахунок.",
+      done: ["Структура й сценарії сторінок", "Каталог: фургони, панелі, причепи", "Блок сервісу та модернізації", "Форма запиту з адаптивом"],
       facts: [
-        { label: "Термін", value: "10 днів" },
-        { label: "Тип", value: "Концепт лендингу" },
+        { label: "Термін", value: "[ТЕРМІН]" },
+        { label: "Тип", value: "Корпоративний сайт" },
       ],
     },
     {
