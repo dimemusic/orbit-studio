@@ -357,13 +357,13 @@ function Title({ t, fin }: { t: number; fin: number }) {
 /** fixed 1200×620 stage, scaled to the space under the header */
 /**
  * Phones (< 768px): the 1200×620 desktop stage shrinks to nothing, so each stage instead shows ONE part of itself,
- * cropped and scaled to fill the box (design: the artboard, code: the live preview, CMS: the iPhone, launch: the browser).
+ * cropped and scaled to fill the box (design: the artboard, code: the editor + terminal, CMS: the product form, launch: the browser).
  * The desktop layout is untouched; the crop is applied per stage layer so the whips between stages stay smooth.
  */
 const FOCUS = [
   { x: 360, y: 20, w: 480, h: 560 },
-  { x: 730, y: 20, w: 430, h: 560 },
-  { x: 836, y: 20, w: 286, h: 560 },
+  { x: 40, y: 20, w: 640, h: 560 },
+  { x: 40, y: 20, w: 540, h: 560 },
   { x: 540, y: 20, w: 600, h: 560 },
 ];
 type Fit = { mobile: boolean; w: number; h: number };
