@@ -252,7 +252,7 @@ p {
   /* section accents: violet (hero, services), turquoise (process, contact), amber (work) */
   .tg-aurora, .tg-violet { --tc: #a78bfa; }
   .tg-teal { --tc: #2dd4bf; }
-  .tg-amber { --tc: #fbbf24; }
+  .tg-amber { --tc: #fb7185; } /* work: coral (was amber) */
 
   /* ---------- buttons ---------- */
   .btn-primary {
