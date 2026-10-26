@@ -806,13 +806,6 @@ html {
   opacity: 0;
 }
 
-/* Work list: mute the other rows only while a ROW is hovered (not the gaps / hairlines between rows) */
-@media (hover: hover) and (pointer: fine) and (min-width: 48rem) {
-  .work-list:has(.work-row:hover) .work-row:not(:hover) .work-dim {
-    opacity: 0.5;
-  }
-}
-
 /* intro: «MaxArt Digital» title card on the first load of a tab session (html.intro, set in the head script).
    0.15s letters rise out of a blur (45ms apart) · 0.75s underline draws · 1.75s the word lifts away ·
    1.9s the screen fades (the boot releases the site at 2.0s underneath) · 2.6s html.intro removed. */
@@ -882,5 +875,28 @@ html {
   to {
     opacity: 0;
     visibility: hidden;
+  }
+}
+
+/* Work cards: the full-page screenshot scrolls inside the frame on hover (mini preview) */
+.work-grid {
+  --fh: clamp(220px, 40dvh, 520px);
+}
+.work-view {
+  height: var(--fh);
+}
+.work-scroll {
+  transform: translateY(0);
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .work-card:hover .work-scroll {
+    transform: translateY(calc(var(--fh) - 100%));
+    transition: transform var(--dur, 4s) cubic-bezier(0.45, 0, 0.55, 1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-card .work-scroll {
+    transform: none !important;
   }
 }

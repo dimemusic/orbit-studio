@@ -60,6 +60,8 @@ export type Case = {
   media: string;
   /** screens the laptop cycles through while the case is active, sorted by name; one shot = slow vertical scroll */
   shots: string[];
+  /** full-page screenshot (720px wide) that scrolls inside the Work card on hover; null = static cover */
+  full: { src: string; w: number; h: number } | null;
   /** live project link, null when there is none (yet) */
   url: string | null;
   status: string;
@@ -103,6 +105,7 @@ export const WORK = {
       tags: ["Дизайн", "Next.js", "Sanity"],
       media: "/cases/maina.webp",
       shots: ["/cases/maina.webp"],
+      full: { src: "/cases/maina-full.webp", w: 720, h: 1910 },
       url: null,
       status: "Живий проєкт",
       result: "[РЕЗУЛЬТАТ]",
@@ -125,6 +128,7 @@ export const WORK = {
       tags: ["UI/UX", "Дизайн"],
       media: "/cases/avtoban.webp",
       shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
+      full: { src: "/cases/avtoban-full.webp", w: 720, h: 2283 },
       url: "https://avtoban-trailers.vercel.app/",
       status: "UI/UX",
       result: "[РЕЗУЛЬТАТ]",
@@ -147,6 +151,7 @@ export const WORK = {
       tags: ["Дизайн", "Next.js"],
       media: "/cases/biganskiy.webp",
       shots: ["/cases/biganskiy.webp"],
+      full: { src: "/cases/biganskiy-full.webp", w: 720, h: 3871 },
       url: "https://biganskiy-site.vercel.app",
       status: "Концепт",
       result: "[РЕЗУЛЬТАТ]",
@@ -169,6 +174,7 @@ export const WORK = {
       tags: ["Дизайн", "Лендинг"],
       media: "/cases/krendel.webp",
       shots: ["/cases/krendel.webp"],
+      full: null, // TODO: full-page shot once the site is online
       url: null,
       status: "Концепт",
       result: "[РЕЗУЛЬТАТ]",
