@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ArrowUpRight, Buildings, CheckCircle, IdentificationCard, Rocket, ShoppingBag, X } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, ArrowUpRight, CheckCircle, X } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Case } from "@/lib/content";
@@ -17,8 +17,6 @@ import { RevealWords } from "../ui/RevealWords";
  * (speed follows the page length), and slides back on leave. Click opens the case window.
  * Cases without a full-page shot show their cover, no scroll. Reduced motion: no scroll.
  */
-const KIND_ICON = { landing: Rocket, shop: ShoppingBag, card: IdentificationCard, corp: Buildings };
-
 export function Work() {
   const { WORK } = useContent();
   const CASES = WORK.cases;
@@ -49,7 +47,7 @@ export function Work() {
         className="work-grid relative z-[1] mt-[clamp(24px,4.5vh,48px)] grid w-full min-w-0 gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-4"
       >
         {CASES.map((c, i) => (
-          <li key={c.id} data-reveal style={{ "--d": `${i * 80}ms` } as CSSProperties} className="min-w-0">
+          <li key={c.id} data-reveal style={{ "--d": `${i * 80}ms` } as CSSProperties} className="flex min-w-0">
             <CaseCard
               c={c}
               onOpen={(el) => {
@@ -60,29 +58,6 @@ export function Work() {
           </li>
         ))}
       </ul>
-
-      {/* the kinds of sites we make: four columns on hairlines, no cards */}
-      <div className="relative z-[1] mt-[clamp(20px,3.5vh,48px)] w-full min-w-0 border-t border-white/[0.09] pt-[clamp(16px,2.5vh,28px)]">
-        <h3 data-reveal className="legible text-[15px] font-medium text-grey">
-          {WORK.kinds.title}
-        </h3>
-        <ul className="mt-[clamp(12px,2vh,20px)] grid gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
-          {WORK.kinds.items.map((k, i) => {
-            const Ic = KIND_ICON[k.icon];
-            return (
-              <li key={k.name} data-reveal style={{ "--d": `${i * 70}ms` } as CSSProperties} className="flex min-w-0 gap-4">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300">
-                  <Ic size={22} weight="light" aria-hidden="true" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[18px] font-medium tracking-[-0.02em] text-fg">{k.name}</span>
-                  <span className="mt-1 block text-[14px] leading-snug text-body">{k.text}</span>
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
 
       <CaseDialog open={open} onClose={() => setOpen(null)} returnFocus={opener} />
     </section>
@@ -99,7 +74,7 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       onClick={(e) => onOpen(e.currentTarget)}
       aria-haspopup="dialog"
       aria-label={`${WORK.open}: ${c.name}, ${c.kind}`}
-      className="work-card group/card block w-full min-w-0 text-left"
+      className="work-card group/card flex h-full w-full min-w-0 flex-col text-left"
     >
       <span
         aria-hidden="true"
@@ -125,20 +100,20 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
           ) : (
             <Image src={c.media} alt="" fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw" className="object-cover object-top" />
           )}
+          {/* kind of website */}
+          <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-[rgb(5_7_13/0.82)] px-3 py-1.5 text-[12px] font-semibold leading-none text-fg">
+            {c.type}
+          </span>
         </span>
       </span>
 
-      <span className="mt-5 flex items-start justify-between gap-4">
-        <span className="min-w-0">
+      <span className="mt-5 block min-w-0">
           <span className="block text-[clamp(22px,1.8vw,28px)] font-medium leading-tight tracking-[-0.03em] text-fg" translate="no">
             {c.name}
           </span>
           <span className="mt-1 block text-[14px] text-grey">{c.kind}</span>
-        </span>
-        <ArrowButton />
       </span>
-      {/* on short desktop screens the one-liner gives way so the kinds strip fits the snap screen */}
-      <span className="mt-3 block text-[15px] leading-snug text-body lg:hidden lg:[@media(min-height:62rem)]:block">{c.text}</span>
+      <span className="mt-3 block text-[15px] leading-snug text-body">{c.text}</span>
       <span className="mt-4 flex flex-wrap gap-1.5">
         {c.tags.map((t, k) => (
           <Tag key={t} color={k === 0 ? c.accent : undefined}>
@@ -146,19 +121,14 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
           </Tag>
         ))}
       </span>
+      {/* «view» pill (the whole card is the button); pinned to the bottom so the four cards line up */}
+      <span className="mt-auto pt-5">
+        <span className="inline-flex h-11 items-center gap-2 rounded-full border border-white/[0.18] px-5 text-[15px] font-semibold text-fg transition-colors duration-300 md:group-hover/card:border-blue md:group-hover/card:bg-blue md:group-hover/card:text-white">
+          {WORK.view}
+          <ArrowUpRight size={16} aria-hidden="true" />
+        </span>
+      </span>
     </button>
-  );
-}
-
-/** 44px round button: on card hover it fills with the accent, only the arrow inside shifts */
-function ArrowButton() {
-  return (
-    <span
-      aria-hidden="true"
-      className="grid size-11 shrink-0 place-items-center rounded-full border border-white/[0.18] text-fg transition-colors duration-300 md:group-hover/card:border-blue md:group-hover/card:bg-blue md:group-hover/card:text-white"
-    >
-      <ArrowUpRight size={20} weight="light" />
-    </span>
   );
 }
 

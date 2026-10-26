@@ -53,7 +53,9 @@ export type Case = {
   id: string;
   name: string;
   kind: string;
-  /** 1–2 lines under the name in the Work list */
+  /** kind of website, shown as a tag on the card preview */
+  type: string;
+  /** 2–3 lines under the name on the Work card */
   text: string;
   /** four short items in the Work list row («що зробили») */
   did: string[];
@@ -93,27 +95,19 @@ export const WORK = {
   },
   open: "Деталі проєкту",
   cta: "Хочу схожий",
+  view: "Переглянути",
   visit: "Відкрити сайт",
   close: "Закрити",
   taskLabel: "Задача",
   doneLabel: "Що зробили",
-  /** strip under the cards: the kinds of sites we make */
-  kinds: {
-    title: "Робимо сайти під вашу задачу",
-    items: [
-      { icon: "landing", name: "Лендинг", text: "Одна сторінка, що продає продукт чи послугу і веде до заявки." },
-      { icon: "shop", name: "Інтернет-магазин", text: "Каталог, кошик і замовлення. Товари й ціни оновлюєте самі." },
-      { icon: "card", name: "Сайт-візитівка", text: "Хто ви, що робите і як з вами зв'язатись. Швидко й охайно." },
-      { icon: "corp", name: "Корпоративний сайт", text: "Продукція, послуги й команда, заявки з будь-якої сторінки." },
-    ] as { icon: "landing" | "shop" | "card" | "corp"; name: string; text: string }[],
-  },
   cases: [
     {
       id: "maina",
       name: "Maina by Rivka",
       kind: "Магазин напівфабрикатів", // DRAFT
+      type: "Інтернет-магазин",
       did: ["UX і структура", "UI-дизайн", "Розробка Next.js", "Адмінка Sanity"], // DRAFT
-      text: "Магазин напівфабрикатів і готової їжі з доставкою по Україні. Асортимент і ціни клієнт оновлює сам в адмінці.", // DRAFT
+      text: "Інтернет-магазин напівфабрикатів і готової їжі з доставкою по Україні. Каталог із категоріями, замовлення в кілька кліків, а асортимент і ціни власниця оновлює сама в адмінці Sanity.", // DRAFT
       tags: ["Дизайн", "Next.js", "Sanity"],
       media: "/cases/maina.webp",
       shots: ["/cases/maina.webp"],
@@ -135,8 +129,9 @@ export const WORK = {
       id: "avtoban",
       name: "Автобан Трейлерз",
       kind: "Сайт виробника",
+      type: "Корпоративний сайт",
       did: ["UX-структура", "UI-дизайн", "Каталог продукції", "Форма запиту"], // DRAFT
-      text: "Сайт виробника сендвіч-панелей, фургонів і причепів.", // DRAFT
+      text: "Сайт виробника сендвіч-панелей, фургонів і причепів. Продумали структуру й сценарії, каталог продукції та форму запиту на розрахунок, щоб клієнт швидко знаходив потрібне.", // DRAFT
       tags: ["UI/UX", "Дизайн"],
       media: "/cases/avtoban.webp",
       shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
@@ -158,8 +153,9 @@ export const WORK = {
       id: "biganskiy",
       name: "BIGANSKIY",
       kind: "Архітектурне бюро (концепт)", // DRAFT
+      type: "Сайт-портфоліо",
       did: ["Арт-дирекшн", "UI-дизайн", "Анімації", "Розробка"], // DRAFT
-      text: "Стильне архітектурне бюро футуристичних будинків: сайт-портфоліо з ефектною подачею проєктів.", // DRAFT
+      text: "Сайт-портфоліо архітектурного бюро футуристичних будинків. Відео на першому екрані, галерея проєктів і анімації, що подають кожен будинок як подію.", // DRAFT
       tags: ["Дизайн", "Next.js"],
       media: "/cases/biganskiy.webp",
       shots: ["/cases/biganskiy.webp"],
@@ -181,8 +177,9 @@ export const WORK = {
       id: "krendel",
       name: "Крендель",
       kind: "Лендинг домашньої пекарні", // DRAFT
+      type: "Лендинг",
       did: ["Ілюстративний стиль", "UI-дизайн", "Адаптив", "Розробка"], // DRAFT
-      text: "Лендинг домашньої пекарні: меню, замовлення, теплий мультяшний стиль.", // DRAFT
+      text: "Лендинг кав'ярні з власною пекарнею в теплому мультяшному стилі. Меню й асортимент, доставка та контакти: усе веде до замовлення або візиту.", // DRAFT
       tags: ["Дизайн", "Лендинг"],
       media: "/cases/krendel.webp",
       shots: ["/cases/krendel.webp"],

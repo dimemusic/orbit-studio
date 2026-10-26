@@ -56,26 +56,19 @@ export const en: Content = {
     },
     open: "Project details",
     cta: "I want one like this",
+    view: "View project",
     visit: "Open the website",
     close: "Close",
     taskLabel: "Task",
     doneLabel: "What we did",
-    kinds: {
-      title: "Websites for whatever you need",
-      items: [
-        { icon: "landing", name: "Landing page", text: "One page that sells a product or service and leads to a request." },
-        { icon: "shop", name: "Online store", text: "Catalogue, cart and orders. You update products and prices yourself." },
-        { icon: "card", name: "Business card site", text: "Who you are, what you do and how to reach you. Fast and neat." },
-        { icon: "corp", name: "Corporate website", text: "Products, services and team, with requests from any page." },
-      ],
-    },
     cases: [
       {
         id: "maina",
         name: "Maina by Rivka",
         kind: "Frozen food shop", // DRAFT
+        type: "Online store",
         did: ["UX and structure", "UI design", "Next.js development", "Sanity admin"], // DRAFT
-        text: "A shop for frozen and ready meals with delivery across Ukraine. The owner updates products and prices herself in the admin panel.", // DRAFT
+        text: "An online store for frozen and ready meals with delivery across Ukraine. A catalogue with categories, ordering in a few clicks, and the owner updates products and prices herself in Sanity.", // DRAFT
         tags: ["Design", "Next.js", "Sanity"],
         media: "/cases/maina.webp",
         shots: ["/cases/maina.webp"],
@@ -96,8 +89,9 @@ export const en: Content = {
         id: "avtoban",
         name: "Avtoban Trailers",
         kind: "Manufacturer website",
+        type: "Corporate website",
         did: ["UX structure", "UI design", "Product catalogue", "Request form"], // DRAFT
-        text: "Website for a manufacturer of sandwich panels, vans and trailers.", // DRAFT
+        text: "Website for a maker of sandwich panels, vans and trailers. We planned the structure and user flows, the product catalogue and a quote request form so clients find what they need fast.", // DRAFT
         tags: ["UI/UX", "Design"],
         media: "/cases/avtoban.webp",
         shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
@@ -118,8 +112,9 @@ export const en: Content = {
         id: "biganskiy",
         name: "BIGANSKIY",
         kind: "Architecture studio (concept)", // DRAFT
+        type: "Portfolio website",
         did: ["Art direction", "UI design", "Animations", "Development"], // DRAFT
-        text: "A stylish studio of futuristic houses: a portfolio website that shows off every project.", // DRAFT
+        text: "Portfolio website for a studio of futuristic houses. Video on the first screen, a project gallery and animations that present every house as an event.", // DRAFT
         tags: ["Design", "Next.js"],
         media: "/cases/biganskiy.webp",
         shots: ["/cases/biganskiy.webp"],
@@ -140,8 +135,9 @@ export const en: Content = {
         id: "krendel",
         name: "Krendel",
         kind: "Home bakery landing page", // DRAFT
+        type: "Landing page",
         did: ["Illustrated style", "UI design", "Responsive", "Development"], // DRAFT
-        text: "A landing page for a home bakery: menu, orders and a warm cartoon style.", // DRAFT
+        text: "Landing page for a café with its own bakery, in a warm cartoon style. Menu and range, delivery and contacts: everything leads to an order or a visit.", // DRAFT
         tags: ["Design", "Landing page"],
         media: "/cases/krendel.webp",
         shots: ["/cases/krendel.webp"],
