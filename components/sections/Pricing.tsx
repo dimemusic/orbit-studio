@@ -52,7 +52,7 @@ export function Pricing() {
     >
       <header className="relative z-[1] flex w-full min-w-0 flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
         <h2 id="services-title" className="legible text-mega font-semibold">
-          <RevealWords text={SERVICES.title[0]} accent={SERVICES.title[1]} tone="fresh" />
+          <RevealWords text={SERVICES.title[0]} accent={SERVICES.title[1]} tone="violet" />
         </h2>
         <p className="legible text-lead text-body">{SERVICES.lead}</p>
       </header>

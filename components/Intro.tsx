@@ -18,7 +18,7 @@ export function Intro() {
           </span>
         ))}{" "}
         <span className="intro-l intro-accent" style={{ "--i": a.length + 2 } as React.CSSProperties}>
-          <G tone="aurora">{b}</G>
+          <G tone="violet">{b}</G>
         </span>
         <span className="intro-line" />
       </div>

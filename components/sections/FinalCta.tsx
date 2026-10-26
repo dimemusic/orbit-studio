@@ -56,7 +56,7 @@ export function FinalCta() {
         {/* left: the invitation + direct contacts */}
         <div className="min-w-0">
           <h2 id="contact-title" className="legible text-mega font-semibold">
-            <RevealWords text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="aurora" stack />
+            <RevealWords text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="teal" stack />
           </h2>
           <p className="legible mt-6 max-w-[40ch] text-lead text-body">{CONTACT.lead}</p>
 

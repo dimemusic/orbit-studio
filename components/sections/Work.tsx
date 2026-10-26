@@ -50,7 +50,7 @@ export function Work() {
             id="work-title"
             className="legible text-mega font-semibold"
           >
-            <RevealWords text={WORK.title[0]} accent={WORK.title[1]} tone="aurora" />
+            <RevealWords text={WORK.title[0]} accent={WORK.title[1]} tone="amber" />
           </h2>
           <a
             href="#contact"

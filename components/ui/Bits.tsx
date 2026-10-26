@@ -16,7 +16,7 @@ export function Eyebrow({ color = "blue", children }: { color?: Accent; children
 }
 
 /** Gradient moods for key words in headings (see .tg-* in globals.css). */
-export type Tone = "aurora" | "calm" | "mind" | "spark" | "shield" | "ice" | "warm" | "fresh" | "soft";
+export type Tone = "aurora" | "violet" | "teal" | "amber" | "calm" | "mind" | "spark" | "shield" | "ice" | "warm" | "fresh" | "soft";
 
 /** Key words in a heading. Pick the tone that matches the section's emotion. */
 export function G({ tone = "aurora", children }: { tone?: Tone; children: ReactNode }) {

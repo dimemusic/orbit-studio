@@ -13,7 +13,7 @@ export function Hero() {
           <h1 id="hero-title" data-reveal className="legible text-mega font-semibold">
             {first}
             <br />
-            {second} <G>{last}</G>
+            {second} <G tone="violet">{last}</G>
           </h1>
           <p data-reveal style={{ ["--d" as string]: "80ms" }} className="legible mt-8 max-w-[64ch] text-lead text-body">
             {HERO.lead}

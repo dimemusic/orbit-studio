@@ -285,7 +285,7 @@ function IntroCard({ time }: { time: number }) {
         {words.map((w, i) => {
           const k = expo(seg(time, 0.08 + i * 0.1, 0.7 + i * 0.1));
           const moving = k < 0.999 || out > 0;
-          const word = i === words.length - 1 ? <G tone="aurora">{w}</G> : w;
+          const word = i === words.length - 1 ? <G tone="teal">{w}</G> : w;
           return (
             <span key={i} className="inline-block" style={moving ? { transform: `translateY(${((1 - k) * 0.35 - out * 0.25).toFixed(3)}em)`, filter: `blur(${((1 - k) * 12 + out * 14).toFixed(1)}px)`, opacity: Math.min(1, k * 1.4) * (1 - out) } : undefined}>
               {word}

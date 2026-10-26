@@ -245,10 +245,14 @@ p {
   .tg-fresh  { --g: linear-gradient(90deg, #a3e635 0%, #34d399 50%, #22d3ee 100%); } /* value, lightness */
   .tg-soft   { --g: linear-gradient(90deg, #c4b5fd 0%, #93c5fd 55%, #67e8f9 100%); } /* gentle, helpful */
 
-  /* key words in headings: one solid accent colour (gradients removed site-wide, Oct 2026); the tg-* tones are kept but unused */
+  /* key words in headings: one solid colour per section (gradients removed site-wide, Oct 2026) */
   .text-gradient {
-    color: #5aa2ff;
+    color: var(--tc, #a78bfa);
   }
+  /* section accents: violet (hero, services), turquoise (process, contact), amber (work) */
+  .tg-aurora, .tg-violet { --tc: #a78bfa; }
+  .tg-teal { --tc: #2dd4bf; }
+  .tg-amber { --tc: #fbbf24; }
 
   /* ---------- buttons ---------- */
   .btn-primary {
