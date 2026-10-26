@@ -880,7 +880,7 @@ html {
 
 /* Work cards: the full-page screenshot scrolls inside the frame on hover (mini preview) */
 .work-grid {
-  --fh: clamp(220px, 40dvh, 520px);
+  --fh: clamp(200px, 31dvh, 400px);
 }
 .work-view {
   height: var(--fh);
