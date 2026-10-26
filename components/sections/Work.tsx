@@ -122,8 +122,8 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
         ))}
       </span>
       {/* «view» pill (the whole card is the button); pinned to the bottom so the four cards line up */}
-      <span className="mt-auto pt-5">
-        <span className="inline-flex h-11 items-center gap-2 rounded-full border border-white/[0.18] px-5 text-[15px] font-semibold text-fg transition-colors duration-300 md:group-hover/card:border-blue md:group-hover/card:bg-blue md:group-hover/card:text-white">
+      <span className="mt-auto block pt-5">
+        <span className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/[0.18] px-5 text-[15px] font-semibold text-fg transition-colors duration-300 md:group-hover/card:border-blue md:group-hover/card:bg-blue md:group-hover/card:text-white">
           {WORK.view}
           <ArrowUpRight size={16} aria-hidden="true" />
         </span>
