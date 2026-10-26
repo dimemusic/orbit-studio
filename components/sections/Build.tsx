@@ -33,8 +33,10 @@ import {
   UploadSimple,
 } from "@phosphor-icons/react/dist/ssr";
 import {
+  createContext,
   Fragment,
   memo,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -248,10 +250,10 @@ export function Build() {
           const exit = exitK * exitK * exitK;
           const s0 = (Math.max(0, t - start) / len) * BEATS;
           return (
-            <div
+            <StageLayer
               key={s.id}
-              className="absolute inset-0"
-              style={
+              i={i}
+              whip={
                 // only while the whip runs: a permanent will-change / 3D transform freezes the raster and the stage turns soft when scaled up
                 enter < 0.999 || exit > 0
                   ? {
@@ -267,7 +269,7 @@ export function Build() {
               {i === 1 && <CodeStage s={s0} />}
               {i === 2 && <CmsStage s={s0} />}
               {i === 3 && <LaunchStage s={s0} />}
-            </div>
+            </StageLayer>
           );
         })}
       </StageBox>
@@ -353,38 +355,82 @@ function Title({ t, fin }: { t: number; fin: number }) {
 }
 
 /** fixed 1200×620 stage, scaled to the space under the header */
+/**
+ * Phones (< 768px): the 1200×620 desktop stage shrinks to nothing, so each stage instead shows ONE part of itself,
+ * cropped and scaled to fill the box (design: the artboard, code: the live preview, CMS: the iPhone, launch: the browser).
+ * The desktop layout is untouched; the crop is applied per stage layer so the whips between stages stay smooth.
+ */
+const FOCUS = [
+  { x: 360, y: 20, w: 480, h: 560 },
+  { x: 730, y: 20, w: 430, h: 560 },
+  { x: 836, y: 20, w: 286, h: 560 },
+  { x: 540, y: 20, w: 600, h: 560 },
+];
+type Fit = { mobile: boolean; w: number; h: number };
+const FitCtx = createContext<Fit>({ mobile: false, w: 0, h: 0 });
+/** mobile crop of stage i: transform for its layer (origin 0 0) */
+const cropOf = (i: number, f: Fit) => {
+  const r = FOCUS[i];
+  const c = Math.min(f.w / r.w, f.h / r.h);
+  return { c, tx: (f.w - r.w * c) / 2 - r.x * c, ty: (f.h - r.h * c) / 2 - r.y * c };
+};
+
 function StageBox({ children }: { children: ReactNode }) {
   const box = useRef<HTMLDivElement>(null);
-  const [k, setK] = useState(0);
+  const [fit, setFit] = useState<Fit & { k: number }>({ mobile: false, w: 0, h: 0, k: 0 });
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const fit = () => {
+    const mq = window.matchMedia("(max-width: 47.99rem)");
+    const measure = () => {
       const r = el.getBoundingClientRect();
-      setK(Math.min(r.width / SW, r.height / SH));
+      setFit({ mobile: mq.matches, w: r.width, h: r.height, k: Math.min(r.width / SW, r.height / SH) });
     };
-    fit();
-    const ro = new ResizeObserver(fit);
+    measure();
+    const ro = new ResizeObserver(measure);
     ro.observe(el);
-    return () => ro.disconnect();
+    mq.addEventListener("change", measure);
+    return () => {
+      ro.disconnect();
+      mq.removeEventListener("change", measure);
+    };
   }, []);
+  const ready = fit.mobile ? fit.w > 0 : fit.k > 0;
   return (
     <div
       ref={box}
       aria-hidden="true"
-      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1"
+      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1 max-md:min-h-[420px] max-md:overflow-hidden"
     >
-      <div
-        className="absolute left-1/2 top-1/2"
-        style={{
-          width: SW,
-          height: SH,
-          transform: `translate(-50%, -50%) scale(${k})`,
-          visibility: k ? "visible" : "hidden",
-        }}
-      >
-        {children}
-      </div>
+      <FitCtx.Provider value={fit}>
+        <div
+          className={fit.mobile ? "absolute left-0 top-0" : "absolute left-1/2 top-1/2"}
+          style={{
+            width: SW,
+            height: SH,
+            transform: fit.mobile ? undefined : `translate(-50%, -50%) scale(${fit.k})`,
+            visibility: ready ? "visible" : "hidden",
+          }}
+        >
+          {children}
+        </div>
+      </FitCtx.Provider>
+    </div>
+  );
+}
+
+/** one stage layer: whip transform while it moves + the phone crop (if any) */
+function StageLayer({ i, whip, children }: { i: number; whip: CSSProperties | undefined; children: ReactNode }) {
+  const f = useContext(FitCtx);
+  if (!f.mobile) return <div className="absolute inset-0" style={whip}>{children}</div>;
+  const { c, tx, ty } = cropOf(i, f);
+  const r = FOCUS[i];
+  const crop = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${c.toFixed(4)})`;
+  // only the focus part is shown: neighbours (panels, toasts) are clipped away
+  const clip = `inset(${r.y}px ${SW - r.x - r.w}px ${SH - r.y - r.h}px ${r.x}px round 24px)`;
+  return (
+    <div className="absolute inset-0 origin-top-left" style={{ ...whip, clipPath: clip, transform: whip?.transform ? `${whip.transform} ${crop}` : crop }}>
+      {children}
     </div>
   );
 }
