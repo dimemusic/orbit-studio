@@ -200,75 +200,45 @@ export const WORK = {
   ] satisfies Case[],
 };
 
-export type Service = {
-  id: string;
+export type Plan = {
+  id: "card" | "landing" | "shop" | "corp";
   name: string;
-  blurb: string;
-  /** «від» price in UAH */
+  /** who it is for, one line */
+  for: string;
+  /** «від» price in USD */
   price: number;
-  /** term in days: [min, max] */
-  days: [number, number];
-  color: Accent;
-  icon: IconKey;
+  /** minimal term in days */
+  days: number;
   features: string[];
+  /** highlighted card (card-pro + badge) */
+  hot?: boolean;
 };
 
+/** Prices by website type (USD). Values marked DRAFT are placeholders to confirm. */
 export const SERVICES = {
   label: "Послуги",
   /** plain start · accent end */
   title: ["Наш", "прайс-лист."],
-  lead: "Можна окремо, вигідніше під ключ.",
+  lead: "Ціна залежить від типу сайту. Точну суму фіксуємо після брифу.",
   pricePrefix: "від",
-  currency: "₴",
-  add: "Додати",
-  added: "Додано",
-  listLabel: "Послуги",
-  /** the package card on the right */
-  package: "Ваш пакет",
-  total: "Разом",
-  term: "Термін:",
-  empty: "Оберіть послуги зліва",
-  remove: "Прибрати",
-  save: "економія",
-  items: [
-    {
-      id: "design",
-      name: "Дизайн",
-      blurb: "Макет, що виглядає дорого й веде до заявки.",
-      price: 12000, // DRAFT
-      days: [5, 7], // DRAFT
-      color: "violet",
-      icon: "design",
-      features: ["Структура й прототип", "Десктоп + мобайл", "UI-кіт і стилі", "Анімації"], // DRAFT
-    },
-    {
-      id: "dev",
-      name: "Розробка",
-      blurb: "Швидкий адаптивний сайт на сучасному стеку.",
-      price: 18000, // DRAFT
-      days: [7, 10], // DRAFT
-      color: "blue",
-      icon: "code",
-      features: ["Next.js", "Адаптив", "Швидкість і SEO", "Домен і хостинг"], // DRAFT
-    },
-    {
-      id: "cms",
-      name: "Адмінка",
-      blurb: "Тексти, ціни, фото й товари змінюєте самі.",
-      price: 8000, // DRAFT
-      days: [3, 5], // DRAFT
-      color: "cyan",
-      icon: "cms",
-      features: ["Sanity CMS", "Редагування з телефона", "Схеми під ваш контент", "Навчання"], // DRAFT
-    },
-  ] satisfies Service[],
-  /** all three picked */
-  turnkey: {
-    name: "Під ключ",
-    price: 32000, // DRAFT
-    term: "від 2 тижнів", // DRAFT
-    perks: ["3 раунди правок", "Підтримка 1 місяць після запуску"], // DRAFT
-  },
+  currency: "$",
+  term: "від",
+  choose: "Обрати",
+  hot: "Рекомендуємо",
+  listLabel: "Тарифи",
+  plans: [
+    { id: "card", name: "Сайт-візитівка", for: "Для експертів, майстрів і малого бізнесу.", price: 400, days: 5, features: ["До 5 сторінок", "Адаптив під телефони", "Форма заявки й контакти", "Базове SEO"] }, // DRAFT: days, features
+    { id: "landing", name: "Лендинг", for: "Одна сторінка під продукт, послугу чи рекламу.", price: 600, days: 7, hot: true, features: ["Унікальний дизайн", "Анімації на скролі", "Форма заявки й аналітика", "Швидке завантаження"] }, // DRAFT: days, features
+    { id: "shop", name: "Інтернет-магазин", for: "Каталог, кошик і замовлення онлайн.", price: 1000, days: 14, features: ["Каталог із фільтрами", "Кошик і оформлення", "Адмінка для товарів і цін", "Оплата й доставка"] }, // DRAFT: days, features
+    { id: "corp", name: "Корпоративний сайт", for: "Для компаній з кількома напрямками.", price: 1200, days: 14, features: ["Багато сторінок і розділів", "Каталог послуг чи продукції", "Адмінка для контенту", "Кілька мов"] }, // DRAFT: price, days, features
+  ] satisfies Plan[],
+  extrasLabel: "Окремо",
+  // DRAFT: all extras
+  extras: [
+    { name: "Дизайн без розробки", price: "від $250" },
+    { name: "Адмінка до готового сайту", price: "від $200" },
+    { name: "Підтримка після запуску", price: "від $50 / міс" },
+  ],
 };
 
 export const PROCESS = {
@@ -381,13 +351,14 @@ export const CONTACT = {
   needs: "Що потрібно?",
   consent: "Надсилаючи заявку, ви погоджуєтесь з",
   consentLink: "політикою конфіденційності",
-  chips: ["Все під ключ", "Дизайн", "Розробка", "Адмінка"],
+  /** [i] = SERVICES.plans[i], then «Інше» */
+  chips: ["Сайт-візитівка", "Лендинг", "Інтернет-магазин", "Корпоративний сайт", "Інше"],
   submit: "Надіслати",
   availability: "Зараз приймаємо проєкти на листопад", // DRAFT
   sending: "Надсилаємо…",
   errName: "Вкажіть, як до вас звертатись.",
   errContact: "Вкажіть Telegram (@нік) або email.",
-  errNeeds: "Оберіть хоча б одну послугу.",
+  errNeeds: "Оберіть хоча б один варіант.",
   errSend: "Не вдалося надіслати. Напишіть нам у Telegram або на email.",
   thanksTitle: "Дякуємо!",
   thanksText: "Ми отримали заявку і напишемо вам протягом 24 годин.",

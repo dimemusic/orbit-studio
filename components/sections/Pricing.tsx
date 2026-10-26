@@ -1,50 +1,27 @@
 "use client";
 
-import { Check, Plus, X } from "@phosphor-icons/react/dist/ssr";
-import { useState, type CSSProperties } from "react";
-import type { Content, Service } from "@/lib/content";
-import { useContent } from "../Lang";
+import { Buildings, Check, IdentificationCard, Rocket, ShoppingBag } from "@phosphor-icons/react/dist/ssr";
+import type { CSSProperties } from "react";
+import type { Plan } from "@/lib/content";
 import { PACKAGE_PICK } from "../home";
-import { ACCENT } from "../ui/accent";
-import { IconTile, Tag } from "../ui/Bits";
+import { useContent } from "../Lang";
+import { ACCENT, type Accent } from "../ui/accent";
+import { Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
-import { useTween } from "../ui/hooks";
-import { Icon } from "../ui/icons";
 import { RevealWords } from "../ui/RevealWords";
 
-/** money formatting + plural days for the current language */
-const fmt = (c: Content) => ({
-  money: (n: number) => `${Math.round(n).toLocaleString(c.UI.locale)} ${c.SERVICES.currency}`,
-  days: c.UI.days,
-});
 const delay = (i: number) => ({ "--d": `${i * 80}ms` }) as CSSProperties;
+const ICON = { card: IdentificationCard, landing: Rocket, shop: ShoppingBag, corp: Buildings } as const;
+const COLOR: Record<Plan["id"], Accent> = { card: "cyan", landing: "violet", shop: "green", corp: "blue" };
 
 /**
- * Services as a package builder: one full screen (lg+). Big word-by-word title + one line on the right, then
- * 3 service rows on hairlines (whole row toggles, picked = colour stripe + faint tint) and the «Ваш пакет» card
- * (.card-pro, sticky): picked services with prices, counting total, term; all three = the turnkey offer.
- * Nothing picked by default. Phones: rows stacked, the package card under them, section may be taller.
+ * Pricing by website type: one full screen (lg+). Title + one line on the right, then 4 plan cards
+ * (icon, name, who it's for, «від $N», term, 4 included items, «Обрати» → the form with that type picked).
+ * The recommended plan is a .card-pro with a badge and a primary button. Under the cards: one line of extras.
  */
 export function Pricing() {
-  const content = useContent();
-  const { CONTACT, CTA, SERVICES } = content;
-  const { money, days } = fmt(content);
-  const ITEMS: Service[] = SERVICES.items;
-  const TURNKEY = SERVICES.turnkey;
-  const FULL = ITEMS.reduce((s, i) => s + i.price, 0);
-  const [picked, setPicked] = useState<Set<string>>(() => new Set());
-  const chosen = ITEMS.filter((s) => picked.has(s.id));
-  const all = chosen.length === ITEMS.length;
-  const total = useTween(all ? TURNKEY.price : chosen.reduce((t, s) => t + s.price, 0), 600);
-  const term = chosen.reduce((t, s) => t + s.days[0], 0);
-
-  const toggle = (id: string) =>
-    setPicked((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  const { SERVICES, CONTACT, UI } = useContent();
+  const pick = (i: number) => window.dispatchEvent(new CustomEvent(PACKAGE_PICK, { detail: [CONTACT.chips[i]] }));
 
   return (
     <section
@@ -56,175 +33,75 @@ export function Pricing() {
         <h2 id="services-title" className="legible text-mega font-semibold">
           <RevealWords text={SERVICES.title[0]} accent={SERVICES.title[1]} tone="violet" />
         </h2>
-        <p className="legible text-lead text-body">{SERVICES.lead}</p>
+        <p className="legible max-w-[34ch] text-lead text-body">{SERVICES.lead}</p>
       </header>
 
-      <div className="relative z-[1] flex w-full min-w-0 py-[clamp(24px,4vh,44px)] lg:pb-0 lg:pt-[clamp(32px,5vh,56px)]">
-        <div className="grid w-full min-w-0 grid-cols-1 items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_400px]">
-          <ul aria-label={SERVICES.listLabel} className="min-w-0 lg:flex lg:flex-col">
-            {ITEMS.map((s, i) => (
-              <li key={s.id} data-reveal style={delay(i)} className="min-w-0 border-t border-white/[0.09] last:border-b lg:flex lg:flex-1 lg:flex-col">
-                <Row s={s} on={picked.has(s.id)} onToggle={() => toggle(s.id)} />
-              </li>
-            ))}
-          </ul>
-
-          {/* the wrapper only moves (scale + rise), the card's content fades: no opacity on the glass */}
-          <div data-reveal data-lift style={delay(ITEMS.length)} className="min-w-0 lg:self-stretch">
-            <aside aria-label={SERVICES.package} className="card card-pro flex h-full flex-col p-7" data-hot={all ? "" : undefined}>
-              {/* fixed min height (fits the full turnkey state), so toggling never shifts the centred layout */}
-              <div className="lift-fade flex flex-1 flex-col" style={delay(ITEMS.length + 1)}>
+      <ul
+        aria-label={SERVICES.listLabel}
+        className="relative z-[1] mt-[clamp(20px,3.5vh,48px)] grid w-full min-w-0 gap-4 md:grid-cols-2 lg:grid-cols-4 lg:gap-5"
+      >
+        {SERVICES.plans.map((p, i) => {
+          const a = ACCENT[COLOR[p.id]];
+          const Ic = ICON[p.id];
+          return (
+            <li key={p.id} data-reveal style={delay(i)} className="flex min-w-0">
+              <article
+                aria-labelledby={`plan-${p.id}`}
+                className={`card flex w-full flex-col px-[clamp(20px,1.8vw,28px)] py-[clamp(18px,2.6vh,28px)] ${p.hot ? "card-pro" : ""}`}
+                data-hot={p.hot ? "" : undefined}
+              >
                 <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-title font-semibold text-fg">{SERVICES.package}</h3>
-                  <span aria-hidden={!all} className={`transition-opacity duration-500 ${all ? "opacity-100" : "opacity-0"}`}>
-                    <Tag color="blue">{TURNKEY.name}</Tag>
+                  <span className={`grid size-11 place-items-center rounded-xl ${a.tint} ${a.text}`}>
+                    <Ic size={22} weight="light" aria-hidden="true" />
                   </span>
+                  {p.hot && <Tag color="blue">{SERVICES.hot}</Tag>}
                 </div>
 
-                {/* picked services: each line folds open / shut */}
-                <ul className="mt-4">
-                  {ITEMS.map((s) => {
-                    const on = picked.has(s.id);
-                    return (
-                      <li
-                        key={s.id}
-                        aria-hidden={!on}
-                        className={`grid transition-[grid-template-rows,opacity] duration-500 ease-[var(--ease)] ${on ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
-                      >
-                        <span className="flex min-h-0 items-center justify-between gap-3 overflow-hidden text-[15px]">
-                          <span className="flex items-center gap-2.5 py-1.5 text-body">
-                            <span aria-hidden="true" className={`size-1.5 rounded-full ${ACCENT[s.color].dot}`} />
-                            {s.name}
-                          </span>
-                          <span className="flex items-center gap-2">
-                            <span className="tabular-nums text-fg">
-                              {SERVICES.pricePrefix} {money(s.price)}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => toggle(s.id)}
-                              tabIndex={on ? 0 : -1}
-                              aria-label={`${SERVICES.remove}: ${s.name}`}
-                              className="grid size-7 shrink-0 place-items-center rounded-full text-grey transition-colors duration-200 hover:bg-white/[0.08] hover:text-fg"
-                            >
-                              <X size={13} weight="bold" aria-hidden="true" />
-                            </button>
-                          </span>
-                        </span>
-                      </li>
-                    );
-                  })}
+                <h3 id={`plan-${p.id}`} className="mt-[clamp(12px,2vh,20px)] text-[clamp(20px,1.6vw,24px)] font-semibold leading-tight tracking-[-0.03em] text-fg">
+                  {p.name}
+                </h3>
+                <p className="mt-1.5 text-[14px] leading-snug text-grey">{p.for}</p>
+
+                <p className="mt-[clamp(12px,2vh,20px)] flex items-baseline gap-2">
+                  <span className="text-[14px] text-grey">{SERVICES.pricePrefix}</span>
+                  <span className="text-[clamp(32px,2.6vw,42px)] font-semibold leading-none tracking-[-0.04em] text-fg tabular-nums">
+                    {SERVICES.currency}
+                    {p.price.toLocaleString(UI.locale)}
+                  </span>
+                </p>
+                <p className="mt-2 text-[14px] text-body">
+                  {SERVICES.term} {UI.days(p.days)}
+                </p>
+
+                <ul className="mt-[clamp(12px,2vh,20px)] flex flex-col gap-[clamp(6px,1vh,10px)] border-t border-white/[0.09] pt-[clamp(12px,2vh,20px)]">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2.5 text-[15px] leading-snug text-body">
+                      <Check size={15} weight="bold" aria-hidden="true" className={`shrink-0 ${a.text}`} />
+                      {f}
+                    </li>
+                  ))}
                 </ul>
 
-                <div className="mb-6 mt-4 border-t border-white/[0.09] pt-5" aria-live="polite">
-                  {chosen.length === 0 ? (
-                    <p className="py-3 text-[15px] text-grey">{SERVICES.empty}</p>
-                  ) : (
-                    <>
-                      <p className="text-[13px] text-grey">{all ? TURNKEY.name : SERVICES.total}</p>
-                      <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                        <span className="text-[clamp(30px,2.6vw,40px)] font-semibold leading-none tracking-[-0.04em] text-fg tabular-nums">
-                          {SERVICES.pricePrefix} {money(total)}
-                        </span>
-                        {all && <s className="text-[15px] text-faint tabular-nums">{money(FULL)}</s>}
-                      </p>
-                      {all && (
-                        <p className="mt-2 text-[14px] text-green">
-                          {SERVICES.save} {money(FULL - TURNKEY.price)}
-                        </p>
-                      )}
-                      <p className="mt-3 text-[14px] text-body">
-                        {SERVICES.term} {all ? TURNKEY.term : `${SERVICES.pricePrefix} ${days(term)}`}
-                      </p>
-                      {all && <p className="mt-1 text-[14px] text-grey">{TURNKEY.perks.join(" · ")}</p>}
-                    </>
-                  )}
+                <div className="mt-auto pt-[clamp(14px,2.4vh,24px)]">
+                  <Button href="#contact" size="nav" variant={p.hot ? "primary" : "secondary"} onClick={() => pick(i)} className="w-full">
+                    {SERVICES.choose}
+                  </Button>
                 </div>
-
-                <Button
-                  href="#contact"
-                  className="mt-auto w-full"
-                  onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent(PACKAGE_PICK, { detail: all ? [CONTACT.chips[0]] : chosen.map((c) => CONTACT.chips[ITEMS.indexOf(c) + 1]) }),
-                    )
-                  }
-                >
-                  {CTA.primary}
-                </Button>
-              </div>
-            </aside>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/** a service on hairlines: icon · name + blurb · included (2 columns) · price + term · toggle. The whole row toggles. */
-function Row({ s, on, onToggle }: { s: Service; on: boolean; onToggle: () => void }) {
-  const content = useContent();
-  const { SERVICES } = content;
-  const { money, days } = fmt(content);
-  const a = ACCENT[s.color];
-  return (
-    <div
-      onClick={onToggle}
-      className={`relative grid cursor-pointer grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-5 pl-4 pr-4 transition-colors lg:flex-1 lg:content-center duration-300 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-x-6 md:px-5 ${
-        on ? "" : "md:hover:bg-white/[0.012]"
-      }`}
-    >
-      {/* picked: faint tint that fades out to the right, so the row has no hard edge */}
-      <span
-        aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 -z-10 bg-linear-to-r from-white/[0.035] via-white/[0.018] to-transparent transition-opacity duration-300 ${on ? "opacity-100" : "opacity-0"}`}
-      />
-      {/* picked: a thin stripe in the service colour */}
-      <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-[2px] transition-opacity duration-300 ${a.dot} ${on ? "opacity-100" : "opacity-0"}`} />
-      <IconTile color={s.color}>
-        <Icon name={s.icon} />
-      </IconTile>
-      <div className="min-w-0">
-        <h3 className="text-[clamp(22px,2vw,30px)] font-medium leading-tight tracking-[-0.03em] text-fg">{s.name}</h3>
-        <p className="mt-1 text-[15px] leading-snug text-body">{s.blurb}</p>
-        {/* what's included: tinted pills in the service colour, one line where it fits */}
-        <ul className="mt-3.5 flex flex-wrap gap-2">
-          {s.features.map((f) => (
-            <li
-              key={f}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium leading-none text-fg/90 ${a.border} ${a.tint}`}
-            >
-              <Check size={12} weight="bold" aria-hidden="true" className={`shrink-0 ${a.text}`} />
-              {f}
+              </article>
             </li>
-          ))}
-        </ul>
-      </div>
-      <div className="col-span-2 flex items-center justify-between gap-5 md:col-span-1 md:gap-8 md:self-center">
-        <p className="md:text-right">
-          <span className="block text-[22px] font-semibold leading-none tracking-[-0.03em] text-fg tabular-nums">
-            {SERVICES.pricePrefix} {money(s.price)}
+          );
+        })}
+      </ul>
+
+      {/* extras: one quiet line under the cards */}
+      <p className="legible relative z-[1] mt-[clamp(16px,3vh,28px)] flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px] text-body">
+        <span className="text-grey">{SERVICES.extrasLabel}:</span>
+        {SERVICES.extras.map((e) => (
+          <span key={e.name}>
+            {e.name} <span className="font-semibold text-fg">{e.price}</span>
           </span>
-          <span className="mt-1.5 block text-[14px] text-grey">
-            {s.days[0]}–{days(s.days[1])}
-          </span>
-        </p>
-        <button
-          type="button"
-          aria-pressed={on}
-          aria-label={`${on ? SERVICES.added : SERVICES.add}: ${s.name}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle();
-          }}
-          className={`inline-flex h-[52px] w-[9rem] shrink-0 items-center justify-center gap-2 rounded-full border text-[16px] font-semibold transition-[background-color,border-color,color] duration-300 ${
-            on ? `border-transparent ${a.tint} ${a.text}` : "border-white/[0.18] text-fg hover:border-white/40 hover:bg-white/[0.07]"
-          }`}
-        >
-          {on ? <Check size={16} weight="bold" aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
-          {on ? SERVICES.added : SERVICES.add}
-        </button>
-      </div>
-    </div>
+        ))}
+      </p>
+    </section>
   );
 }

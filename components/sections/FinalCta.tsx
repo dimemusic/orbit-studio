@@ -41,7 +41,7 @@ function Err({ id, children }: { id: string; children?: string }) {
 
 /**
  * Last screen: request form. Same header as Services (word-by-word title + one line on the right), then one .card:
- * direct contacts on the left, the form on the right («Що потрібно» chips = the services, prefilled from «Ваш пакет»).
+ * direct contacts on the left, the form on the right («Що потрібно» chips = website types, prefilled from a pricing card).
  * Sends to /api/contact (Resend); without the env keys the route answers 503 and the form points to Telegram / email.
  */
 export function FinalCta() {
@@ -98,14 +98,12 @@ export function FinalCta() {
 
 function ContactForm() {
   const { BRAND, CONTACT } = useContent();
-  /** «Все під ключ» excludes the single services and back */
-  const TURNKEY_CHIP = CONTACT.chips[0];
   const uid = useId();
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
-  const [needs, setNeeds] = useState<Set<string>>(() => new Set([CONTACT.chips[0]]));
+  const [needs, setNeeds] = useState<Set<string>>(() => new Set());
   // an error is visible only after the field was left (blur) or after a submit attempt
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -118,7 +116,7 @@ function ContactForm() {
     if (done) doneRef.current?.focus({ preventScroll: true });
   }, [done]);
 
-  // «Обговорити проєкт» in «Ваш пакет» brings the picked services along
+  // «Обрати» on a pricing card brings that website type along
   useEffect(() => {
     const onPick = (e: Event) => {
       const picked = (e as CustomEvent<string[]>).detail;
@@ -136,11 +134,7 @@ function ContactForm() {
     setNeeds((prev) => {
       const next = new Set(prev);
       if (next.has(chip)) next.delete(chip);
-      else if (chip === TURNKEY_CHIP) return new Set([chip]);
-      else {
-        next.delete(TURNKEY_CHIP);
-        next.add(chip);
-      }
+      else next.add(chip);
       return next;
     });
 
@@ -173,7 +167,7 @@ function ContactForm() {
     setContact("");
     setMessage("");
     setFailed(false);
-    setNeeds(new Set([CONTACT.chips[0]]));
+    setNeeds(new Set());
     setTouched({});
     setSubmitted(false);
     setDone(false);
@@ -195,11 +189,11 @@ function ContactForm() {
           >
             <fieldset className="flex flex-col gap-2.5" aria-describedby={`${uid}-needs-err`}>
               <legend className="mb-3 text-[16px] font-medium text-fg">{CONTACT.needs}</legend>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-[repeat(4,auto)] sm:gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {CONTACT.chips.map((chip, i) => {
                   const on = needs.has(chip);
                   return (
-                    <label key={chip} className={`min-w-0 cursor-pointer ${i === 0 ? "col-span-3 sm:col-span-1" : ""}`}>
+                    <label key={chip} className="min-w-0 cursor-pointer">
                       <input
                         ref={i === 0 ? refs.needs : undefined}
                         type="checkbox"
@@ -213,13 +207,13 @@ function ContactForm() {
                         className="peer sr-only"
                       />
                       <span
-                        className={`flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border px-2 text-[14px] sm:px-2.5 sm:text-[15px] font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
+                        className={`flex h-11 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-[15px] font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
                           on ? "border-blue bg-blue/12 text-fg" : "border-white/15 text-body hover:border-white/30 hover:text-fg"
                         }`}
                       >
                         <span
                           aria-hidden="true"
-                          className={`size-4 shrink-0 place-items-center rounded-full transition-colors duration-300 ${i === 0 ? "grid" : "hidden sm:grid"} ${on ? "bg-blue text-white" : "border border-white/25"}`}
+                          className={`grid size-4 shrink-0 place-items-center rounded-full transition-colors duration-300 ${on ? "bg-blue text-white" : "border border-white/25"}`}
                         >
                           {on && <Check size={10} weight="bold" />}
                         </span>

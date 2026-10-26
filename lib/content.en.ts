@@ -1,6 +1,6 @@
 // English copy: the same shape as the Ukrainian `uk` in lib/content.ts (typed as Content, so nothing can go missing).
 // `// DRAFT` values mirror the Ukrainian placeholders: replace both before launch.
-import type { Case, Content, Service } from "./content";
+import type { Case, Content, Plan } from "./content";
 
 export const en: Content = {
   BRAND: {
@@ -160,56 +160,25 @@ export const en: Content = {
   SERVICES: {
     label: "Services",
     title: ["Our", "pricing."],
-    lead: "Order separately or save with the full package.",
+    lead: "The price depends on the type of website. We fix the exact sum after the brief.",
     pricePrefix: "from",
-    currency: "₴",
-    add: "Add",
-    added: "Added",
-    listLabel: "Services",
-    package: "Your package",
-    total: "Total",
-    term: "Time:",
-    empty: "Pick services on the left",
-    remove: "Remove",
-    save: "you save",
-    items: [
-      {
-        id: "design",
-        name: "Design",
-        blurb: "A layout that looks premium and leads to requests.",
-        price: 12000, // DRAFT
-        days: [5, 7], // DRAFT
-        color: "violet",
-        icon: "design",
-        features: ["Structure and prototype", "Desktop + mobile", "UI kit and styles", "Animations"], // DRAFT
-      },
-      {
-        id: "dev",
-        name: "Development",
-        blurb: "A fast responsive website on a modern stack.",
-        price: 18000, // DRAFT
-        days: [7, 10], // DRAFT
-        color: "blue",
-        icon: "code",
-        features: ["Next.js", "Responsive", "Speed and SEO", "Domain and hosting"], // DRAFT
-      },
-      {
-        id: "cms",
-        name: "Admin panel",
-        blurb: "Change texts, prices, photos and products yourself.",
-        price: 8000, // DRAFT
-        days: [3, 5], // DRAFT
-        color: "cyan",
-        icon: "cms",
-        features: ["Sanity CMS", "Edit from your phone", "Schemas for your content", "Training"], // DRAFT
-      },
-    ] satisfies Service[],
-    turnkey: {
-      name: "Full package",
-      price: 32000, // DRAFT
-      term: "from 2 weeks", // DRAFT
-      perks: ["3 rounds of revisions", "1 month of support after launch"], // DRAFT
-    },
+    currency: "$",
+    term: "from",
+    choose: "Choose",
+    hot: "Recommended",
+    listLabel: "Plans",
+    plans: [
+      { id: "card", name: "Business card site", for: "For experts, craftspeople and small businesses.", price: 400, days: 5, features: ["Up to 5 pages", "Mobile-friendly", "Request form and contacts", "Basic SEO"] }, // DRAFT
+      { id: "landing", name: "Landing page", for: "One page for a product, service or ad campaign.", price: 600, days: 7, hot: true, features: ["Custom design", "Scroll animations", "Request form and analytics", "Fast loading"] }, // DRAFT
+      { id: "shop", name: "Online store", for: "Catalogue, cart and online orders.", price: 1000, days: 14, features: ["Catalogue with filters", "Cart and checkout", "Admin for products and prices", "Payment and delivery"] }, // DRAFT
+      { id: "corp", name: "Corporate website", for: "For companies with several lines of business.", price: 1200, days: 14, features: ["Many pages and sections", "Services or product catalogue", "Content admin panel", "Several languages"] }, // DRAFT
+    ] satisfies Plan[],
+    extrasLabel: "Separately",
+    extras: [
+      { name: "Design without development", price: "from $250" },
+      { name: "Admin panel for an existing site", price: "from $200" },
+      { name: "Support after launch", price: "from $50 / mo" },
+    ],
   },
 
   CONTACT: {
@@ -225,13 +194,13 @@ export const en: Content = {
     needs: "What do you need?",
     consent: "By sending the request you agree to the",
     consentLink: "privacy policy",
-    chips: ["Full package", "Design", "Development", "CMS"],
+    chips: ["Business card site", "Landing page", "Online store", "Corporate website", "Other"],
     submit: "Send",
     availability: "Now booking projects for November", // DRAFT
     sending: "Sending…",
     errName: "Tell us how to call you.",
     errContact: "Enter your Telegram (@username) or email.",
-    errNeeds: "Pick at least one service.",
+    errNeeds: "Pick at least one option.",
     errSend: "Couldn't send it. Message us on Telegram or by email.",
     thanksTitle: "Thank you!",
     thanksText: "We've got your request and will reply within 24 hours.",
