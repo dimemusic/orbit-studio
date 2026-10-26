@@ -12,7 +12,7 @@ export const BRAND = {
   city: "Львів",
   telegram: "@maxartdigital", // DRAFT
   telegramUrl: "https://t.me/maxartdigital", // DRAFT
-  email: "hello@maxart.digital", // DRAFT
+  email: "hello@maxartdigital.com",
   privacyHref: "/privacy",
 };
 
