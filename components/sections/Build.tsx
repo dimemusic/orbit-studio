@@ -372,7 +372,8 @@ const FitCtx = createContext<Fit>({ mobile: false, w: 0, h: 0 });
 const cropOf = (i: number, f: Fit) => {
   const r = FOCUS[i];
   const c = Math.min(f.w / r.w, f.h / r.h);
-  return { c, tx: (f.w - r.w * c) / 2 - r.x * c, ty: (f.h - r.h * c) / 2 - r.y * c };
+  // centred horizontally, pinned to the top so the stage sits right under the stage title
+  return { c, tx: (f.w - r.w * c) / 2 - r.x * c, ty: -r.y * c };
 };
 
 function StageBox({ children }: { children: ReactNode }) {
@@ -400,7 +401,7 @@ function StageBox({ children }: { children: ReactNode }) {
     <div
       ref={box}
       aria-hidden="true"
-      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1 max-md:min-h-[420px] max-md:overflow-hidden"
+      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1 max-md:mt-6 max-md:h-[min(118vw,64dvh)] max-md:min-h-0 max-md:flex-none max-md:overflow-visible"
     >
       <FitCtx.Provider value={fit}>
         <div
@@ -427,7 +428,8 @@ function StageLayer({ i, whip, children }: { i: number; whip: CSSProperties | un
   const r = FOCUS[i];
   const crop = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${c.toFixed(4)})`;
   // only the focus part is shown: neighbours (panels, toasts) are clipped away
-  const clip = `inset(${r.y}px ${SW - r.x - r.w}px ${SH - r.y - r.h}px ${r.x}px round 24px)`;
+  // a few px of air so the panels' own rounded corners and shadows are not cut
+  const clip = `inset(${r.y - 6}px ${SW - r.x - r.w - 6}px ${SH - r.y - r.h - 6}px ${r.x - 6}px)`;
   return (
     <div className="absolute inset-0 origin-top-left" style={{ ...whip, clipPath: clip, transform: whip?.transform ? `${whip.transform} ${crop}` : crop }}>
       {children}
