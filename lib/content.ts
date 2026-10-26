@@ -97,11 +97,21 @@ export const WORK = {
   close: "Закрити",
   taskLabel: "Задача",
   doneLabel: "Що зробили",
+  /** strip under the cards: the kinds of sites we make */
+  kinds: {
+    title: "Робимо сайти під вашу задачу",
+    items: [
+      { icon: "landing", name: "Лендинг", text: "Одна сторінка, що продає продукт чи послугу і веде до заявки." },
+      { icon: "shop", name: "Інтернет-магазин", text: "Каталог, кошик і замовлення. Товари й ціни оновлюєте самі." },
+      { icon: "card", name: "Сайт-візитівка", text: "Хто ви, що робите і як з вами зв'язатись. Швидко й охайно." },
+      { icon: "corp", name: "Корпоративний сайт", text: "Продукція, послуги й команда, заявки з будь-якої сторінки." },
+    ] as { icon: "landing" | "shop" | "card" | "corp"; name: string; text: string }[],
+  },
   cases: [
     {
       id: "maina",
       name: "Maina by Rivka",
-      kind: "Магазин напівфабрикатів і готової їжі", // DRAFT
+      kind: "Магазин напівфабрикатів", // DRAFT
       did: ["UX і структура", "UI-дизайн", "Розробка Next.js", "Адмінка Sanity"], // DRAFT
       text: "Магазин напівфабрикатів і готової їжі з доставкою по Україні. Асортимент і ціни клієнт оновлює сам в адмінці.", // DRAFT
       tags: ["Дизайн", "Next.js", "Sanity"],

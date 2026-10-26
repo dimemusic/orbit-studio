@@ -60,11 +60,20 @@ export const en: Content = {
     close: "Close",
     taskLabel: "Task",
     doneLabel: "What we did",
+    kinds: {
+      title: "Websites for whatever you need",
+      items: [
+        { icon: "landing", name: "Landing page", text: "One page that sells a product or service and leads to a request." },
+        { icon: "shop", name: "Online store", text: "Catalogue, cart and orders. You update products and prices yourself." },
+        { icon: "card", name: "Business card site", text: "Who you are, what you do and how to reach you. Fast and neat." },
+        { icon: "corp", name: "Corporate website", text: "Products, services and team, with requests from any page." },
+      ],
+    },
     cases: [
       {
         id: "maina",
         name: "Maina by Rivka",
-        kind: "Ready-meal and frozen food shop", // DRAFT
+        kind: "Frozen food shop", // DRAFT
         did: ["UX and structure", "UI design", "Next.js development", "Sanity admin"], // DRAFT
         text: "A shop for frozen and ready meals with delivery across Ukraine. The owner updates products and prices herself in the admin panel.", // DRAFT
         tags: ["Design", "Next.js", "Sanity"],

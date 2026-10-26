@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ArrowUpRight, CheckCircle, X } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, ArrowUpRight, Buildings, CheckCircle, IdentificationCard, Rocket, ShoppingBag, X } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Case } from "@/lib/content";
@@ -17,6 +17,8 @@ import { RevealWords } from "../ui/RevealWords";
  * (speed follows the page length), and slides back on leave. Click opens the case window.
  * Cases without a full-page shot show their cover, no scroll. Reduced motion: no scroll.
  */
+const KIND_ICON = { landing: Rocket, shop: ShoppingBag, card: IdentificationCard, corp: Buildings };
+
 export function Work() {
   const { WORK } = useContent();
   const CASES = WORK.cases;
@@ -58,6 +60,29 @@ export function Work() {
           </li>
         ))}
       </ul>
+
+      {/* the kinds of sites we make: four columns on hairlines, no cards */}
+      <div className="relative z-[1] mt-[clamp(20px,3.5vh,48px)] w-full min-w-0 border-t border-white/[0.09] pt-[clamp(16px,2.5vh,28px)]">
+        <h3 data-reveal className="legible text-[15px] font-medium text-grey">
+          {WORK.kinds.title}
+        </h3>
+        <ul className="mt-[clamp(12px,2vh,20px)] grid gap-x-6 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+          {WORK.kinds.items.map((k, i) => {
+            const Ic = KIND_ICON[k.icon];
+            return (
+              <li key={k.name} data-reveal style={{ "--d": `${i * 70}ms` } as CSSProperties} className="flex min-w-0 gap-4">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-400/10 text-amber-300">
+                  <Ic size={22} weight="light" aria-hidden="true" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[18px] font-medium tracking-[-0.02em] text-fg">{k.name}</span>
+                  <span className="mt-1 block text-[14px] leading-snug text-body">{k.text}</span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
       <CaseDialog open={open} onClose={() => setOpen(null)} returnFocus={opener} />
     </section>
@@ -112,7 +137,8 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
         </span>
         <ArrowButton />
       </span>
-      <span className="mt-3 block text-[15px] leading-snug text-body">{c.text}</span>
+      {/* on short desktop screens the one-liner gives way so the kinds strip fits the snap screen */}
+      <span className="mt-3 block text-[15px] leading-snug text-body lg:hidden lg:[@media(min-height:62rem)]:block">{c.text}</span>
       <span className="mt-4 flex flex-wrap gap-1.5">
         {c.tags.map((t, k) => (
           <Tag key={t} color={k === 0 ? c.accent : undefined}>
