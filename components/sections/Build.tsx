@@ -46,7 +46,6 @@ import {
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
 import { G } from "../ui/Bits";
-import { Button } from "../ui/Button";
 import { along, Caret, ease, expo, seg, smooth, Typed, typed } from "../process/util";
 
 /**
@@ -103,7 +102,6 @@ const fly = (
 
 export function Build() {
   const { BUILD } = useB();
-  const { CTA } = useContent();
   const ref = useRef<HTMLElement>(null);
   // `time` runs 0..CYCLE in a loop: the film (0..TOTAL), then the final frame is held for HOLD seconds
   const [time, setTime] = useState(0);
@@ -276,7 +274,7 @@ export function Build() {
         })}
       </StageBox>
 
-      {/* phones only: what this stage means for the client + the CTA, fills the space under the stage */}
+      {/* phones only: what this stage means for the client, fills the space under the stage */}
       <div className="relative z-[1] mx-gutter mb-10 mt-4 flex flex-col gap-5 md:hidden">
         <p key={cur} className="build-note legible min-h-[4.5em] text-[16px] leading-relaxed text-body">
           <span className="font-semibold tabular-nums" style={{ color: st.color }}>
@@ -284,9 +282,6 @@ export function Build() {
           </span>{" "}
           {st.note}
         </p>
-        <Button href="#contact" className="w-full">
-          {CTA.primary}
-        </Button>
       </div>
       </div>
     </section>
