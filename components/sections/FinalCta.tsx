@@ -2,7 +2,8 @@
 
 import { Check, CheckCircle, EnvelopeSimple, TelegramLogo } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { BRAND, CONTACT } from "@/lib/content";
+import type { Content } from "@/lib/content";
+import { useContent } from "../Lang";
 import { PACKAGE_PICK } from "../home";
 import { Button } from "../ui/Button";
 import { RevealWords } from "../ui/RevealWords";
@@ -12,7 +13,7 @@ type Field = "name" | "contact" | "needs";
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const TG = /^@?[a-zA-Z0-9_]{4,32}$/;
 
-function validate(v: { name: string; contact: string; needs: Set<string> }) {
+function validate(CONTACT: Content["CONTACT"], v: { name: string; contact: string; needs: Set<string> }) {
   const e: Partial<Record<Field, string>> = {};
   if (v.name.trim().length < 2) e.name = CONTACT.errName;
   const c = v.contact.trim();
@@ -37,8 +38,6 @@ function Err({ id, children }: { id: string; children?: string }) {
   );
 }
 
-/** «Все під ключ» excludes the single services and back */
-const TURNKEY_CHIP = CONTACT.chips[0];
 
 /**
  * Last screen: request form. Same header as Services (word-by-word title + one line on the right), then one .card:
@@ -46,6 +45,7 @@ const TURNKEY_CHIP = CONTACT.chips[0];
  * Sends to /api/contact (Resend); without the env keys the route answers 503 and the form points to Telegram / email.
  */
 export function FinalCta() {
+  const { BRAND, CONTACT } = useContent();
   return (
     <section
       id="contact"
@@ -97,6 +97,9 @@ export function FinalCta() {
 }
 
 function ContactForm() {
+  const { BRAND, CONTACT } = useContent();
+  /** «Все під ключ» excludes the single services and back */
+  const TURNKEY_CHIP = CONTACT.chips[0];
   const uid = useId();
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
@@ -125,7 +128,7 @@ function ContactForm() {
     return () => window.removeEventListener(PACKAGE_PICK, onPick);
   }, []);
 
-  const errors = validate({ name, contact, needs });
+  const errors = validate(CONTACT, { name, contact, needs });
   const shown = (f: Field) => (submitted || touched[f] ? errors[f] : undefined);
   const touch = (f: Field) => () => setTouched((t) => ({ ...t, [f]: true }));
 
@@ -192,7 +195,7 @@ function ContactForm() {
           >
             <fieldset className="flex flex-col gap-2.5" aria-describedby={`${uid}-needs-err`}>
               <legend className="mb-3 text-[16px] font-medium text-fg">{CONTACT.needs}</legend>
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-[1.4fr_1fr_1fr_1fr]">
+              <div className="grid grid-cols-3 gap-2 sm:grid-cols-[repeat(4,auto)] sm:gap-1.5">
                 {CONTACT.chips.map((chip, i) => {
                   const on = needs.has(chip);
                   return (
@@ -210,7 +213,7 @@ function ContactForm() {
                         className="peer sr-only"
                       />
                       <span
-                        className={`flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border px-2 text-[14px] sm:px-3 sm:text-[15px] font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
+                        className={`flex h-11 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border px-2 text-[14px] sm:px-2.5 sm:text-[15px] font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
                           on ? "border-blue bg-blue/12 text-fg" : "border-white/15 text-body hover:border-white/30 hover:text-fg"
                         }`}
                       >

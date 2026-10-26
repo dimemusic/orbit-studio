@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { LangProvider } from "@/components/Lang";
 import { Geologica } from "next/font/google";
 import { Ambient } from "@/components/Ambient";
 import { Intro } from "@/components/Intro";
@@ -8,8 +9,9 @@ import { Footer } from "@/components/sections/Footer";
 import { CardFx } from "@/components/ui/CardFx";
 import { HideOn } from "@/components/ui/HideOn";
 import { RevealRoot } from "@/components/ui/RevealRoot";
-import { META } from "@/lib/content";
-import "./globals.css";
+import type { Lang } from "@/lib/content";
+import { contentFor } from "@/lib/i18n";
+import "@/app/globals.css";
 
 const geologica = Geologica({
   subsets: ["latin", "cyrillic"],
@@ -21,10 +23,15 @@ const geologica = Geologica({
 // pages without ivy, nav and footer (none on the studio site yet)
 const FOCUSED: string[] = [];
 
-export const metadata: Metadata = {
-  title: { default: META.title, template: "%s · MaxArt Digital" },
-  description: META.description,
-};
+/** per-language metadata with hreflang alternates */
+export function shellMetadata(lang: Lang): Metadata {
+  const { META } = contentFor(lang);
+  return {
+    title: { default: META.title, template: "%s · MaxArt Digital" },
+    description: META.description,
+    alternates: { languages: { uk: "/", en: "/en" } },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#05070d",
@@ -32,9 +39,10 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+/** the whole page frame (html, scene, nav, footer); each language root layout renders it */
+export function Shell({ lang, children }: { lang: Lang; children: React.ReactNode }) {
   return (
-    <html lang="uk" className={geologica.variable} suppressHydrationWarning>
+    <html lang={lang} className={geologica.variable} suppressHydrationWarning>
       <head>
         {/* lets CSS hide [data-reveal] content only when JS will reveal it */}
         {/* "intro": first load of a tab session plays the «MaxArt Digital» title card (Intro); the boot then waits until 2.0s */}
@@ -47,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <LangProvider lang={lang}>
         <Intro />
         {/* shared on every page (except FOCUSED ones): fixed ivy scene, nav, footer; reveal + card layers always */}
         <HideOn paths={FOCUSED}>
@@ -65,6 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </HideOn>
         <RevealRoot />
         <CardFx />
+        </LangProvider>
       </body>
     </html>
   );

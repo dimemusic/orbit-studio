@@ -12,5 +12,5 @@ export const homeNum = (id: HomeId) => String(HOME_SECTIONS.findIndex((s) => s.i
 /** Work case card hover → its node in the background particle network (IvyScene listens; detail = case index or null) */
 export const CASE_HOVER = "case-hover";
 
-/** «Ваш пакет» CTA → contact form chips (detail = chip labels from CONTACT.chips) */
+/** «Ваш пакет» CTA → contact form chips (detail = chip labels from CONTACT.chips: [0] = full package, [i + 1] = SERVICES.items[i]) */
 export const PACKAGE_PICK = "package-pick";

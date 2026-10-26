@@ -1,10 +1,13 @@
+"use client";
+
 import Link from "next/link";
-import { BRAND, FOOTER, NAV } from "@/lib/content";
+import { useContent } from "../Lang";
 
 export function Footer() {
+  const { BRAND, FOOTER, NAV, UI } = useContent();
   return (
     <footer className="card relative w-full overflow-hidden rounded-none border-x-0 border-b-0 px-gutter pb-10 pt-16 text-center shadow-none">
-      <nav aria-label="Посилання у футері">
+      <nav aria-label={UI.footerNav}>
         <ul className="flex flex-wrap justify-center gap-x-8 gap-y-1">
           {NAV.map(({ label, href }) => (
             <li key={label}>

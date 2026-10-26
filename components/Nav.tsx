@@ -5,9 +5,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "./ui/Button";
 import { Logo } from "./ui/Logo";
-import { BRAND, CTA, NAV } from "@/lib/content";
-
-const LINKS = NAV;
+import { otherPath } from "@/lib/i18n";
+import { useContent, useLang } from "./Lang";
 
 /** page links are active on their own route; home anchors never are */
 const isActive = (href: string, path: string) => !href.includes("#") && path.startsWith(href);
@@ -17,6 +16,8 @@ export function Nav() {
   const menuId = useId();
   const toggleRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
+  const { BRAND, CTA, NAV: LINKS, UI } = useContent();
+  const lang = useLang();
 
   // close the mobile menu after navigating
   useEffect(() => setOpen(false), [pathname]);
@@ -43,13 +44,13 @@ export function Nav() {
         href="#main"
         className="sr-only rounded-full bg-fg px-4 py-2 text-sm text-bg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"
       >
-        Перейти до змісту
+        {UI.skip}
       </a>
 
       {/* floating card bar (slightly lighter than content cards) */}
       <div className="card card-nav">
-        <nav aria-label="Головна навігація" className="flex h-16 items-center gap-6 pl-5 pr-2.5">
-          <Link href="/" aria-label={`${BRAND.name}, на головну`} className="shrink-0">
+        <nav aria-label={UI.mainNav} className="flex h-16 items-center gap-6 pl-5 pr-2.5">
+          <Link href={CTA.home} aria-label={`${BRAND.name}, ${UI.toHome}`} className="shrink-0">
             <Logo />
           </Link>
 
@@ -74,7 +75,24 @@ export function Nav() {
             })}
           </ul>
 
-          <div className="ml-auto flex shrink-0 items-center gap-6 lg:ml-0">
+          <div className="ml-auto flex shrink-0 items-center gap-4 lg:ml-0 lg:gap-6">
+            {/* language switch: full page load, the other language has its own root layout */}
+            <span role="group" aria-label={UI.lang} className="flex items-center rounded-full border border-white/[0.12] p-1 text-[13px] font-semibold">
+              {(["uk", "en"] as const).map((l) => (
+                <a
+                  key={l}
+                  href={otherPath(pathname, l)}
+                  hrefLang={l}
+                  lang={l}
+                  aria-current={l === lang ? "true" : undefined}
+                  className={`grid h-8 min-w-9 place-items-center rounded-full px-2 transition-colors duration-200 ${
+                    l === lang ? "bg-white/[0.1] text-fg" : "text-grey hover:text-fg"
+                  }`}
+                >
+                  {l === "uk" ? "UA" : "EN"}
+                </a>
+              ))}
+            </span>
             {/* wrapper owns visibility: the Button base class is inline-flex and would override `hidden` */}
             <span className="hidden sm:contents">
               <Button href={CTA.primaryHref} size="nav">
@@ -89,7 +107,7 @@ export function Nav() {
               onClick={() => setOpen((v) => !v)}
               className="btn-secondary inline-flex h-11 items-center rounded-full px-4 text-[14px] lg:hidden"
             >
-              {open ? "Закрити" : "Меню"}
+              {open ? UI.close : UI.menu}
             </button>
           </div>
         </nav>

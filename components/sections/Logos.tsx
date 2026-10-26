@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { HERO } from "@/lib/content";
+import type { Content } from "@/lib/content";
+import { useContent } from "../Lang";
 import { useInView } from "../ui/hooks";
 
 const DURATION = 1200;
@@ -29,7 +30,7 @@ function useCountUp(value: number, go: boolean) {
   return n;
 }
 
-function Stat({ stat, go }: { stat: (typeof HERO.stats)[number]; go: boolean }) {
+function Stat({ stat, go }: { stat: Content["HERO"]["stats"][number]; go: boolean }) {
   const n = useCountUp(stat.value ?? 0, go);
   return (
     <span className="flex items-baseline gap-2 whitespace-nowrap">
@@ -45,8 +46,9 @@ function Stat({ stat, go }: { stat: (typeof HERO.stats)[number]; go: boolean }) 
 export function LogoStrip() {
   const ref = useRef<HTMLUListElement>(null);
   const go = useInView(ref, 0.5);
+  const { HERO, UI } = useContent();
   return (
-    <ul ref={ref} aria-label="Чому ми" className="legible mx-auto grid w-fit grid-cols-1 justify-items-center gap-x-10 gap-y-2.5 sm:grid-cols-2 sm:justify-items-start nav:flex nav:items-center nav:gap-x-0">
+    <ul ref={ref} aria-label={UI.why} className="legible mx-auto grid w-fit grid-cols-1 justify-items-center gap-x-10 gap-y-2.5 sm:grid-cols-2 sm:justify-items-start nav:flex nav:items-center nav:gap-x-0">
       {HERO.stats.map((s, i) => (
         <li key={s.label} className="flex items-center">
           {i > 0 && <span aria-hidden="true" className="mx-5 hidden size-1 rounded-full bg-white/20 nav:block" />}

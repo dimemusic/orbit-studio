@@ -6,7 +6,7 @@ import { Work } from "@/components/sections/Work";
 import { SectionSnap } from "@/components/SectionSnap";
 
 // Rebuilding the page section by section: hero → «Як ми працюємо» → «Наші роботи» → «Послуги» → заявка. Other sections stay in components/sections for reuse.
-export default function Home() {
+export function HomePage() {
   return (
     <>
       <Hero />

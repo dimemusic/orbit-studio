@@ -1,6 +1,6 @@
 # MaxArt Digital — website for our web studio (UI forked from Cloud Sphere)
 
-> Studio name: **MaxArt Digital** (renamed from the working name Orbit.studio). All site copy is in **Ukrainian**.
+> Studio name: **MaxArt Digital** (renamed from the working name Orbit.studio). Site copy is **Ukrainian** at `/` and **English** at `/en` (Oct 2026).
 > Values marked `// DRAFT` in `lib/content.ts` are invented placeholders (prices, terms, team, contacts, case texts): replace before launch.
 > Forked from `~/Desktop/cloudsphere-site` (restore point: first commit «Fork of Cloud Sphere»). Never edit the original.
 
@@ -15,7 +15,8 @@ The visual language is the Cloud Sphere one and does not change: layout, the 3D 
 - Next.js (App Router) + TypeScript + Tailwind v4 (tokens in `app/globals.css`, exposed via `@theme inline`). Deploy target: Vercel.
 - three + @react-three/fiber for the background scene. No other 3D/animation libs unless asked; UI motion is CSS + IntersectionObserver.
 - Icons: `@phosphor-icons/react` (`/dist/ssr`), `light` weight, used sparingly. Images via `next/image`.
-- **All copy lives in one file: `lib/content.ts`** (Sanity CMS comes later). Components import from it; no copy in components.
+- **All copy lives in `lib/content.ts` (Ukrainian) and `lib/content.en.ts` (English, typed `Content`, same shape)** (Sanity CMS comes later). No copy in components.
+- **i18n (Oct 2026):** two root layouts via route groups: `app/(uk)/layout.tsx` (`/`, `/privacy`) and `app/(en)/layout.tsx` (`/en`, `/en/privacy`), both render `components/Shell.tsx` (html lang, scene, nav, footer, `LangProvider`). Components read copy with `useContent()` / `useLang()` from `components/Lang.tsx` (so they are client components); server code uses `contentFor(lang)` from `lib/i18n.ts`. Build's per-language data comes from `useB()` (cached `derive(BUILD)`). Small UI strings, locale and plural days live in `UI`. Nav has a UA / EN switch (plain links, `otherPath`). Contact chips map by index: `[0]` = full package, `[i + 1]` = `SERVICES.items[i]`. Any new copy goes into BOTH files.
 
 ## Design system (inherited, do not change)
 

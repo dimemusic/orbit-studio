@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/ui/PageHero";
-import { PRIVACY } from "@/lib/content";
+import { contentFor } from "@/lib/i18n";
+
+const { PRIVACY } = contentFor("en");
 
 export const metadata: Metadata = { title: PRIVACY.title };
 

@@ -2,7 +2,8 @@
 
 import { Check, Plus, X } from "@phosphor-icons/react/dist/ssr";
 import { useState, type CSSProperties } from "react";
-import { CONTACT, CTA, SERVICES, type Service } from "@/lib/content";
+import type { Content, Service } from "@/lib/content";
+import { useContent } from "../Lang";
 import { PACKAGE_PICK } from "../home";
 import { ACCENT } from "../ui/accent";
 import { IconTile, Tag } from "../ui/Bits";
@@ -11,17 +12,12 @@ import { useTween } from "../ui/hooks";
 import { Icon } from "../ui/icons";
 import { RevealWords } from "../ui/RevealWords";
 
-const ITEMS: Service[] = SERVICES.items;
-const TURNKEY = SERVICES.turnkey;
-const FULL = ITEMS.reduce((s, i) => s + i.price, 0);
-const money = (n: number) => `${Math.round(n).toLocaleString("uk-UA")} ${SERVICES.currency}`;
+/** money formatting + plural days for the current language */
+const fmt = (c: Content) => ({
+  money: (n: number) => `${Math.round(n).toLocaleString(c.UI.locale)} ${c.SERVICES.currency}`,
+  days: c.UI.days,
+});
 const delay = (i: number) => ({ "--d": `${i * 80}ms` }) as CSSProperties;
-/** 1 день · 2–4 дні · 5+ днів */
-const days = (n: number) => {
-  const d = n % 10;
-  const h = n % 100;
-  return `${n} ${d === 1 && h !== 11 ? "день" : d >= 2 && d <= 4 && (h < 12 || h > 14) ? "дні" : "днів"}`;
-};
 
 /**
  * Services as a package builder: one full screen (lg+). Big word-by-word title + one line on the right, then
@@ -30,6 +26,12 @@ const days = (n: number) => {
  * Nothing picked by default. Phones: rows stacked, the package card under them, section may be taller.
  */
 export function Pricing() {
+  const content = useContent();
+  const { CONTACT, CTA, SERVICES } = content;
+  const { money, days } = fmt(content);
+  const ITEMS: Service[] = SERVICES.items;
+  const TURNKEY = SERVICES.turnkey;
+  const FULL = ITEMS.reduce((s, i) => s + i.price, 0);
   const [picked, setPicked] = useState<Set<string>>(() => new Set());
   const chosen = ITEMS.filter((s) => picked.has(s.id));
   const all = chosen.length === ITEMS.length;
@@ -144,7 +146,7 @@ export function Pricing() {
                   className="mt-auto w-full"
                   onClick={() =>
                     window.dispatchEvent(
-                      new CustomEvent(PACKAGE_PICK, { detail: all ? [CONTACT.chips[0]] : chosen.map((c) => c.name) }),
+                      new CustomEvent(PACKAGE_PICK, { detail: all ? [CONTACT.chips[0]] : chosen.map((c) => CONTACT.chips[ITEMS.indexOf(c) + 1]) }),
                     )
                   }
                 >
@@ -161,6 +163,9 @@ export function Pricing() {
 
 /** a service on hairlines: icon · name + blurb · included (2 columns) · price + term · toggle. The whole row toggles. */
 function Row({ s, on, onToggle }: { s: Service; on: boolean; onToggle: () => void }) {
+  const content = useContent();
+  const { SERVICES } = content;
+  const { money, days } = fmt(content);
   const a = ACCENT[s.color];
   return (
     <div

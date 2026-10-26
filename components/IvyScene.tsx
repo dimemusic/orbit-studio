@@ -13,7 +13,7 @@ import {
   ivyPointsFragment,
   ivyPointsVertex,
 } from "@/lib/ivyShaders";
-import { WORK } from "@/lib/content";
+import { useContent } from "./Lang";
 import { CASE_HOVER } from "./home";
 
 type Setup = { data: IvyData; camZ: number; visH: number; genWidth: number; genHeight: number; route: string };
@@ -372,6 +372,7 @@ function Ivy({ setup, reduce, nodes, onHot }: IvyProps) {
 }
 
 export default function IvyScene() {
+  const { UI } = useContent();
   const [setup, setSetup] = useState<Setup | null>(null);
   // the stars are built: let them render two frames, then end the boot so hero, nav and stars appear together
   useEffect(() => {
@@ -524,7 +525,7 @@ export default function IvyScene() {
           gl={{ antialias: true, powerPreference: "high-performance" }}
           onCreated={({ gl }) => gl.setClearColor("#05070d", 1)}
           style={{ pointerEvents: "none" }}
-          fallback={<p className="fixed inset-x-4 bottom-20 text-center text-[13px] text-grey">Цей браузер не підтримує WebGL.</p>}
+          fallback={<p className="fixed inset-x-4 bottom-20 text-center text-[13px] text-grey">{UI.noWebgl}</p>}
         >
           {setup && <Ivy setup={setup} reduce={reduce} nodes={nodes} onHot={(i, p) => {
               setHot(i);
@@ -541,6 +542,7 @@ export default function IvyScene() {
 
 /** DOM layer above the content: one marker per case (moved by the render loop) + a glass preview on hover. */
 function CaseNodes({ nodes, hot, preview }: { nodes: RefObject<NodeUi>; hot: number | null; preview: boolean }) {
+  const { WORK } = useContent();
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[3] overflow-hidden">
       {WORK.cases.map((c, i) => {

@@ -3,13 +3,13 @@
 import { ArrowRight, ArrowUpRight, CheckCircle, X } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { WORK, type Case } from "@/lib/content";
+import type { Case } from "@/lib/content";
+import { useContent } from "../Lang";
 import { Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { DeviceShot } from "../ui/DeviceShot";
 import { RevealWords } from "../ui/RevealWords";
 
-const CASES = WORK.cases;
 /**
  * Work: one full screen (lg+), header + 4 case cards in a row (2 on tablets, 1 on phones).
  * A card = browser-like frame with the site's full-page screenshot, name, kind, one line, tags, arrow.
@@ -18,6 +18,8 @@ const CASES = WORK.cases;
  * Cases without a full-page shot show their cover, no scroll. Reduced motion: no scroll.
  */
 export function Work() {
+  const { WORK } = useContent();
+  const CASES = WORK.cases;
   const [open, setOpen] = useState<number | null>(null);
   const opener = useRef<HTMLElement | null>(null);
 
@@ -63,6 +65,7 @@ export function Work() {
 }
 
 function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void }) {
+  const { WORK } = useContent();
   // ~1.3s of scroll per screen-width of page length, never under 2.5s
   const dur = c.full ? Math.max(2.5, (c.full.h / c.full.w) * 1.3) : 0;
   return (
@@ -134,6 +137,8 @@ function ArrowButton() {
 }
 
 function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClose: () => void; returnFocus: React.RefObject<HTMLElement | null> }) {
+  const { WORK, UI } = useContent();
+  const CASES = WORK.cases;
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const d = dialog.current;
@@ -177,7 +182,7 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
               </div>
               <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.12em] text-grey">{WORK.taskLabel}</p>
               <p className="mt-2 text-[16px] leading-relaxed text-body">{c.task}</p>
-              <ul aria-label="Теги" className="mt-5 flex flex-wrap gap-1.5">
+              <ul aria-label={UI.tags} className="mt-5 flex flex-wrap gap-1.5">
                 {c.tags.map((t, k) => (
                   <li key={t}>
                     <Tag color={k === 0 ? c.accent : undefined}>{t}</Tag>

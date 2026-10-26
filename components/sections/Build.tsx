@@ -41,7 +41,8 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { BUILD } from "@/lib/content";
+import type { Content } from "@/lib/content";
+import { useContent } from "../Lang";
 import { G } from "../ui/Bits";
 import { along, Caret, ease, expo, seg, smooth, Typed, typed } from "../process/util";
 
@@ -98,6 +99,7 @@ const fly = (
 });
 
 export function Build() {
+  const { BUILD } = useB();
   const ref = useRef<HTMLElement>(null);
   // `time` runs 0..CYCLE in a loop: the film (0..TOTAL), then the final frame is held for HOLD seconds
   const [time, setTime] = useState(0);
@@ -276,6 +278,7 @@ export function Build() {
 
 /** title card before every lap: words rise out of a blur in the middle of the screen, then lift away */
 function IntroCard({ time }: { time: number }) {
+  const { BUILD } = useB();
   if (time >= INTRO + 0.05) return null;
   const out = seg(time, INTRO - 0.45, INTRO) ** 2;
   const words = BUILD.intro;
@@ -300,6 +303,7 @@ function IntroCard({ time }: { time: number }) {
 
 /** stage title, letter by letter with blur in and blur out */
 function Title({ t, fin }: { t: number; fin: number }) {
+  const { BUILD } = useB();
   const i = stageAt(t);
   const st = BUILD.stages[i];
   const end = STAGE_START[i] + STAGE_SEC[i];
@@ -335,7 +339,7 @@ function Title({ t, fin }: { t: number; fin: number }) {
                     : undefined
                 }
               >
-                {ch}
+                {ch === " " ? "\u00a0" : ch}
               </span>
             );
           })}
@@ -453,7 +457,6 @@ const Visual = memo(function Visual({ v = 0 }: { v?: number }) {
 });
 
 /* ---------------- 1 · Design ---------------- */
-const D = BUILD.design;
 const AB = { x: 360, y: 20, w: 480, h: 560 };
 /** element rects inside the artboard: assembled AND selected from the same numbers, so the selection always fits */
 type Rc = { x: number; y: number; w: number; h: number };
@@ -491,6 +494,7 @@ const swatch = (i: number) => ({ x: RS.x + 32 + i * 42 + 4, y: RS.y + 478 + 6 })
 const grab = (r: Rc) => ({ x: r.x + r.w * 0.55, y: r.y + r.h * 0.62 });
 
 function DesignStage({ s }: { s: number }) {
+  const { BUILD, D } = useB();
   // a team in one file: the designer, the copywriter and the client work at the same time, each with their own cursor and selection colour
   const pan = (i: number) => expo(seg(s, 0.02 + i * 0.04, 0.55 + i * 0.04));
   const frame = smooth(seg(s, 0.4, 0.95));
@@ -992,6 +996,7 @@ function Mate({ x, y, color, name, down = false, k = 1 }: { x: number; y: number
 }
 
 const PlanBody = memo(function PlanBody({ i }: { i: number }) {
+  const { D } = useB();
   const p = D.plans[i];
   return (
     <>
@@ -1009,7 +1014,6 @@ const PlanBody = memo(function PlanBody({ i }: { i: number }) {
 });
 
 /* ---------------- 2 · Code ---------------- */
-const C = BUILD.code;
 const KW = "#c792ea";
 const TG = "#7fdbca";
 const AT = "#addb67";
@@ -1017,87 +1021,101 @@ const STR = "#ecc48d";
 const PU = "#8b919c";
 const TX = "#d6deeb";
 type Tok = [string, string];
-const LINES: Tok[][] = [
-  [
-    ["export default function ", KW],
-    ["Home", TG],
-    ["() {", PU],
-  ],
-  [
-    ["  return ", KW],
-    ["(", PU],
-  ],
-  [
-    ["    <", PU],
-    ["Header", TG],
-    [" logo", AT],
-    ["=", PU],
-    ['"Your product"', STR],
-    [" />", PU],
-  ],
-  [
-    ["    <", PU],
-    ["Hero", TG],
-    [">", PU],
-  ],
-  [
-    ["      <", PU],
-    ["h1", TG],
-    [">", PU],
-    [C.h1, TX],
-    ["</", PU],
-    ["h1", TG],
-    [">", PU],
-  ],
-  [
-    ["      <", PU],
-    ["p", TG],
-    [">", PU],
-    [C.p, TX],
-    ["</", PU],
-    ["p", TG],
-    [">", PU],
-  ],
-  [
-    ["      <", PU],
-    ["Button", TG],
-    [">", PU],
-    [C.btn, TX],
-    ["</", PU],
-    ["Button", TG],
-    [">", PU],
-  ],
-  [
-    ["      <", PU],
-    ["Signup", TG],
-    [" placeholder", AT],
-    ["=", PU],
-    ['"email"', STR],
-    [" />", PU],
-  ],
-  [
-    ["    </", PU],
-    ["Hero", TG],
-    [">", PU],
-  ],
-  [
-    ["    <", PU],
-    ["Plans", TG],
-    [" items", AT],
-    ["=", PU],
-    ["{", PU],
-    ["plans", TX],
-    ["}", PU],
-    [" />", PU],
-  ],
-  [["  );", PU]],
-  [["}", PU]],
-];
-const LEN = LINES.map((l) => l.reduce((a, [x]) => a + x.length, 0));
-const START = LEN.map((_, i) => LEN.slice(0, i).reduce((a, b) => a + b, 0));
-const CHARS = LEN.reduce((a, b) => a + b, 0);
+/** everything the film reads from the copy, per language (built once per language, cached) */
+type B = Content["BUILD"];
+function derive(BUILD: B) {
+  const C = BUILD.code;
+  const LINES: Tok[][] = [
+    [
+      ["export default function ", KW],
+      ["Home", TG],
+      ["() {", PU],
+    ],
+    [
+      ["  return ", KW],
+      ["(", PU],
+    ],
+    [
+      ["    <", PU],
+      ["Header", TG],
+      [" logo", AT],
+      ["=", PU],
+      ['"Your product"', STR],
+      [" />", PU],
+    ],
+    [
+      ["    <", PU],
+      ["Hero", TG],
+      [">", PU],
+    ],
+    [
+      ["      <", PU],
+      ["h1", TG],
+      [">", PU],
+      [C.h1, TX],
+      ["</", PU],
+      ["h1", TG],
+      [">", PU],
+    ],
+    [
+      ["      <", PU],
+      ["p", TG],
+      [">", PU],
+      [C.p, TX],
+      ["</", PU],
+      ["p", TG],
+      [">", PU],
+    ],
+    [
+      ["      <", PU],
+      ["Button", TG],
+      [">", PU],
+      [C.btn, TX],
+      ["</", PU],
+      ["Button", TG],
+      [">", PU],
+    ],
+    [
+      ["      <", PU],
+      ["Signup", TG],
+      [" placeholder", AT],
+      ["=", PU],
+      ['"email"', STR],
+      [" />", PU],
+    ],
+    [
+      ["    </", PU],
+      ["Hero", TG],
+      [">", PU],
+    ],
+    [
+      ["    <", PU],
+      ["Plans", TG],
+      [" items", AT],
+      ["=", PU],
+      ["{", PU],
+      ["plans", TX],
+      ["}", PU],
+      [" />", PU],
+    ],
+    [["  );", PU]],
+    [["}", PU]],
+  ];
+  const LEN = LINES.map((l) => l.reduce((a, [x]) => a + x.length, 0));
+  const START = LEN.map((_, i) => LEN.slice(0, i).reduce((a, b) => a + b, 0));
+  const CHARS = LEN.reduce((a, b) => a + b, 0);
+  return { BUILD, D: BUILD.design, C, M: BUILD.cms, L: BUILD.launch, LINES, LEN, START, CHARS };
+}
+const DER = new Map<B, ReturnType<typeof derive>>();
+function useB() {
+  const { BUILD } = useContent();
+  let d = DER.get(BUILD);
+  if (!d) DER.set(BUILD, (d = derive(BUILD)));
+  return d;
+}
 
 function CodeStage({ s }: { s: number }) {
+  const { BUILD, C, CHARS, LEN, LINES, START } = useB();
   const chars = Math.round(seg(s, 0.3, 1.95) * CHARS);
   const lineK = (i: number) =>
     Math.min(1, Math.max(0, (chars - START[i]) / LEN[i]));
@@ -1269,7 +1287,6 @@ function CodeStage({ s }: { s: number }) {
 }
 
 /* ---------------- 3 · CMS ---------------- */
-const M = BUILD.cms;
 
 /** one CMS input: label row, field with focus ring, optional hint under it */
 function Field({
@@ -1334,6 +1351,7 @@ function Swap({ k, a, b }: { k: number; a: ReactNode; b: ReactNode }) {
 }
 
 function CmsStage({ s }: { s: number }) {
+  const { BUILD, M } = useB();
   const focusK = (a: number, b: number) =>
     smooth(seg(s, a, a + 0.08)) * (1 - smooth(seg(s, b, b + 0.08)));
   const fName = focusK(0.38, 0.98);
@@ -1758,7 +1776,6 @@ const PhoneStatus = memo(function PhoneStatus() {
 });
 
 /* ---------------- 4 · Launch ---------------- */
-const L = BUILD.launch;
 const BR = { x: 540, y: 20, w: 600, h: 560 };
 const PIECES = [
   { x: 0, y: 40, w: 600, h: 50, dx: -420, dy: -120, c: "#e6e0d4" },
@@ -1780,6 +1797,7 @@ const CHECK = [
 ];
 
 function LaunchStage({ s }: { s: number }) {
+  const { BUILD, L } = useB();
   const shell = expo(seg(s, 0.03, 0.55));
   const url = typed(L.url, seg(s, 1.25, 1.65));
   const deploy = ease(seg(s, 1.6, 2.0));

@@ -1,4 +1,5 @@
-// All site copy lives here (Sanity CMS comes later). Ukrainian only.
+// All site copy lives here (Sanity CMS comes later). Ukrainian; the English copy is lib/content.en.ts
+// (same shape, typed as `Content`). Components read the current language via useContent() (components/Lang.tsx).
 //
 // ⚠️ DRAFT VALUES: everything marked `// DRAFT` is an invented, realistic-looking placeholder
 // (prices, terms, contacts, team, case texts). Replace each one with real data before launch.
@@ -23,6 +24,7 @@ export const META = {
 export const CTA = {
   primary: "Обговорити проєкт",
   primaryHref: "/#contact",
+  home: "/",
   work: "Наші роботи",
 };
 
@@ -486,6 +488,29 @@ export const FOOTER = {
   privacy: "Політика конфіденційності",
 };
 
+/** small interface strings (aria labels, menu, plural rules) */
+export const UI = {
+  skip: "Перейти до змісту",
+  mainNav: "Головна навігація",
+  toHome: "на головну",
+  menu: "Меню",
+  close: "Закрити",
+  footerNav: "Посилання у футері",
+  crumbs: "Хлібні крихти",
+  home: "Головна",
+  tags: "Теги",
+  why: "Чому ми",
+  noWebgl: "Цей браузер не підтримує WebGL.",
+  lang: "Мова",
+  locale: "uk-UA",
+  /** 1 день · 2–4 дні · 5+ днів */
+  days: (n: number) => {
+    const d = n % 10;
+    const h = n % 100;
+    return `${n} ${d === 1 && h !== 11 ? "день" : d >= 2 && d <= 4 && (h < 12 || h > 14) ? "дні" : "днів"}`;
+  },
+};
+
 export const PRIVACY = {
   crumb: "Політика конфіденційності",
   title: "Політика конфіденційності",
@@ -500,3 +525,8 @@ export const HOME_SECTIONS = [
   { id: "services", label: SERVICES.label },
   { id: "contact", label: CONTACT.label },
 ] as const;
+
+/** everything the live pages read, per language */
+export const uk = { BRAND, META, CTA, NAV, HERO, WORK, SERVICES, CONTACT, BUILD, FOOTER, PRIVACY, UI };
+export type Content = typeof uk;
+export type Lang = "uk" | "en";

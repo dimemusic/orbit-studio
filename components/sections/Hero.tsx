@@ -1,10 +1,13 @@
-import { CTA, HERO } from "@/lib/content";
+"use client";
+
 import { G } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { LogoStrip } from "./Logos";
+import { useContent } from "../Lang";
 
 /** 01: the promise, one primary + one secondary CTA, stats strip at the bottom of the screen. */
 export function Hero() {
+  const { CTA, HERO } = useContent();
   const [first, second, last] = HERO.title;
   return (
     <section id="top" aria-labelledby="hero-title" className="snap-section relative flex min-h-[100dvh] w-full flex-col px-gutter text-center">
@@ -20,7 +23,7 @@ export function Hero() {
           </p>
         </div>
 
-        <div data-reveal style={{ ["--d" as string]: "160ms" }} className="mt-8 flex flex-wrap justify-center gap-3">
+        <div data-reveal style={{ ["--d" as string]: "160ms" }} className="mt-8 flex w-full flex-wrap justify-center gap-3">
           <Button href="#contact">{CTA.primary}</Button>
           <Button href="#work" variant="secondary">
             {CTA.work}
