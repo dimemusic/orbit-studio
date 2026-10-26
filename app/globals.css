@@ -25,6 +25,16 @@
   color-scheme: dark;
 }
 
+/* clickable things show the hand cursor (Tailwind v4 preflight leaves buttons on the arrow) */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  label:has(> input:not(:disabled)) {
+    cursor: pointer;
+  }
+}
+
 /* card cursor light (CardFx): registered so it can fade in and out */
 @property --spot {
   syntax: "<number>";
@@ -192,7 +202,7 @@ p {
     border-radius: inherit;
     padding: 1px;
     pointer-events: none;
-    background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
+    background: var(--blue);
     -webkit-mask:
       linear-gradient(#000 0 0) content-box,
       linear-gradient(#000 0 0);
@@ -235,18 +245,9 @@ p {
   .tg-fresh  { --g: linear-gradient(90deg, #a3e635 0%, #34d399 50%, #22d3ee 100%); } /* value, lightness */
   .tg-soft   { --g: linear-gradient(90deg, #c4b5fd 0%, #93c5fd 55%, #67e8f9 100%); } /* gentle, helpful */
 
-  /* key words in headings */
+  /* key words in headings: one solid accent colour (gradients removed site-wide, Oct 2026); the tg-* tones are kept but unused */
   .text-gradient {
-    background: var(--g, linear-gradient(90deg, #5aa2ff 0%, #8b5cf6 50%, #e83fa8 100%));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    /* inherited .legible text-shadow would show THROUGH the transparent glyphs and muddy the gradient;
-       use a drop-shadow on the rendered result instead */
-    text-shadow: none;
-    filter: drop-shadow(0 2px 22px rgb(5 7 13 / 0.85));
-    /* keeps descenders inside the clip box */
-    padding-bottom: 0.06em;
+    color: #5aa2ff;
   }
 
   /* ---------- buttons ---------- */
@@ -844,7 +845,7 @@ html {
   bottom: -0.18em;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, #3d8bff, #22d3ee);
+  background: var(--blue);
   transform: scaleX(0);
   transform-origin: left;
   animation: intro-line 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.75s forwards;
