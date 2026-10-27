@@ -10,7 +10,7 @@ import { CardFx } from "@/components/ui/CardFx";
 import { HideOn } from "@/components/ui/HideOn";
 import { RevealRoot } from "@/components/ui/RevealRoot";
 import type { Lang } from "@/lib/content";
-import { contentFor } from "@/lib/i18n";
+import { contentFor, SITE_URL } from "@/lib/i18n";
 import "@/app/globals.css";
 
 const geologica = Geologica({
@@ -27,9 +27,11 @@ const FOCUSED: string[] = [];
 export function shellMetadata(lang: Lang): Metadata {
   const { META } = contentFor(lang);
   return {
+    metadataBase: new URL(SITE_URL),
     title: { default: META.title, template: "%s · MaxArt Digital" },
     description: META.description,
-    alternates: { languages: { uk: "/", en: "/en" } },
+    alternates: { canonical: lang === "en" ? "/en" : "/", languages: { uk: "/", en: "/en" } },
+    openGraph: { type: "website", siteName: "MaxArt Digital", title: META.title, description: META.description, locale: lang === "en" ? "en_GB" : "uk_UA" },
   };
 }
 

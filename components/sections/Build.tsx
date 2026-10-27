@@ -275,7 +275,7 @@ export function Build() {
       </StageBox>
 
       {/* phones only: what this stage means for the client, fills the space under the stage */}
-      <div className="relative z-[1] mx-gutter mb-10 mt-4 flex flex-col gap-5 md:hidden">
+      <div className="relative z-[1] mx-auto mb-10 mt-4 flex w-full max-w-[40rem] flex-col gap-5 px-gutter lg:hidden">
         <p key={cur} className="build-note legible min-h-[4.5em] text-[16px] leading-relaxed text-body">
           <span className="font-semibold tabular-nums" style={{ color: st.color }}>
             0{cur + 1} / 0{BUILD.stages.length}
@@ -366,7 +366,7 @@ function Title({ t, fin }: { t: number; fin: number }) {
 
 /** fixed 1200×620 stage, scaled to the space under the header */
 /**
- * Phones (< 768px): the 1200×620 desktop stage shrinks to nothing, so each stage instead shows ONE part of itself,
+ * Phones and tablets (< 1024px): the 1200×620 desktop stage shrinks to nothing, so each stage instead shows ONE part of itself,
  * cropped and scaled to fill the box (design: the artboard, code: the editor + terminal, CMS: the product form, launch: the browser).
  * The desktop layout is untouched; the crop is applied per stage layer so the whips between stages stay smooth.
  */
@@ -382,7 +382,7 @@ const FitCtx = createContext<Fit>({ mobile: false, w: 0, h: 0 });
 const cropOf = (i: number, f: Fit) => {
   const r = FOCUS[i];
   // width decides the scale; the box height follows the current stage (StageBox)
-  const c = f.w / r.w;
+  const c = Math.min(f.w / r.w, (window.innerHeight * 0.58) / r.h);
   // centred horizontally, pinned to the top so the stage sits right under the stage title
   return { c, tx: (f.w - r.w * c) / 2 - r.x * c, ty: -r.y * c };
 };
@@ -393,7 +393,7 @@ function StageBox({ cur, children }: { cur: number; children: ReactNode }) {
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const mq = window.matchMedia("(max-width: 47.99rem)");
+    const mq = window.matchMedia("(max-width: 63.99rem)");
     const measure = () => {
       const r = el.getBoundingClientRect();
       setFit({ mobile: mq.matches, w: r.width, h: r.height, k: Math.min(r.width / SW, r.height / SH) });
@@ -412,8 +412,8 @@ function StageBox({ cur, children }: { cur: number; children: ReactNode }) {
     <div
       ref={box}
       aria-hidden="true"
-      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1 max-md:mt-6 max-md:min-h-0 max-md:flex-none max-md:overflow-visible max-md:transition-[height] max-md:duration-500 max-md:ease-[cubic-bezier(0.16,1,0.3,1)]"
-      style={fit.mobile && fit.w ? { height: (FOCUS[cur].h * fit.w) / FOCUS[cur].w } : undefined}
+      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1 max-lg:mt-6 max-lg:min-h-0 max-lg:flex-none max-lg:overflow-visible max-lg:transition-[height] max-lg:duration-500 max-lg:ease-[cubic-bezier(0.16,1,0.3,1)]"
+      style={fit.mobile && fit.w ? { height: FOCUS[cur].h * cropOf(cur, fit).c } : undefined}
     >
       <FitCtx.Provider value={fit}>
         <div
@@ -425,7 +425,8 @@ function StageBox({ cur, children }: { cur: number; children: ReactNode }) {
             visibility: ready ? "visible" : "hidden",
           }}
         >
-          {children}
+          {/* the stage is measured on the client first: rendering it only then also keeps its float-heavy inline styles out of SSR (no hydration mismatch) */}
+          {ready && children}
         </div>
       </FitCtx.Provider>
     </div>
@@ -1426,7 +1427,6 @@ function CmsStage({ s }: { s: number }) {
   const stockK = expo(seg(s, 2.05, 2.28));
   const pressed = s > 2.2 && s < 2.3;
   const pubK = expo(seg(s, 2.3, 2.55));
-  const pub = s > 2.3;
   const row = (i: number) =>
     fly(expo(seg(s, 0.1 + i * 0.045, 0.6 + i * 0.045)), -40, 0, 8);
   const LOG_AT = [1.0, 1.3, 1.7, 2.32];

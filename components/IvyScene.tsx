@@ -404,7 +404,7 @@ export default function IvyScene() {
   const fine = useMemo(() => typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches, []);
   const nodes = useRef<NodeUi>({ enabled: fine, world: [], markers: [], hot: null, preview: false, forced: null });
   const [hot, setHot] = useState<number | null>(null);
-  const [preview, setPreview] = useState(false);
+  const [, setPreview] = useState(false);
 
   // a Work card hover lights its node; the shown case marks its card (data-hot) so both light up together
   useEffect(() => {
@@ -540,55 +540,3 @@ export default function IvyScene() {
   );
 }
 
-/** DOM layer above the content: one marker per case (moved by the render loop) + a glass preview on hover. */
-function CaseNodes({ nodes, hot, preview }: { nodes: RefObject<NodeUi>; hot: number | null; preview: boolean }) {
-  const { WORK } = useContent();
-  return (
-    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[3] overflow-hidden">
-      {WORK.cases.map((c, i) => {
-        const on = hot === i;
-        // right-margin nodes open their preview to the left
-        const right = i % 2 === 1;
-        return (
-          <div
-            key={c.id}
-            ref={(el) => {
-              nodes.current.markers[i] = el;
-            }}
-            className="absolute left-0 top-0"
-            style={{ transform: "translate3d(-200px, -200px, 0)", ["--c" as string]: c.color }}
-          >
-            <span
-              className={`absolute left-0 top-0 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[color:var(--c)] transition-[scale] duration-300 ${on ? "scale-150" : ""}`}
-            />
-            <span
-              className={`absolute left-0 top-0 size-7 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-[scale] duration-500 ease-[var(--ease)] ${on ? "scale-150" : ""}`}
-              style={{ borderColor: "color-mix(in srgb, var(--c) 50%, transparent)" }}
-            />
-            <div
-              className={`card absolute top-0 w-[248px] -translate-y-1/2 p-3 text-left transition-[translate,visibility] duration-500 ease-[var(--ease)] ${
-                right ? "right-7" : "left-7"
-              } ${on && preview ? "visible translate-x-0" : `invisible ${right ? "translate-x-2" : "-translate-x-2"}`}`}
-            >
-              <div
-                className="grid aspect-[16/10] place-items-center rounded-lg border border-white/[0.07]"
-                style={{ background: "radial-gradient(80% 90% at 50% 100%, color-mix(in srgb, var(--c) 30%, transparent), transparent 70%)" }}
-              >
-                <span translate="no" className="text-[22px] font-semibold tracking-[-0.04em] text-fg">
-                  {c.name}
-                </span>
-              </div>
-              <p className="mt-3 px-1">
-                <span className="block text-[14px] font-semibold text-fg" translate="no">
-                  {c.name}
-                </span>
-                <span className="block text-[12px] text-grey">{c.kind}</span>
-              </p>
-              <p className="mt-1 px-1 pb-0.5 text-[12px] text-body">{c.tags.join(" · ")}</p>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}

@@ -1,5 +1,3 @@
-import type { CSSProperties, ReactNode } from "react";
-
 /** 0..1 progress of t inside [a, b] */
 export const seg = (t: number, a: number, b: number) => Math.min(1, Math.max(0, (t - a) / (b - a)));
 
@@ -59,53 +57,6 @@ export function along(t: number, pts: [number, number, number][]) {
   }
   const last = pts[pts.length - 1];
   return { x: last[1], y: last[2] };
-}
-
-/** absolutely positioned box inside the 1000×640 stage */
-export function Abs({ x, y, w, h, style, className = "", children }: { x: number; y: number; w?: number; h?: number; style?: CSSProperties; className?: string; children?: ReactNode }) {
-  return (
-    <div className={`absolute ${className}`} style={{ left: x, top: y, width: w, height: h, ...style }}>
-      {children}
-    </div>
-  );
-}
-
-/** fake mouse pointer: macOS-style arrow (black, white outline, soft shadow); (x, y) is the tip */
-const PS = 30; // rendered size in stage px
-const TIP = { x: (4 / 24) * PS, y: (2 / 24) * PS };
-export function Pointer({ x, y, down = false }: { x: number; y: number; down?: boolean }) {
-  return (
-    <svg
-      width={PS}
-      height={PS}
-      viewBox="0 0 24 24"
-      className="pointer-events-none absolute z-20 [filter:drop-shadow(0_1px_1.5px_rgb(0_0_0/0.45))_drop-shadow(0_6px_10px_rgb(0_0_0/0.35))]"
-      style={{
-        left: x - TIP.x,
-        top: y - TIP.y,
-        transformOrigin: `${TIP.x}px ${TIP.y}px`,
-        transform: `scale(${down ? 0.88 : 1})`,
-        transition: "transform .12s cubic-bezier(.3,.7,.4,1)",
-      }}
-    >
-      <path d="M4 2v17.2l4.1-3.9 2.9 6.6 2.9-1.25-2.85-6.45h5.9z" fill="#0b0b0d" stroke="#fff" strokeWidth="2.4" strokeLinejoin="round" paintOrder="stroke" />
-    </svg>
-  );
-}
-
-/** mock app window: title bar with dots + body */
-export function Win({ title, children, className = "" }: { title: string; children: ReactNode; className?: string }) {
-  return (
-    <div className={`absolute inset-0 overflow-hidden rounded-[14px] border border-white/10 bg-[#0a0d15] shadow-[0_40px_90px_-30px_rgb(0_0_0/0.9)] ${className}`}>
-      <div className="flex h-9 items-center gap-2 border-b border-white/[0.07] bg-[#0d111a] px-4">
-        <i className="size-2.5 rounded-full bg-[#ff5f57]/80" />
-        <i className="size-2.5 rounded-full bg-[#febc2e]/80" />
-        <i className="size-2.5 rounded-full bg-[#28c840]/80" />
-        <span className="ml-3 text-[12px] text-grey">{title}</span>
-      </div>
-      <div className="relative h-[calc(100%-36px)]">{children}</div>
-    </div>
-  );
 }
 
 /** blinking text caret */

@@ -52,7 +52,7 @@ export function FinalCta() {
       aria-labelledby="contact-title"
       className="snap-section relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-[clamp(24px,4.5vh,48px)] pt-[clamp(88px,12vh,128px)]"
     >
-      <div className="relative z-[1] grid w-full min-w-0 items-center gap-x-[clamp(48px,7vw,140px)] gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,40rem)] wide:grid-cols-[minmax(0,38rem)_minmax(0,46rem)] wide:justify-center">
+      <div className="relative z-[1] grid w-full min-w-0 items-center gap-x-[clamp(48px,7vw,140px)] gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)] wide:grid-cols-[minmax(0,38rem)_minmax(0,46rem)] wide:justify-center">
         {/* left: the invitation + direct contacts */}
         <div className="min-w-0">
           <h2 id="contact-title" className="legible text-mega font-semibold">
@@ -174,7 +174,7 @@ function ContactForm() {
   }
 
   return (
-    <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0">
+    <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0 max-w-[40rem] xl:max-w-none">
       <div className="card overflow-hidden text-left">
         {/* form and thanks state share one grid cell, so the card never jumps */}
         <div className="grid p-6 sm:p-9 wide:p-11">

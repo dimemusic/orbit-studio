@@ -63,7 +63,7 @@ export function Pricing() {
                     {p.hot && <Tag color="blue">{SERVICES.hot}</Tag>}
                   </div>
                   <p className="mt-1 text-[15px] leading-snug text-body">{p.for}</p>
-                  <ul className="mt-3 flex flex-wrap gap-2">
+                  <ul className="mt-3 flex flex-wrap gap-2 lg:[@media(max-height:52rem)]:hidden">
                     {p.features.map((f) => (
                       <li
                         key={f}
