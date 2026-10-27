@@ -15,10 +15,10 @@ export function Eyebrow({ color = "blue", children }: { color?: Accent; children
   );
 }
 
-/** Gradient moods for key words in headings (see .tg-* in globals.css). */
+/** Accent colour of key words in headings, one per section (see .tg-* in globals.css; other tones fall back to violet). */
 export type Tone = "aurora" | "violet" | "teal" | "amber" | "calm" | "mind" | "spark" | "shield" | "ice" | "warm" | "fresh" | "soft";
 
-/** Key words in a heading. Pick the tone that matches the section's emotion. */
+/** Key words in a heading, in the section's accent colour. */
 export function G({ tone = "aurora", children }: { tone?: Tone; children: ReactNode }) {
   return <span className={`text-gradient tg-${tone}`}>{children}</span>;
 }

@@ -63,9 +63,10 @@
 
   --spacing-gutter: var(--gutter);
 
-  /* app shell breakpoints: rem like md/lg so variants sort correctly (never min-[1100px]:) */
-  --breakpoint-nav: 68.75rem; /* 1100px: full sidebar */
-  --breakpoint-wide: 90rem; /* 1440px: details panel sits beside the grid */
+  /* extra breakpoints in rem, like md/lg, so variants sort correctly (never min-[1100px]:) */
+  --breakpoint-xs: 25rem; /* 400px: the nav fits the language switch */
+  --breakpoint-nav: 68.75rem; /* 1100px: hero stats in one row */
+  --breakpoint-wide: 90rem; /* 1440px: contact columns become one centred pair */
 
   /* display scale: huge and tight */
   /* hero + final CTA headline: big but not shouting (~86px at 1440, max 104px) */
@@ -246,13 +247,14 @@ p {
   .tg-amber { --tc: #fb7185; } /* work: coral (was amber) */
 
   /* ---------- buttons ---------- */
+  /* a shade deeper than --blue so white button text passes WCAG AA (4.6:1; #3d8bff gave 3.3:1) */
   .btn-primary {
-    background: var(--blue);
+    background: #2a6fe8;
     color: #fff;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
   }
   .btn-primary:hover {
-    background: #8b5cf6;
+    background: #7c3aed;
     box-shadow:
       inset 0 1px 0 rgb(255 255 255 / 0.3),
       0 0 32px rgba(167, 139, 250, 0.45);

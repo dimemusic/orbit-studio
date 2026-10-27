@@ -12,7 +12,8 @@ import { RevealWords } from "../ui/RevealWords";
 
 /**
  * Work: one full screen (lg+), header + 4 case cards in a row (2 on tablets, 1 on phones).
- * A card = browser-like frame with the site's full-page screenshot, name, kind, one line, tags, arrow.
+ * A card = browser-like frame with the site's full-page screenshot and a site-type pill, name, kind, a short
+ * description, tags and a full-width «Переглянути» button (the whole card is the button).
  * Hover (fine pointers): the screenshot scrolls top → bottom inside the frame like a mini preview
  * (speed follows the page length), and slides back on leave. Click opens the case window.
  * Cases without a full-page shot show their cover, no scroll. Reduced motion: no scroll.
@@ -123,7 +124,7 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       </span>
       {/* «view» pill (the whole card is the button); pinned to the bottom so the four cards line up */}
       <span className="mt-auto block pt-5">
-        <span className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/[0.18] px-5 text-[15px] font-semibold text-fg transition-colors duration-300 md:group-hover/card:border-blue md:group-hover/card:bg-blue md:group-hover/card:text-white">
+        <span className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/[0.18] px-5 text-[15px] font-semibold text-fg transition-colors duration-300 md:group-hover/card:border-[#2a6fe8] md:group-hover/card:bg-[#2a6fe8] md:group-hover/card:text-white">
           {WORK.view}
           <ArrowUpRight size={16} aria-hidden="true" />
         </span>

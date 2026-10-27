@@ -5,7 +5,8 @@ import { Pricing } from "@/components/sections/Pricing";
 import { Work } from "@/components/sections/Work";
 import { SectionSnap } from "@/components/SectionSnap";
 
-// Rebuilding the page section by section: hero → «Як ми працюємо» → «Наші роботи» → «Послуги» → заявка. Other sections stay in components/sections for reuse.
+// The one-page site: hero → «Як ми працюємо» → «Наші роботи» → прайс → заявка (shared by / and /en).
+// About.tsx / Faq.tsx in components/sections are parked, not rendered.
 export function HomePage() {
   return (
     <>

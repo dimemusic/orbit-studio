@@ -17,7 +17,6 @@ export function Nav() {
   const toggleRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const { BRAND, CTA, NAV: LINKS, UI } = useContent();
-  const lang = useLang();
 
   // close the mobile menu after navigating
   useEffect(() => setOpen(false), [pathname]);
@@ -76,23 +75,8 @@ export function Nav() {
           </ul>
 
           <div className="ml-auto flex shrink-0 items-center gap-4 lg:ml-0 lg:gap-6">
-            {/* language switch: full page load, the other language has its own root layout */}
-            <span role="group" aria-label={UI.lang} className="flex items-center rounded-full border border-white/[0.12] p-1 text-[13px] font-semibold">
-              {(["uk", "en"] as const).map((l) => (
-                <a
-                  key={l}
-                  href={otherPath(pathname, l)}
-                  hrefLang={l}
-                  lang={l}
-                  aria-current={l === lang ? "true" : undefined}
-                  className={`grid h-8 min-w-9 place-items-center rounded-full px-2 transition-colors duration-200 ${
-                    l === lang ? "bg-white/[0.1] text-fg" : "text-grey hover:text-fg"
-                  }`}
-                >
-                  {l === "uk" ? "UA" : "EN"}
-                </a>
-              ))}
-            </span>
+            {/* language switch: in the bar from 400px up, in the mobile menu on the narrowest phones */}
+            <LangSwitch className="hidden xs:flex" />
             {/* wrapper owns visibility: the Button base class is inline-flex and would override `hidden` */}
             <span className="hidden sm:contents">
               <Button href={CTA.primaryHref} size="nav">
@@ -130,6 +114,9 @@ export function Nav() {
               );
             })}
           </ul>
+          <div className="mt-4 flex justify-center xs:hidden">
+            <LangSwitch />
+          </div>
           <div className="mt-4 flex justify-center">
             <Button href={CTA.primaryHref} onClick={() => setOpen(false)} className="w-full max-w-xs">
               {CTA.primary}
@@ -138,5 +125,30 @@ export function Nav() {
         </div>
       </div>
     </header>
+  );
+}
+
+/** UA / EN: plain links (each language has its own root layout, so switching is a full page load) */
+function LangSwitch({ className = "flex" }: { className?: string }) {
+  const pathname = usePathname();
+  const lang = useLang();
+  const { UI } = useContent();
+  return (
+    <span role="group" aria-label={UI.lang} className={`${className} items-center rounded-full border border-white/[0.12] p-1 text-[13px] font-semibold`}>
+      {(["uk", "en"] as const).map((l) => (
+        <a
+          key={l}
+          href={otherPath(pathname, l)}
+          hrefLang={l}
+          lang={l}
+          aria-current={l === lang ? "true" : undefined}
+          className={`grid h-8 min-w-9 place-items-center rounded-full px-2 transition-colors duration-200 ${
+            l === lang ? "bg-white/[0.1] text-fg" : "text-grey hover:text-fg"
+          }`}
+        >
+          {l === "uk" ? "UA" : "EN"}
+        </a>
+      ))}
+    </span>
   );
 }

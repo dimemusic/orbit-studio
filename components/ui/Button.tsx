@@ -25,7 +25,7 @@ type AsButton = Common & { href?: undefined } & Omit<ComponentPropsWithoutRef<"b
 
 export function Button(props: AsLink | AsButton) {
   const { variant = "primary", size = "lg", className = "", children, ...rest } = props;
-  // every big PRIMARY button has one width (= the «Ваш пакет» CTA), shrinking only on narrow phones; secondary stays content-wide
+  // big PRIMARY buttons share one minimum width (shrinks on narrow phones); secondary ones stay content-wide
   const wide = size === "lg" && variant === "primary" ? "min-w-[min(17rem,100%)]" : "";
   const cls = `${base} ${variants[variant]} ${sizes[size]} ${wide} ${className}`;
   if (rest.href !== undefined) {

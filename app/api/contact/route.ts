@@ -16,6 +16,8 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json({ error: "bad-json" }, { status: 400 });
   }
+  // honeypot: a hidden field real visitors never fill; bots get a fake «ok» and nothing is sent
+  if (str(body.website, 200)) return NextResponse.json({ ok: true });
   const name = str(body.name, 120);
   const contact = str(body.contact, 160);
   const message = str(body.message, 1500);
@@ -27,7 +29,7 @@ export async function POST(req: Request) {
   const key = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO;
   if (!key || !to) {
-    console.warn("[contact] RESEND_API_KEY / CONTACT_TO not set, lead not sent:", { name, contact, needs });
+    console.warn("[contact] RESEND_API_KEY / CONTACT_TO not set, lead not sent");
     return NextResponse.json({ error: "not-configured" }, { status: 503 });
   }
 

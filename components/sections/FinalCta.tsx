@@ -40,8 +40,8 @@ function Err({ id, children }: { id: string; children?: string }) {
 
 
 /**
- * Last screen: request form. Same header as Services (word-by-word title + one line on the right), then one .card:
- * direct contacts on the left, the form on the right («Що потрібно» chips = website types, prefilled from a pricing card).
+ * Last screen: request form. Left: stacked title, one line, direct contacts. Right: the form in one .card
+ * («Що потрібно» chips = website types, prefilled from a pricing card). Two columns from xl, stacked below.
  * Sends to /api/contact (Resend); without the env keys the route answers 503 and the form points to Telegram / email.
  */
 export function FinalCta() {
@@ -111,6 +111,7 @@ function ContactForm() {
   const [done, setDone] = useState(false);
   const refs = { name: useRef<HTMLInputElement>(null), contact: useRef<HTMLInputElement>(null), needs: useRef<HTMLInputElement>(null) };
   const doneRef = useRef<HTMLHeadingElement>(null);
+  const trap = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (done) doneRef.current?.focus({ preventScroll: true });
@@ -152,7 +153,7 @@ function ContactForm() {
     fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), contact: contact.trim(), message: message.trim(), needs: [...needs] }),
+      body: JSON.stringify({ name: name.trim(), contact: contact.trim(), message: message.trim(), needs: [...needs], website: trap.current?.value ?? "" }),
     })
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));
@@ -187,6 +188,8 @@ function ContactForm() {
               done ? "pointer-events-none translate-y-2 opacity-0" : ""
             }`}
           >
+            {/* honeypot for bots: off-screen, out of the tab order and hidden from assistive tech */}
+            <input ref={trap} name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
             <fieldset className="flex flex-col gap-2.5" aria-describedby={`${uid}-needs-err`}>
               <legend className="mb-3 text-[16px] font-medium text-fg">{CONTACT.needs}</legend>
               <div className="flex flex-wrap gap-2">
