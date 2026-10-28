@@ -102,44 +102,28 @@ export function CodeStage({ s }: { s: number }) {
         </div>
         <div className="p-5">
           <div
-            className="flex items-center justify-between"
-            style={fly(expo(lineK(2)), 0, -16, 8)}
-          >
-            <span className="text-[15px] font-semibold tracking-[-0.03em]">
-              {BUILD.brand}
-            </span>
-            <span className="flex items-center gap-3 text-[10px] font-medium text-[#5c564c]">
-              {BUILD.design.nav.map((n) => (
-                <span key={n}>{n}</span>
-              ))}
-              <span className="rounded-full bg-[#1a1714] px-2 py-1 text-[9px] font-semibold text-[#f4f0e8]">
-                {BUILD.design.login}
-              </span>
-            </span>
-          </div>
-          <div
-            className="relative mt-5 h-[104px] overflow-hidden rounded-xl"
-            style={fly(expo(lineK(3)), 0, 16, 10)}
+            className="relative h-[144px] overflow-hidden rounded-xl"
+            style={fly(expo(lineK(2)), 0, 16, 10)}
           >
             <Visual />
           </div>
           <div className="pt-3">
             <p className="min-h-[28px] text-[26px] font-semibold leading-none tracking-[-0.045em]">
-              {textOf(4, 3)}
+              {textOf(3, 3)}
             </p>
             <p className="mt-1.5 min-h-[18px] text-[13px] text-[#5c564c]">
-              {textOf(5, 3)}
+              {textOf(4, 3)}
             </p>
             <span
               className="mt-3 inline-grid h-9 min-w-[110px] place-items-center rounded-full bg-[#1a1714] px-5 text-[12px] font-semibold text-white"
-              style={fly(expo(Math.min(1, lineK(6) * 2.5)), 0, 12, 8)}
+              style={fly(expo(Math.min(1, lineK(5) * 2.5)), 0, 12, 8)}
             >
-              {textOf(6, 3) || " "}
+              {textOf(5, 3) || " "}
             </span>
           </div>
           <div
             className="mt-3 flex items-center gap-2 rounded-xl bg-white p-1 pl-3 shadow-[0_6px_16px_-10px_rgb(40_30_20/0.5)]"
-            style={fly(expo(Math.min(1, lineK(7) * 2)), 0, 14, 8)}
+            style={fly(expo(Math.min(1, lineK(6) * 2)), 0, 14, 8)}
           >
             <EnvelopeSimple size={13} className="text-[#7a7368]" />
             <span className="flex-1 text-[11px] text-[#9a9287]">
@@ -155,7 +139,7 @@ export function CodeStage({ s }: { s: number }) {
                 key={k}
                 className="rounded-lg bg-white p-2"
                 style={fly(
-                  expo(seg(lineK(9), k * 0.2, k * 0.2 + 0.6)),
+                  expo(seg(lineK(8), k * 0.2, k * 0.2 + 0.6)),
                   0,
                   30,
                   10,

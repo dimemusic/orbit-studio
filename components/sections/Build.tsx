@@ -113,7 +113,7 @@ export function Build() {
 
       <IntroCard time={time} />
       <div className="relative z-[1] flex min-h-0 flex-1 flex-col" style={film < 1 ? { opacity: film } : undefined}>
-      <header className="relative z-[1] flex flex-col items-center px-gutter pt-[clamp(88px,12vh,128px)] text-center">
+      <div className="relative z-[1] flex flex-col items-center px-gutter pt-[clamp(88px,12vh,128px)] text-center">
         <h2 id="build-title" className="sr-only">
           {BUILD.label}: {BUILD.stages.map((s) => s.title.join(" ")).join(" ")}
         </h2>
@@ -141,13 +141,7 @@ export function Build() {
             </span>
           ))}
         </div>
-        <p className="mt-3 text-[14px] text-body" aria-live="polite">
-          {st.step} · {st.days}
-          {t >= TOTAL - 0.4 && (
-            <span className="text-grey"> · {BUILD.replayNote}</span>
-          )}
-        </p>
-      </header>
+      </div>
 
       <StageBox cur={cur}>
         {BUILD.stages.map((s, i) => {

@@ -142,14 +142,6 @@ function derive(BUILD: B) {
     ],
     [
       ["    <", PU],
-      ["Header", TG],
-      [" logo", AT],
-      ["=", PU],
-      ['"Your product"', STR],
-      [" />", PU],
-    ],
-    [
-      ["    <", PU],
       ["Hero", TG],
       [">", PU],
     ],

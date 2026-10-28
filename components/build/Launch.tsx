@@ -12,8 +12,7 @@ import { box, fly, useB, Visual } from "./shared";
 /* ---------------- 4 · Launch ---------------- */
 const BR = { x: 540, y: 20, w: 600, h: 560 };
 const PIECES = [
-  { x: 0, y: 40, w: 600, h: 50, dx: -420, dy: -120, c: "#e6e0d4" },
-  { x: 24, y: 112, w: 552, h: 236, dx: 460, dy: -80, c: "#efe9de" },
+  { x: 24, y: 64, w: 552, h: 279, dx: 460, dy: -80, c: "#efe9de" },
   { x: 24, y: 364, w: 170, h: 172, dx: -480, dy: 160, c: "#efe9de" },
   { x: 215, y: 364, w: 170, h: 172, dx: 0, dy: 320, c: "#efe9de" },
   { x: 406, y: 364, w: 170, h: 172, dx: 480, dy: 160, c: "#efe9de" },
@@ -113,29 +112,16 @@ export function LaunchStage({ s }: { s: number }) {
                 width: p.w,
                 height: p.h,
                 background: p.c,
-                borderRadius: i === 0 ? 0 : 12,
                 ...fly(
                   k,
                   p.dx,
                   p.dy,
                   22,
-                  `rotate(${((1 - k) * (i % 2 ? 10 : -10)).toFixed(1)}deg)`,
+                  `rotate(${((1 - k) * (i % 2 ? -10 : 10)).toFixed(1)}deg)`,
                 ),
               }}
             >
               {i === 0 && (
-                <div className="flex h-full items-center justify-between px-6 text-[#1a1714]">
-                  <span className="text-[18px] font-semibold tracking-[-0.03em]">
-                    {BUILD.brand}
-                  </span>
-                  <span className="flex gap-4 text-[12px] font-medium text-[#5c564c]">
-                    {BUILD.design.nav.map((n) => (
-                      <span key={n}>{n}</span>
-                    ))}
-                  </span>
-                </div>
-              )}
-              {i === 1 && (
                 <div className="relative flex h-full flex-col justify-center overflow-hidden rounded-xl p-7 text-[#1a1714]">
                   <div className="absolute inset-y-3 right-3 w-[270px] overflow-hidden rounded-lg">
                     <Visual />
@@ -151,16 +137,16 @@ export function LaunchStage({ s }: { s: number }) {
                   </span>
                 </div>
               )}
-              {i >= 2 && (
+              {i >= 1 && (
                 <div className="flex h-full flex-col p-3">
                   <div className="relative h-[106px] shrink-0 overflow-hidden rounded-lg">
-                    <Visual v={i - 2} />
+                    <Visual v={i - 1} />
                   </div>
                   <p className="mt-2.5 truncate text-[12px] font-semibold leading-tight text-[#1a1714]">
-                    {BUILD.design.plans[i - 2].name}
+                    {BUILD.design.plans[i - 1].name}
                   </p>
                   <p className="mt-0.5 text-[11px] leading-tight text-[#7a7368]">
-                    {BUILD.design.plans[i - 2].price}
+                    {BUILD.design.plans[i - 1].price}
                   </p>
                 </div>
               )}

@@ -213,12 +213,11 @@ export const en: Content = {
     intro: ["What", "we", "do?"],
     brand: "Your product",
     stages: [
-      { id: "design", title: ["We draw", "the design."], step: "Design", days: "3–5 days", color: "#a78bfa", note: "Structure and layouts for phone and desktop. You watch the design live and comment right in Figma." }, // DRAFT: days
-      { id: "code", title: ["We write", "the code."], step: "Development", days: "5–7 days", color: "#5aa2ff", note: "We build a fast responsive site. You follow the progress on a test link from day one." }, // DRAFT: days
-      { id: "cms", title: ["We connect", "the admin."], step: "Admin panel", days: "2–3 days", color: "#22d3ee", note: "We connect the admin panel: you change texts, prices, photos and products yourself, no developer needed." }, // DRAFT: days
-      { id: "launch", title: ["We launch", "the site."], step: "Launch", days: "1 day", color: "#34d399", note: "Domain, SSL, analytics and team training. We stay in touch after launch." }, // DRAFT: days
+      { id: "design", title: ["We draw", "the design."], step: "Design", color: "#a78bfa", note: "Structure and layouts for phone and desktop. You watch the design live and comment right in Figma." },
+      { id: "code", title: ["We write", "the code."], step: "Development", color: "#5aa2ff", note: "We build a fast responsive site. You follow the progress on a test link from day one." },
+      { id: "cms", title: ["We connect", "the admin."], step: "Admin panel", color: "#22d3ee", note: "We connect the admin panel: you change texts, prices, photos and products yourself, no developer needed." },
+      { id: "launch", title: ["We launch", "the site."], step: "Launch", color: "#34d399", note: "Domain, SSL, analytics and team training. We stay in touch after launch." },
     ],
-    replayNote: "Total: from 2 weeks", // DRAFT
     design: {
       layers: ["Desktop", "Photo", "Form", "Heading", "Text", "Button", "Plans"],
       team: [{ name: "Designer" }, { name: "Editor" }, { name: "Client" }],
@@ -238,8 +237,6 @@ export const en: Content = {
       fill: "Fill",
       effects: "Effects",
       shadow: "Shadow",
-      nav: ["Product", "Pricing", "Contact"],
-      login: "Start",
       badge: "New",
       title: "Your product here",
       sub: "A short line on why it beats the rest.",

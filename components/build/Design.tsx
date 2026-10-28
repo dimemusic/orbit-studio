@@ -27,7 +27,7 @@ const AB = { x: 360, y: 20, w: 480, h: 560 };
 /** element rects inside the artboard: assembled AND selected from the same numbers, so the selection always fits */
 type Rc = { x: number; y: number; w: number; h: number };
 const R = {
-  img: { x: 24, y: 60, w: 432, h: 150 },
+  img: { x: 24, y: 24, w: 432, h: 186 },
   title: { x: 24, y: 262, w: 420, h: 48 },
   btn: { x: 24, y: 360, w: 150, h: 46 },
   plans: { x: 24, y: 428, w: 432, h: 74 },
@@ -60,11 +60,10 @@ const swatch = (i: number) => ({ x: RS.x + 32 + i * 42 + 4, y: RS.y + 478 + 6 })
 const grab = (r: Rc) => ({ x: r.x + r.w * 0.55, y: r.y + r.h * 0.62 });
 
 export function DesignStage({ s }: { s: number }) {
-  const { BUILD, D } = useB();
+  const { D } = useB();
   // a team in one file: the designer, the copywriter and the client work at the same time, each with their own cursor and selection colour
   const pan = (i: number) => expo(seg(s, 0.02 + i * 0.04, 0.55 + i * 0.04));
   const frame = smooth(seg(s, 0.4, 0.95));
-  const nav = expo(seg(s, 0.9, 1.2));
   const img = expo(seg(s, 1.02, 1.4));
   const badge = expo(seg(s, 1.25, 1.5));
   const signup = expo(seg(s, 1.3, 1.62));
@@ -369,22 +368,6 @@ export function DesignStage({ s }: { s: number }) {
           clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)`,
         }}
       >
-        <div
-          className="absolute inset-x-6 top-5 flex items-center justify-between"
-          style={fly(nav, 0, -12, 6)}
-        >
-          <span className="text-[17px] font-semibold tracking-[-0.03em]">
-            {BUILD.brand}
-          </span>
-          <span className="flex items-center gap-4 text-[12px] font-medium text-[#5c564c]">
-            {D.nav.map((n) => (
-              <span key={n}>{n}</span>
-            ))}
-            <span className="rounded-full bg-[#1a1714] px-3 py-1.5 text-[11px] font-semibold text-[#f4f0e8]">
-              {D.login}
-            </span>
-          </span>
-        </div>
         <div
           className="absolute overflow-hidden rounded-xl"
           style={{
