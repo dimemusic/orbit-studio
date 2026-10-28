@@ -85,8 +85,9 @@ export function Build() {
     <section
       ref={ref}
       id="process"
+      data-boot
       aria-labelledby="build-title"
-      className="snap-section relative flex min-h-[100dvh] w-full flex-col overflow-hidden md:h-[100dvh]"
+      className="snap-section relative flex min-h-[100dvh] w-full flex-col overflow-hidden"
     >
       {/* grid drawn on the page background */}
       <div
@@ -113,7 +114,7 @@ export function Build() {
 
       <IntroCard time={time} />
       <div className="relative z-[1] flex min-h-0 flex-1 flex-col" style={film < 1 ? { opacity: film } : undefined}>
-      <div className="relative z-[1] flex flex-col items-center px-gutter pt-[clamp(88px,12vh,128px)] text-center">
+      <div className="relative z-[1] flex flex-col items-center px-gutter pt-28 text-center">
         <h2 id="build-title" className="sr-only">
           {BUILD.label}: {BUILD.stages.map((s) => s.title.join(" ")).join(" ")}
         </h2>

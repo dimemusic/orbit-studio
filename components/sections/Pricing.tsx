@@ -27,17 +27,17 @@ export function Pricing() {
     <section
       id="services"
       aria-labelledby="services-title"
-      className="snap-section relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-[clamp(24px,4.5vh,48px)] pt-[clamp(88px,12vh,128px)] lg:h-[100dvh]"
+      className="snap-section relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-10 pt-28"
     >
       <header className="relative z-[1] flex w-full min-w-0 flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
         <h2 id="services-title" className="legible text-mega font-semibold">
           <RevealWords text={SERVICES.title[0]} accent={SERVICES.title[1]} tone="violet" />
         </h2>
-        <p className="legible max-w-[34ch] text-lead text-body">{SERVICES.lead}</p>
+        <p data-boot className="legible max-w-[34ch] text-lead text-body">{SERVICES.lead}</p>
       </header>
 
       {/* plans as rows on hairlines: icon · name + who it's for + included · price + term · «Обрати» */}
-      <ul aria-label={SERVICES.listLabel} className="relative z-[1] mt-[clamp(20px,3.5vh,48px)] w-full min-w-0">
+      <ul aria-label={SERVICES.listLabel} className="relative z-[1] mt-10 w-full min-w-0">
         {SERVICES.plans.map((p, i) => {
           const a = ACCENT[COLOR[p.id]];
           const Ic = ICON[p.id];
@@ -45,7 +45,7 @@ export function Pricing() {
             <li key={p.id} data-reveal style={delay(i)} className="min-w-0 border-t border-white/[0.09] last:border-b">
               <article
                 aria-labelledby={`plan-${p.id}`}
-                className={`relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-[clamp(14px,2.2vh,24px)] pl-4 pr-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-6 md:px-5 ${
+                className={`relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-5 pl-4 pr-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-6 md:px-5 ${
                   p.hot ? "bg-linear-to-r from-white/[0.035] via-white/[0.015] to-transparent" : ""
                 }`}
               >
@@ -100,7 +100,7 @@ export function Pricing() {
       </ul>
 
       {/* extras: one quiet line under the list */}
-      <p className="legible relative z-[1] mt-[clamp(16px,3vh,28px)] flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px] text-body">
+      <p data-boot className="legible relative z-[1] mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px] text-body">
         <span className="text-grey">{SERVICES.extrasLabel}:</span>
         {SERVICES.extras.map((e) => (
           <span key={e.name}>

@@ -7,16 +7,41 @@ import { starFragment, starVertex } from "@/lib/starShaders";
 import { buildStars, type Stars } from "@/lib/stars";
 import { useContent } from "./Lang";
 
-type Setup = { stars: Stars; camZ: number; visH: number; width: number };
+
+type Setup = { stars: Stars; camZ: number; visH: number; width: number; aspect: number; small: boolean };
+
+const camZFor = (aspect: number) => (aspect < 0.8 ? 15 : 10);
+/** phones get fewer stars; by width (or a touch screen), never by height: a low desktop window keeps the full field */
+const isSmall = (w: number, h: number) => w < 700 || (matchMedia("(pointer: coarse)").matches && Math.min(w, h) < 700);
 
 /** one screen of stars for the current viewport (the shader scrolls and wraps it) */
 function generate(): Setup {
   const w = window.innerWidth;
   const h = window.innerHeight;
-  const camZ = w / h < 0.8 ? 15 : 10;
+  const aspect = w / h;
+  const camZ = camZFor(aspect);
+  const small = isSmall(w, h);
   const visH = 2 * Math.tan(THREE.MathUtils.degToRad(22.5)) * camZ; // world units per viewport height
-  return { stars: buildStars({ visW: visH * (w / h), visH, small: Math.min(w, h) < 700 }), camZ, visH, width: w };
+  return { stars: buildStars({ visW: visH * aspect, visH, small }), camZ, visH, width: w, aspect, small };
 }
+
+/**
+ * The camera's field of view is vertical, so a lower window shows more of the world on the sides.
+ * Regenerate when the view got wider than the field (empty sides) or much narrower (stars spread too thin),
+ * or the camera distance / star budget changes; not only on width.
+ */
+const stale = (cur: Setup) => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const aspect = w / h;
+  return (
+    Math.abs(w - cur.width) / cur.width > 0.2 ||
+    aspect > cur.aspect * 1.03 ||
+    aspect < cur.aspect * 0.85 ||
+    camZFor(aspect) !== cur.camZ ||
+    isSmall(w, h) !== cur.small
+  );
+};
 
 /** 0 in the hero → 1 one screen down: the stars (shader) and the canvas wrapper (opacity) dim together */
 const dimAt = () => Math.min(1, Math.max(0, (window.scrollY - window.innerHeight * 0.25) / (window.innerHeight * 0.65)));
@@ -155,7 +180,7 @@ function Field({ setup, reduce }: { setup: Setup; reduce: boolean }) {
 
 /**
  * Fixed full-screen star field behind the whole site (client only, see Scene.tsx).
- * Generated for the viewport; regenerated only when the width changes by more than 20%.
+ * Generated for the viewport; regenerated when the width changes by more than 20% or the view gets wider than the field (see stale).
  * Ends the boot (html.booting) once the first frames are on screen, so stars, nav and hero appear together.
  */
 export default function StarField() {
@@ -180,7 +205,7 @@ export default function StarField() {
     let timer: ReturnType<typeof setTimeout> | undefined;
     const onResize = () => {
       clearTimeout(timer);
-      timer = setTimeout(() => setSetup((cur) => (cur && Math.abs(window.innerWidth - cur.width) / cur.width > 0.2 ? generate() : cur)), 200);
+      timer = setTimeout(() => setSetup((cur) => (cur && stale(cur) ? generate() : cur)), 200);
     };
     window.addEventListener("resize", onResize);
     return () => {

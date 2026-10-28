@@ -48,7 +48,7 @@ export function StageBox({ cur, children }: { cur: number; children: ReactNode }
     <div
       ref={box}
       aria-hidden="true"
-      className="relative z-[1] mx-gutter mb-[clamp(16px,4vh,40px)] mt-[clamp(16px,3vh,32px)] min-h-[240px] flex-1 max-lg:mt-6 max-lg:min-h-0 max-lg:flex-none max-lg:overflow-visible max-lg:transition-[height] max-lg:duration-500 max-lg:ease-[cubic-bezier(0.16,1,0.3,1)]"
+      className="relative z-[1] mx-gutter mb-8 mt-6 min-h-[240px] flex-1 max-lg:mt-6 max-lg:min-h-0 max-lg:flex-none max-lg:overflow-visible max-lg:transition-[height] max-lg:duration-500 max-lg:ease-[cubic-bezier(0.16,1,0.3,1)]"
       style={fit.mobile && fit.w ? { height: FOCUS[cur].h * cropOf(cur, fit).c } : undefined}
     >
       <FitCtx.Provider value={fit}>

@@ -28,24 +28,26 @@ export function Work() {
     <section
       id="work"
       aria-labelledby="work-title"
-      className="snap-section relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-[clamp(24px,4.5vh,48px)] pt-[clamp(88px,12vh,128px)] lg:h-[100dvh]"
+      className="snap-section relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-10 pt-28"
     >
       <header className="relative z-[1] flex w-full min-w-0 flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <h2 id="work-title" className="legible text-mega font-semibold">
           <RevealWords text={WORK.title[0]} accent={WORK.title[1]} tone="amber" />
         </h2>
-        <a
-          href="#contact"
-          className="group/more mb-[0.4em] inline-flex items-center gap-2 rounded-full py-2 text-[15px] font-medium text-blue transition-colors hover:text-fg"
-        >
-          {WORK.more}
-          <ArrowRight size={18} aria-hidden="true" className="transition-transform duration-300 group-hover/more:translate-x-1" />
-        </a>
+        <div data-boot className="mb-[0.4em]">
+          <a
+            href="#contact"
+            className="group/more inline-flex items-center gap-2 rounded-full py-2 text-[15px] font-medium text-blue transition-colors hover:text-fg"
+          >
+            {WORK.more}
+            <ArrowRight size={18} aria-hidden="true" className="transition-transform duration-300 group-hover/more:translate-x-1" />
+          </a>
+        </div>
       </header>
 
       <ul
         aria-label={WORK.listLabel}
-        className="work-grid relative z-[1] mt-[clamp(24px,4.5vh,48px)] grid w-full min-w-0 gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-4"
+        className="work-grid relative z-[1] mt-10 grid w-full min-w-0 gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-4"
       >
         {CASES.map((c, i) => (
           <li key={c.id} data-reveal style={{ "--d": `${i * 80}ms` } as CSSProperties} className="flex min-w-0">
