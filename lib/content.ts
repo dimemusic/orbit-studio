@@ -16,7 +16,7 @@ export const BRAND = {
 };
 
 export const META = {
-  title: "MaxArt Digital · цифрові рішення для вашого бізнесу",
+  title: "MaxArt Digital · цифрові рішення для вашого 1бізнесу",
   description: "Студія дизайну й розробки у Львові: дизайн, сайт і панель керування під ключ, в одних руках.",
 };
 
