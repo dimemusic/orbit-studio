@@ -199,7 +199,6 @@ export default function StarField() {
     const model = new Float32Array(16);
     const mouse: [number, number] = [999, 999];
     const target: [number, number] = [0, 0];
-    let scroll = 0;
     let mouseOn = 0;
     let rotX = 0;
     let rotY = 0;
@@ -213,8 +212,6 @@ export default function StarField() {
       const dt = last ? Math.min((now - last) / 1000, 0.05) : 0.016;
       last = now;
       const s = setup as Setup;
-      const sc = (window.scrollY / window.innerHeight) * s.visH;
-      scroll = reduce ? sc : scroll + (sc - scroll) * Math.min(1, dt * 10);
       pulse.v = Math.max(0, pulse.v - dt * 0.55);
       if (st.client) {
         toPlane(st.client[0], st.client[1], target);
@@ -231,7 +228,9 @@ export default function StarField() {
       rotXY(model, rotX, rotY);
 
       gl.uniform1f(u.uTime, (now - t0) / 1000);
-      gl.uniform1f(u.uScroll, scroll);
+      // the stars follow the page scroll in the same frame (no easing: an eased lag made the background trail the
+      // content and the page read as low-fps)
+      gl.uniform1f(u.uScroll, (window.scrollY / window.innerHeight) * s.visH);
       gl.uniform1f(u.uPulse, pulse.v);
       gl.uniform3f(u.uPulseOrigin, pulse.at[0], pulse.at[1], 0);
       gl.uniform3f(u.uMouse, mouse[0], mouse[1], 0);

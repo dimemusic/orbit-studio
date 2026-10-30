@@ -14,7 +14,7 @@ export function Hero() {
   const { CTA, HERO } = useContent();
   const [first, second, last] = HERO.title;
   return (
-    <section id="top" aria-labelledby="hero-title" className="snap-section relative flex min-h-[100dvh] w-full flex-col px-gutter text-center">
+    <section id="top" aria-labelledby="hero-title" className="relative flex min-h-[100dvh] w-full flex-col px-gutter text-center">
       <div className="flex flex-1 flex-col items-center justify-center pb-10 pt-32">
         <div className="plate flex flex-col items-center px-4 py-8">
           <h1 id="hero-title" data-reveal data-in className="legible text-mega font-semibold">

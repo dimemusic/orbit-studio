@@ -87,7 +87,7 @@ export function Build() {
       id="process"
       data-boot
       aria-labelledby="build-title"
-      className="snap-section relative flex min-h-[100dvh] w-full flex-col overflow-hidden"
+      className="relative flex min-h-[100dvh] w-full flex-col overflow-hidden"
     >
       {/* grid drawn on the page background */}
       <div

@@ -4,7 +4,6 @@ import { Hero } from "@/components/sections/Hero";
 import { Pricing } from "@/components/sections/Pricing";
 import { Work } from "@/components/sections/Work";
 import { JsonLd } from "@/components/JsonLd";
-import { SectionSnap } from "@/components/SectionSnap";
 import type { Lang } from "@/lib/content";
 
 // The one-page site: hero → «Як ми працюємо» → «Наші роботи» → прайс → заявка (shared by / and /en).
@@ -18,7 +17,6 @@ export function HomePage({ lang }: { lang: Lang }) {
       <Work />
       <Pricing />
       <FinalCta />
-      <SectionSnap />
     </>
   );
 }
