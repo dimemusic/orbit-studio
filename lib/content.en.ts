@@ -14,8 +14,10 @@ export const en: Content = {
   },
 
   META: {
-    title: "MaxArt Digital · digital solutions for your business",
-    description: "Design and development studio in Lviv, Ukraine: design, website and admin panel as one turnkey package, from one team.",
+    title: "Website Design & Development Studio · MaxArt Digital",
+    description: "We design and build landing pages, business card sites, online stores and corporate websites with an admin panel. Turnkey, from Lviv, Ukraine.",
+    ogAlt: "MaxArt Digital: turnkey website design and development",
+    service: "Turnkey website design and development: landing pages, business card sites, online stores and corporate websites with an admin panel.",
   },
 
   CTA: {
@@ -34,7 +36,7 @@ export const en: Content = {
 
   HERO: {
     title: ["Digital solutions", "for", "your business."],
-    lead: "Design, development and an admin panel from one team. You get a website you can edit yourself.",
+    lead: "Turnkey websites: design, development and an admin panel from one team. You get a website you can edit yourself.",
     stats: [
       { prefix: "", value: 2, suffix: " weeks", label: "fastest launch" },
       { prefix: "3 in 1", value: null, suffix: "", label: "design + code + CMS" },

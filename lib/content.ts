@@ -15,9 +15,13 @@ export const BRAND = {
   privacyHref: "/privacy",
 };
 
+/** search snippet + social preview: title ≤ 60 chars, description ≤ 160 */
 export const META = {
-  title: "MaxArt Digital · цифрові рішення для вашого бізнесу",
-  description: "Студія дизайну й розробки у Львові: дизайн, сайт і панель керування під ключ, в одних руках.",
+  title: "Розробка сайтів під ключ у Львові · MaxArt Digital",
+  description: "Створюємо лендинги, сайти-візитівки, інтернет-магазини й корпоративні сайти під ключ: дизайн, розробка й адмін-панель. Львів і вся Україна.",
+  ogAlt: "MaxArt Digital: розробка сайтів під ключ",
+  /** service description for structured data (JSON-LD) */
+  service: "Дизайн і розробка сайтів під ключ: лендинги, сайти-візитівки, інтернет-магазини, корпоративні сайти з адмін-панеллю.",
 };
 
 export const CTA = {
@@ -38,7 +42,7 @@ export const NAV = [
 export const HERO = {
   /** line 1 · plain start of line 2 · gradient end of line 2 */
   title: ["Цифрові рішення", "для", "вашого бізнесу."],
-  lead: "Дизайн, розробка й панель керування в одних руках. Ви отримуєте сайт, який редагуєте самі.",
+  lead: "Створюємо сайти під ключ: дизайн, розробка й адмін-панель в одних руках. Ви отримуєте сайт, який редагуєте самі.",
   /** count-up parts: prefix · value (animated) · suffix. `value: null` = static text in `prefix`. */
   stats: [
     { prefix: "", value: 2, suffix: " тижні", label: "мінімальний термін запуску" },

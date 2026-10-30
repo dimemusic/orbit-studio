@@ -19,15 +19,15 @@ const geologica = Geologica({
   display: "swap",
 });
 
-/** per-language metadata with hreflang alternates */
+/** site-wide metadata defaults; each page adds its own canonical / hreflang / social card (lib/seo.ts) */
 export function shellMetadata(lang: Lang): Metadata {
   const { META } = contentFor(lang);
   return {
     metadataBase: new URL(SITE_URL),
     title: { default: META.title, template: "%s · MaxArt Digital" },
     description: META.description,
-    alternates: { canonical: lang === "en" ? "/en" : "/", languages: { uk: "/", en: "/en" } },
-    openGraph: { type: "website", siteName: "MaxArt Digital", title: META.title, description: META.description, locale: lang === "en" ? "en_GB" : "uk_UA" },
+    applicationName: "MaxArt Digital",
+    formatDetection: { telephone: false, email: false, address: false },
   };
 }
 

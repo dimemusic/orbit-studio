@@ -57,6 +57,12 @@ Spotlight / border light on interactive cards, fine pointers only. **Never set `
 - `components/Ambient.tsx`: page colour + two soft colour washes (transform-only drift) whose tint follows the section on screen.
 - The ivy / neuron scene of the original was removed (Oct 2026); `reference/ivy-scene.html` is the old prototype.
 
+## SEO
+- Page metadata via `pageMetadata(lang, path, opts)` (`lib/seo.ts`): title / description from `META` in the content files (title ≤ 60 chars, description ≤ 160), canonical, hreflang uk / en / x-default (= uk), Open Graph + Twitter `summary_large_image` with `public/og-uk.png` / `og-en.png` (1200×630; redraw them if the brand or promise changes). `shellMetadata` in Shell only sets metadataBase, title template and app name.
+- `components/JsonLd.tsx` (rendered by `HomePage`): schema.org `ProfessionalService` + offer catalogue from `SERVICES.plans`, plus `WebSite`. Built from content, so prices stay in sync.
+- Privacy pages are `noindex` and left out of `app/sitemap.ts` until the real policy text is in. `app/manifest.ts`, `app/apple-icon.png`, `public/icon-512.png`.
+- Case images carry descriptive `alt`. One `h1` per page (hero).
+
 ## Performance
 - No CSS `filter` / `backdrop-filter` on full-screen layers. Background motion is transform-only on its own layers.
 - WebGL: DPR ≤ 1.5, render loop paused while the tab is hidden, no allocations inside `useFrame`.
