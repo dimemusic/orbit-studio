@@ -65,7 +65,7 @@ Spotlight / border light on interactive cards, fine pointers only. **Never set `
 
 ## Performance
 - No CSS `filter` / `backdrop-filter` on full-screen layers. Background motion is transform-only on its own layers.
-- WebGL: DPR ≤ 1.5, no antialias, render loop paused while the tab is hidden, no allocations per frame.
+- WebGL: DPR ≤ 1.5, antialias ON (without it the tiny star sprites snap pixel to pixel while scrolling: the whole page seems to shake), render loop paused while the tab is hidden, no allocations per frame.
 - The hero is the LCP: its copy is server-rendered with `data-in` and shows when the boot ends, never waiting for hydration or WebGL. Below-the-fold heavy UI (the Build film) mounts on first interaction.
 - Lighthouse (Oct 2026, after these changes, local headless): mobile 80 / desktop 89, TBT 430 / 220 ms; real PageSpeed runs higher (it has a GPU). Re-check pagespeed.web.dev after big changes.
 - Build film: motion blur only on big moving elements (≥ `BIG_BLUR`) and off entirely when DPR > 1.5 or ≤ 4 CPU cores (`MB`); static parts are `memo`ised.

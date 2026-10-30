@@ -105,7 +105,9 @@ export default function StarField() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance" });
+    // antialias ON: the stars are 1-4 px sprites; without multisampling they snap from pixel to pixel while the page
+    // scrolls and the whole background shimmers (looked like the site shaking on DPR 1 screens)
+    const gl = canvas.getContext("webgl", { alpha: false, antialias: true, depth: false, powerPreference: "high-performance" });
     if (!gl) return setFailed(true);
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
