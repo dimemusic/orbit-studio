@@ -96,12 +96,12 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
               alt={`${c.name}: ${c.type}`}
               width={c.full.w}
               height={c.full.h}
-              sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+              sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
               className="work-scroll absolute left-0 top-0 h-auto w-full"
               style={{ "--dur": `${dur.toFixed(1)}s` } as CSSProperties}
             />
           ) : (
-            <Image src={c.media} alt={`${c.name}: ${c.type}`} fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw" className="object-cover object-top" />
+            <Image src={c.media} alt={`${c.name}: ${c.type}`} fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)" className="object-cover object-top" />
           )}
           {/* kind of website */}
           <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-[rgb(5_7_13/0.82)] px-3 py-1.5 text-[12px] font-semibold leading-none text-fg">

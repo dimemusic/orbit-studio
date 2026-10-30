@@ -599,7 +599,9 @@ html {
   box-shadow: 0 24px 60px -18px rgb(0 0 0 / 0.7);
 }
 /* boot: nothing pops in piece by piece. Until the star field has its first frame (html.booting),
-   the stars, the ambient washes, the nav and the revealed copy stay hidden; then they come in together. */
+   the stars, the ambient washes, the nav and the revealed copy stay hidden; then they come in together.
+   The head script ends the boot by itself at 0.9s (2.0s with the intro), so a slow device never waits
+   for WebGL to see the copy: there the stars (.scene-fade[data-on]) fade in on their own a moment later. */
 .scene-fade {
   transition: opacity 1.2s var(--ease);
 }
@@ -608,6 +610,7 @@ html {
   transition: opacity 0.9s var(--ease);
 }
 .booting .scene-fade,
+.scene-fade:not([data-on]),
 .booting .ambient,
 .booting [data-boot] {
   opacity: 0;

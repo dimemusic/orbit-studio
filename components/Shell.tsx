@@ -46,11 +46,11 @@ export function Shell({ lang, children }: { lang: Lang; children: React.ReactNod
       <head>
         {/* lets CSS hide [data-reveal] content only when JS will reveal it */}
         {/* "intro": first load of a tab session plays the «MaxArt Digital» title card (Intro); the boot then waits until 2.0s */}
-        {/* "booting": hero, nav and stars wait for the star field's first frame, then come in together (safety timeout 1.8s) */}
+        {/* "booting": hero, nav and stars wait for the star field's first frame, then come in together; on a slow device the copy goes at 0.9s and the stars fade in when ready */}
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "var d=document.documentElement,t=1800;d.classList.add('js','booting');try{if(!sessionStorage.getItem('intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){sessionStorage.setItem('intro','1');d.classList.add('intro');t=window.__introEnd=2000;setTimeout(function(){d.classList.remove('intro')},2600)}}catch(e){}setTimeout(function(){d.classList.remove('booting')},t)",
+              "var d=document.documentElement,t=900;d.classList.add('js','booting');try{if(!sessionStorage.getItem('intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){sessionStorage.setItem('intro','1');d.classList.add('intro');t=window.__introEnd=2000;setTimeout(function(){d.classList.remove('intro')},2600)}}catch(e){}setTimeout(function(){d.classList.remove('booting')},t)",
           }}
         />
       </head>

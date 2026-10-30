@@ -1,12 +1,21 @@
 "use client";
 
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
-import * as THREE from "three";
+import { useEffect, useRef, useState } from "react";
 import { starFragment, starVertex } from "@/lib/starShaders";
 import { buildStars, type Stars } from "@/lib/stars";
 import { useContent } from "./Lang";
 
+/**
+ * Fixed full-screen star field behind the whole site (client only, see Scene.tsx).
+ * Plain WebGL, no 3D library: one draw call of additive point sprites (lib/stars.ts, lib/starShaders.ts),
+ * so the background costs a few KB instead of a 3D engine. One screen of stars, generated for the viewport
+ * and regenerated when it goes stale (see `stale`); the shader scrolls and wraps it with the page.
+ * Once two frames are on screen the stars fade in and the boot may end (html.booting, see Shell).
+ */
+
+const FOV = (45 * Math.PI) / 180;
+const TAN = Math.tan(FOV / 2);
+const DPR_MAX = 1.5;
 
 type Setup = { stars: Stars; camZ: number; visH: number; width: number; aspect: number; small: boolean };
 
@@ -21,12 +30,12 @@ function generate(): Setup {
   const aspect = w / h;
   const camZ = camZFor(aspect);
   const small = isSmall(w, h);
-  const visH = 2 * Math.tan(THREE.MathUtils.degToRad(22.5)) * camZ; // world units per viewport height
+  const visH = 2 * TAN * camZ; // world units per viewport height at z = 0
   return { stars: buildStars({ visW: visH * aspect, visH, small }), camZ, visH, width: w, aspect, small };
 }
 
 /**
- * The camera's field of view is vertical, so a lower window shows more of the world on the sides.
+ * The field of view is vertical, so a lower window shows more of the world on the sides.
  * Regenerate when the view got wider than the field (empty sides) or much narrower (stars spread too thin),
  * or the camera distance / star budget changes; not only on width.
  */
@@ -49,69 +58,122 @@ const dimAt = () => Math.min(1, Math.max(0, (window.scrollY - window.innerHeight
 /** clicks on these never send the background wave */
 const INTERACTIVE = "button, a, input, label, summary, textarea, .card";
 
-function Field({ setup, reduce }: { setup: Setup; reduce: boolean }) {
-  const { stars, camZ, visH } = setup;
-  const camera = useThree((s) => s.camera);
-  const dpr = useThree((s) => s.viewport.dpr);
-  const group = useRef<THREE.Group>(null);
+// ---- small column-major 4×4 helpers (no allocations per frame: they write into `out`) ----
+const perspective = (out: Float32Array, aspect: number, near: number, far: number) => {
+  const f = 1 / TAN;
+  out.fill(0);
+  out[0] = f / aspect;
+  out[5] = f;
+  out[10] = (far + near) / (near - far);
+  out[11] = -1;
+  out[14] = (2 * far * near) / (near - far);
+};
+/** rotation X then Y (Euler XYZ, as the old scene graph did): out = Rx · Ry */
+const rotXY = (out: Float32Array, x: number, y: number) => {
+  const cx = Math.cos(x), sx = Math.sin(x), cy = Math.cos(y), sy = Math.sin(y);
+  out.set([cy, sx * sy, -cx * sy, 0, 0, cx, sx, 0, sy, -sx * cy, cx * cy, 0, 0, 0, 0, 1]);
+};
 
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uMotion: { value: reduce ? 0 : 1 },
-      uPulse: { value: 0 },
-      uPulseOrigin: { value: new THREE.Vector3(99, 99, 0) },
-      uMouse: { value: new THREE.Vector3(999, 999, 0) },
-      uMouseOn: { value: 0 },
-      uDPR: { value: 1 },
-      /** page scroll in world units at z = 0 */
-      uScroll: { value: 0 },
-      uFieldH: { value: visH + 0.8 },
-      uCamZ: { value: camZ },
-      uDim: { value: 0 },
-    }),
-    [reduce, visH, camZ],
-  );
-  useEffect(() => {
-    uniforms.uDPR.value = dpr;
-  }, [uniforms, dpr]);
+const VERT_HEAD = "precision highp float;\nuniform mat4 modelMatrix, viewMatrix, projectionMatrix;\nattribute vec3 position;\n";
+const FRAG_HEAD = "precision mediump float;\n";
+const UNIFORMS = ["uTime", "uMotion", "uPulse", "uMouseOn", "uDPR", "uScroll", "uFieldH", "uCamZ", "uDim", "uPulseOrigin", "uMouse", "modelMatrix", "viewMatrix", "projectionMatrix"] as const;
+type U = Record<(typeof UNIFORMS)[number], WebGLUniformLocation | null>;
 
-  const geometry = useMemo(() => {
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.BufferAttribute(stars.position, 3));
-    g.setAttribute("aColor", new THREE.BufferAttribute(stars.color, 3));
-    g.setAttribute("aSeed", new THREE.BufferAttribute(stars.seed, 1));
-    g.setAttribute("aTwinkle", new THREE.BufferAttribute(stars.twinkle, 1));
-    return g;
-  }, [stars]);
-  const material = useMemo(
-    () =>
-      new THREE.ShaderMaterial({
-        uniforms,
-        vertexShader: starVertex,
-        fragmentShader: starFragment,
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-      }),
-    [uniforms],
-  );
-  useEffect(() => () => geometry.dispose(), [geometry]);
-  useEffect(() => () => material.dispose(), [material]);
+function program(gl: WebGLRenderingContext) {
+  const sh = (type: number, src: string) => {
+    const s = gl.createShader(type)!;
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  };
+  const p = gl.createProgram()!;
+  gl.attachShader(p, sh(gl.VERTEX_SHADER, VERT_HEAD + starVertex));
+  gl.attachShader(p, sh(gl.FRAGMENT_SHADER, FRAG_HEAD + starFragment));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p) ?? "star shader");
+  const u = Object.fromEntries(UNIFORMS.map((n) => [n, gl.getUniformLocation(p, n)])) as U;
+  return { p, u };
+}
+
+export default function StarField() {
+  const { UI } = useContent();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const wrap = useRef<HTMLDivElement>(null);
+  const [on, setOn] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    camera.position.z = camZ;
-    camera.updateProjectionMatrix();
-  }, [camera, camZ]);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance" });
+    if (!gl) return setFailed(true);
 
-  // input: listeners on window (the canvas ignores pointer events)
-  const input = useRef({ client: null as [number, number] | null, on: 0, tiltX: 0, tiltY: 0 });
-  useEffect(() => {
-    const st = input.current;
-    const ray = new THREE.Raycaster();
-    const ndc = new THREE.Vector2();
-    const hit = new THREE.Vector3();
-    const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let prog: ReturnType<typeof program>;
+    try {
+      prog = program(gl);
+    } catch {
+      return setFailed(true);
+    }
+    const { u } = prog;
+    gl.useProgram(prog.p);
+    // #05070d converted to linear light, exactly what the previous renderer cleared to (keeps the same deep black)
+    const lin = (c: number) => Math.pow(c / 255, 2.2);
+    gl.clearColor(lin(0x05), lin(0x07), lin(0x0d), 1);
+    gl.disable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE); // additive
+    gl.uniform1f(u.uMotion, reduce ? 0 : 1);
+
+    // attributes: one buffer each, re-filled when the field is regenerated
+    const attrs = (["position", "aColor", "aSeed", "aTwinkle"] as const).map((name, i) => ({
+      loc: gl.getAttribLocation(prog.p, name),
+      size: i < 2 ? 3 : 1,
+      buf: gl.createBuffer(),
+    }));
+    let setup: Setup | null = null;
+    const upload = (s: Setup) => {
+      setup = s;
+      const data = [s.stars.position, s.stars.color, s.stars.seed, s.stars.twinkle];
+      attrs.forEach((a, i) => {
+        if (a.loc < 0) return;
+        gl.bindBuffer(gl.ARRAY_BUFFER, a.buf);
+        gl.bufferData(gl.ARRAY_BUFFER, data[i], gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(a.loc);
+        gl.vertexAttribPointer(a.loc, a.size, gl.FLOAT, false, 0, 0);
+      });
+      gl.uniform1f(u.uFieldH, s.visH + 0.8);
+      gl.uniform1f(u.uCamZ, s.camZ);
+      const view = new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -s.camZ, 1]);
+      gl.uniformMatrix4fv(u.viewMatrix, false, view);
+      size();
+    };
+
+    // canvas size follows its box (full viewport, lvh), DPR capped
+    const proj = new Float32Array(16);
+    let aspect = 1;
+    let dpr = 1;
+    function size() {
+      const r = canvas!.getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, DPR_MAX);
+      canvas!.width = Math.max(1, Math.round(r.width * dpr));
+      canvas!.height = Math.max(1, Math.round(r.height * dpr));
+      gl!.viewport(0, 0, canvas!.width, canvas!.height);
+      aspect = r.width / Math.max(1, r.height);
+      perspective(proj, aspect, 0.1, 100);
+      gl!.uniformMatrix4fv(u.projectionMatrix, false, proj);
+      gl!.uniform1f(u.uDPR, dpr);
+    }
+
+    // input: listeners on window (the canvas ignores pointer events)
+    const st = { client: null as [number, number] | null, on: 0, tiltX: 0, tiltY: 0 };
+    /** pointer → point on the z = 0 plane (camera on the z axis looking down -z) */
+    const toPlane = (cx: number, cy: number, out: [number, number]) => {
+      const camZ = setup?.camZ ?? 10;
+      out[0] = ((cx / window.innerWidth) * 2 - 1) * TAN * aspect * camZ;
+      out[1] = (-(cy / window.innerHeight) * 2 + 1) * TAN * camZ;
+    };
+    const pulse = { v: 0, at: [99, 99] as [number, number] };
     const onMove = (e: PointerEvent) => {
       st.client = [e.clientX, e.clientY];
       st.on = 1;
@@ -120,12 +182,8 @@ function Field({ setup, reduce }: { setup: Setup; reduce: boolean }) {
     };
     const onDown = (e: PointerEvent) => {
       if ((e.target as Element | null)?.closest?.(INTERACTIVE)) return;
-      ndc.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
-      ray.setFromCamera(ndc, camera);
-      if (ray.ray.intersectPlane(plane, hit)) {
-        uniforms.uPulseOrigin.value.copy(hit);
-        uniforms.uPulse.value = 1;
-      }
+      toPlane(e.clientX, e.clientY, pulse.at);
+      pulse.v = 1;
     };
     const onLeave = () => {
       st.on = 0;
@@ -134,148 +192,126 @@ function Field({ setup, reduce }: { setup: Setup; reduce: boolean }) {
     window.addEventListener("pointerdown", onDown);
     document.addEventListener("pointerleave", onLeave);
     window.addEventListener("blur", onLeave);
+
+    // render loop (paused while the tab is hidden); scratch values live here, nothing is allocated per frame
+    const model = new Float32Array(16);
+    const mouse: [number, number] = [999, 999];
+    const target: [number, number] = [0, 0];
+    let scroll = 0;
+    let mouseOn = 0;
+    let rotX = 0;
+    let rotY = 0;
+    let raf = 0;
+    let last = 0;
+    let frames = 0;
+    const t0 = performance.now();
+    const frame = (now: number) => {
+      raf = requestAnimationFrame(frame);
+      if (!setup) return;
+      const dt = last ? Math.min((now - last) / 1000, 0.05) : 0.016;
+      last = now;
+      const s = setup as Setup;
+      const sc = (window.scrollY / window.innerHeight) * s.visH;
+      scroll = reduce ? sc : scroll + (sc - scroll) * Math.min(1, dt * 10);
+      pulse.v = Math.max(0, pulse.v - dt * 0.55);
+      if (st.client) {
+        toPlane(st.client[0], st.client[1], target);
+        const k = Math.min(1, dt * 10);
+        mouse[0] += (target[0] - mouse[0]) * k;
+        mouse[1] += (target[1] - mouse[1]) * k;
+      }
+      mouseOn += (st.on - mouseOn) * Math.min(1, dt * 5);
+      if (!reduce) {
+        const k = Math.min(1, dt * 3);
+        rotX += (st.tiltX - rotX) * k;
+        rotY += (st.tiltY - rotY) * k;
+      }
+      rotXY(model, rotX, rotY);
+
+      gl.uniform1f(u.uTime, (now - t0) / 1000);
+      gl.uniform1f(u.uScroll, scroll);
+      gl.uniform1f(u.uPulse, pulse.v);
+      gl.uniform3f(u.uPulseOrigin, pulse.at[0], pulse.at[1], 0);
+      gl.uniform3f(u.uMouse, mouse[0], mouse[1], 0);
+      gl.uniform1f(u.uMouseOn, mouseOn);
+      gl.uniform1f(u.uDim, dimAt());
+      gl.uniformMatrix4fv(u.modelMatrix, false, model);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.POINTS, 0, s.stars.count);
+
+      // two frames on screen → the stars fade in and the boot may end (the intro card, if any, holds it until it lifts away)
+      if (++frames === 2) {
+        setOn(true);
+        const wait = Math.max(0, ((window as { __introEnd?: number }).__introEnd ?? 0) - performance.now());
+        bootT = window.setTimeout(() => document.documentElement.classList.remove("booting"), wait);
+      }
+    };
+    let bootT = 0;
+    const play = () => {
+      cancelAnimationFrame(raf);
+      last = 0;
+      if (document.visibilityState === "visible") raf = requestAnimationFrame(frame);
+    };
+    document.addEventListener("visibilitychange", play);
+
+    // first build after fonts + one frame (the viewport is final by then)
+    let cancelled = false;
+    (document.fonts?.ready ?? Promise.resolve()).then(() =>
+      requestAnimationFrame(() => {
+        if (cancelled) return;
+        upload(generate());
+        play();
+      }),
+    );
+
+    // resize: canvas always; the star field only when it went stale
+    let resizeT: ReturnType<typeof setTimeout> | undefined;
+    const onResize = () => {
+      if (!setup) return;
+      size();
+      clearTimeout(resizeT);
+      resizeT = setTimeout(() => setup && stale(setup) && upload(generate()), 200);
+    };
+    window.addEventListener("resize", onResize);
+
+    // below the hero the whole layer dims a little (opacity only: no CSS filter on a full-screen layer)
+    const onScroll = () => {
+      if (wrap.current) wrap.current.style.opacity = String(1 - dimAt() * 0.35);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    // a lost GPU context (driver reset, too many tabs) just stops the stars; the page stays usable
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      cancelAnimationFrame(raf);
+    };
+    canvas.addEventListener("webglcontextlost", onLost);
+
     return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      clearTimeout(resizeT);
+      clearTimeout(bootT);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
       document.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("blur", onLeave);
-    };
-  }, [camera, uniforms]);
-
-  // per-frame scratch objects (no allocations inside useFrame)
-  const scratch = useRef({ ray: new THREE.Raycaster(), ndc: new THREE.Vector2(), hit: new THREE.Vector3(), plane: new THREE.Plane(new THREE.Vector3(0, 0, 1), 0) });
-
-  useFrame((state, delta) => {
-    const u = uniforms;
-    const st = input.current;
-    const S = scratch.current;
-    const dt = Math.min(delta, 0.05);
-    u.uTime.value = state.clock.elapsedTime;
-    const scroll = (window.scrollY / window.innerHeight) * visH;
-    u.uScroll.value = reduce ? scroll : u.uScroll.value + (scroll - u.uScroll.value) * Math.min(1, dt * 10);
-    u.uPulse.value = Math.max(0, u.uPulse.value - dt * 0.55);
-    u.uDim.value = dimAt();
-
-    if (st.client) {
-      S.ndc.set((st.client[0] / window.innerWidth) * 2 - 1, -(st.client[1] / window.innerHeight) * 2 + 1);
-      S.ray.setFromCamera(S.ndc, camera);
-      if (S.ray.ray.intersectPlane(S.plane, S.hit)) u.uMouse.value.lerp(S.hit, Math.min(1, dt * 10));
-    }
-    u.uMouseOn.value += (st.on - u.uMouseOn.value) * Math.min(1, dt * 5);
-
-    const g = group.current;
-    if (g && !reduce) {
-      const k = Math.min(1, dt * 3);
-      g.rotation.x += (st.tiltX - g.rotation.x) * k;
-      g.rotation.y += (st.tiltY - g.rotation.y) * k;
-    }
-  });
-
-  return (
-    <group ref={group}>
-      <points geometry={geometry} material={material} frustumCulled={false} />
-    </group>
-  );
-}
-
-/**
- * Fixed full-screen star field behind the whole site (client only, see Scene.tsx).
- * Generated for the viewport; regenerated when the width changes by more than 20% or the view gets wider than the field (see stale).
- * Ends the boot (html.booting) once the first frames are on screen, so stars, nav and hero appear together.
- */
-export default function StarField() {
-  const { UI } = useContent();
-  const [setup, setSetup] = useState<Setup | null>(null);
-  const reduce = useMemo(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
-
-  // first build after fonts + one frame (the viewport is final by then)
-  useEffect(() => {
-    let cancelled = false;
-    (document.fonts?.ready ?? Promise.resolve()).then(() =>
-      requestAnimationFrame(() => {
-        if (!cancelled) setSetup(generate());
-      }),
-    );
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const onResize = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => setSetup((cur) => (cur && stale(cur) ? generate() : cur)), 200);
-    };
-    window.addEventListener("resize", onResize);
-    return () => {
-      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", play);
       window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
-  // two frames rendered → end the boot (the intro title card, if any, holds it until it lifts away)
-  useEffect(() => {
-    if (!setup) return;
-    let r2 = 0;
-    let t = 0;
-    const r1 = requestAnimationFrame(() => {
-      r2 = requestAnimationFrame(() => {
-        const wait = Math.max(0, ((window as { __introEnd?: number }).__introEnd ?? 0) - performance.now());
-        t = window.setTimeout(() => document.documentElement.classList.remove("booting"), wait);
-      });
-    });
-    return () => {
-      cancelAnimationFrame(r1);
-      cancelAnimationFrame(r2);
-      clearTimeout(t);
-    };
-  }, [setup]);
-
-  // render loop only while the tab is visible
-  const [visible, setVisible] = useState(true);
-  useEffect(() => {
-    const on = () => setVisible(document.visibilityState === "visible");
-    on();
-    document.addEventListener("visibilitychange", on);
-    return () => document.removeEventListener("visibilitychange", on);
-  }, []);
-
-  // below the hero the whole layer dims a little (opacity only: no CSS filter on a full-screen layer)
-  const wrap = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = wrap.current;
-    if (!el) return;
-    const onScroll = () => {
-      el.style.opacity = String(1 - dimAt() * 0.35);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      canvas.removeEventListener("webglcontextlost", onLost);
+      attrs.forEach((a) => gl.deleteBuffer(a.buf));
+      gl.deleteProgram(prog.p);
     };
   }, []);
 
   return (
     <div ref={wrap} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[1] h-lvh w-screen">
-      <div className="scene-fade h-full w-full">
-        <Canvas
-          // linear + flat: no colour management / tone mapping (colours as authored)
-          linear
-          flat
-          dpr={[1, 1.5]}
-          frameloop={visible ? "always" : "never"}
-          camera={{ fov: 45, near: 0.1, far: 100, position: [0, 0, 10] }}
-          gl={{ antialias: true, powerPreference: "high-performance" }}
-          onCreated={({ gl }) => gl.setClearColor("#05070d", 1)}
-          style={{ pointerEvents: "none" }}
-          fallback={<p className="fixed inset-x-4 bottom-20 text-center text-[13px] text-grey">{UI.noWebgl}</p>}
-        >
-          {setup && <Field setup={setup} reduce={reduce} />}
-        </Canvas>
+      <div className="scene-fade h-full w-full" data-on={on || undefined}>
+        <canvas ref={canvasRef} className="block h-full w-full" />
       </div>
+      {failed && <p className="fixed inset-x-4 bottom-20 text-center text-[13px] text-grey">{UI.noWebgl}</p>}
     </div>
   );
 }

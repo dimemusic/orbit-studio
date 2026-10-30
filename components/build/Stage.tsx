@@ -43,7 +43,19 @@ export function StageBox({ cur, children }: { cur: number; children: ReactNode }
       mq.removeEventListener("change", measure);
     };
   }, []);
-  const ready = fit.mobile ? fit.w > 0 : fit.k > 0;
+  // the film is below the fold: its stages are heavy, so they mount only once the visitor shows signs of life
+  // (pointer, touch, scroll, key) or the box is already on screen; until then the page loads without that work
+  const [awake, setAwake] = useState(false);
+  useEffect(() => {
+    if (awake) return;
+    const el = box.current;
+    const wake = () => setAwake(true);
+    if (el && el.getBoundingClientRect().top < window.innerHeight) return wake();
+    const evs = ["pointermove", "pointerdown", "touchstart", "wheel", "scroll", "keydown"] as const;
+    evs.forEach((e) => window.addEventListener(e, wake, { passive: true, once: true }));
+    return () => evs.forEach((e) => window.removeEventListener(e, wake));
+  }, [awake]);
+  const ready = awake && (fit.mobile ? fit.w > 0 : fit.k > 0);
   return (
     <div
       ref={box}
