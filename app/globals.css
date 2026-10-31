@@ -606,11 +606,24 @@ html {
 /* Build film UI kit: .tool = a panel, .tool-cell = an input / value cell, .tool-label = section label.
    No backdrop-filter: the stage is scaled with transform and must stay sharp. */
 .tool {
-  /* taken 1:1 from Maksym's Figma (node 41:8351): translucent dark glass, one hairline, deep shadow. Nothing else. */
-  border: 1px solid rgb(255 255 255 / 0.08);
+  /* Figma «Glass» effect of Maksym's panel (node 41:8351: frost 4, refraction .8, depth 20, light −45° at .8,
+     dispersion .5) rebuilt in CSS: a frosted dark body (backdrop blur + the Figma gradient, denser so the stars
+     and grid behind are frosted, not see-through), ONE rim lit from the top-left that catches again at the
+     bottom-right (gradient border-box), a soft refraction glow inside the edge (blurred, never a hard line)
+     and a faint colour fringe (dispersion). Same hairline count as Figma: one. */
+  border: 1px solid transparent;
   border-radius: 18px;
-  background: linear-gradient(156deg, rgb(0 0 0 / 0.3) 5.7%, rgb(13 16 24 / 0.3) 99.6%);
-  box-shadow: 0 34px 70px -28px rgb(0 0 0 / 0.9);
+  background:
+    linear-gradient(156deg, rgb(4 5 8 / 0.72) 5.7%, rgb(15 18 27 / 0.66) 99.6%) padding-box,
+    linear-gradient(135deg, rgb(255 255 255 / 0.32), rgb(255 255 255 / 0.09) 22%, rgb(255 255 255 / 0.04) 50%, rgb(255 255 255 / 0.08) 78%, rgb(255 255 255 / 0.2)) border-box;
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: blur(14px) saturate(1.5);
+  box-shadow:
+    inset 10px 10px 22px -18px rgb(255 255 255 / 0.18),
+    inset -10px -10px 22px -18px rgb(255 255 255 / 0.1),
+    inset 2px 0 6px -4px rgb(80 200 255 / 0.12),
+    inset -2px 0 6px -4px rgb(255 90 170 / 0.08),
+    0 34px 70px -28px rgb(0 0 0 / 0.9);
 }
 .tool-cell {
   background: rgb(255 255 255 / 0.03);
