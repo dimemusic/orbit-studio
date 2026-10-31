@@ -286,6 +286,7 @@ export const en: Content = {
       tags: ["New", "Hit"],
       buy: "Buy",
     },
+    layers: { label: "Layers", items: ["Grid", "Typography", "Visuals", "Code", "Admin panel"] },
     launch: {
       url: "your-product.com",
       online: "Online",
@@ -300,7 +301,7 @@ export const en: Content = {
       events: [
         { t: "First visitor", d: "just now · from Google" },
         { t: "New request", d: "“Standard” plan" },
-        { t: "New order", d: "Standard · 1 990 ₴" },
+        { t: "New order", d: "Standard · 1 790 ₴" },
       ],
     },
   },

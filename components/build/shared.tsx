@@ -9,7 +9,7 @@ import { seg, smooth } from "./util";
 /** each stage's inner timeline is 3 beats; this is how many real seconds each one gets.
  *  Design (the craft) and the panel (the client's benefit) get more time, code and launch read at a glance. */
 export const BEATS = 3;
-export const STAGE_SEC = [5.0, 3.2, 4.0, 3.4];
+export const STAGE_SEC = [4.2, 3.4, 3.8, 3.6];
 export const STAGE_START = STAGE_SEC.map((_, i) =>
   STAGE_SEC.slice(0, i).reduce((a, b) => a + b, 0),
 );

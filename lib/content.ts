@@ -385,6 +385,8 @@ export const BUILD = {
     tags: ["Новинка", "Хіт"],
     buy: "Купити",
   },
+  /** the 3D film: the site as a stack of layers (legend panel) */
+  layers: { label: "Шари", items: ["Сітка", "Типографіка", "Візуал", "Код", "Адмін-панель"] },
   launch: {
     url: "your-product.com",
     online: "Онлайн",
@@ -400,7 +402,7 @@ export const BUILD = {
     events: [
       { t: "Перший відвідувач", d: "щойно · з Google" },
       { t: "Нова заявка", d: "Тариф «Стандарт»" },
-      { t: "Нове замовлення", d: "Стандарт · 1 990 ₴" },
+      { t: "Нове замовлення", d: "Стандарт · 1 790 ₴" },
     ],
   },
 };
