@@ -608,8 +608,8 @@ html {
 .tool {
   /* Maksym's Figma panel (node 41:8351) with its Figma «Glass» effect, matched pixel by pixel against his render:
      the stars behind stay faintly visible but softened and darkened (frost 4 + the 156° black → navy wash),
-     ONE crisp white hairline at 30%, a faint refraction glow inside the bottom / right edge, deep shadow. */
-  border: 1px solid rgb(255 255 255 / 0.3);
+     ONE thin dark hairline (0.5px, white 14%: one device pixel on retina, the glass edge), a faint refraction glow inside the bottom / right edge, deep shadow. */
+  border: 0.5px solid rgb(255 255 255 / 0.14);
   border-radius: 18px;
   background: linear-gradient(156deg, rgb(0 0 0 / 0.6) 5.7%, rgb(13 16 24 / 0.5) 99.6%);
   -webkit-backdrop-filter: blur(4px);
