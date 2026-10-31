@@ -607,7 +607,6 @@ html {
    No backdrop-filter: the stage is scaled with transform and must stay sharp. */
 .tool {
   /* taken 1:1 from Maksym's Figma (node 41:8351): translucent dark glass, one hairline, deep shadow. Nothing else. */
-  --tint: 139 92 246;
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 18px;
   background: linear-gradient(156deg, rgb(0 0 0 / 0.3) 5.7%, rgb(13 16 24 / 0.3) 99.6%);
@@ -621,7 +620,7 @@ html {
 }
 /* a bright control inside a panel (active tool, publish button): a soft glow in its own colour (Figma: drop shadow 0 0 4.3 #855ede) */
 .tool-glow {
-  box-shadow: 0 0 6px rgb(var(--tint) / 0.85);
+  box-shadow: 0 0 6px rgb(var(--tint, 139 92 246) / 0.85);
 }
 .tool-label {
   font-size: 11px;
