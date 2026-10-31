@@ -50,7 +50,7 @@ export function FinalCta() {
     <section
       id="contact"
       aria-labelledby="contact-title"
-      className="relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-10 pt-28"
+      className="relative flex w-full flex-col px-gutter pb-12 pt-24"
     >
       <div className="relative z-[1] grid w-full min-w-0 items-center gap-x-[clamp(48px,7vw,140px)] gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)] wide:grid-cols-[minmax(0,38rem)_minmax(0,46rem)] wide:justify-center">
         {/* left: the invitation + direct contacts */}

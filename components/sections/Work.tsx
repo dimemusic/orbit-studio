@@ -28,7 +28,7 @@ export function Work() {
     <section
       id="work"
       aria-labelledby="work-title"
-      className="relative flex min-h-[100dvh] w-full flex-col justify-center px-gutter pb-10 pt-28"
+      className="relative flex w-full flex-col px-gutter pb-12 pt-24"
     >
       <header className="relative z-[1] flex w-full min-w-0 flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <h2 id="work-title" className="legible text-mega font-semibold">
