@@ -135,6 +135,8 @@ p {
      dark frosted glass: particles behind turn into a soft blurred glow, never sharp dots */
   .card {
     position: relative;
+    /* the site-wide glass (Oct 2026, asked: same style as the Build film panels): a see-through dark body with
+       the stars / grid behind frosted by a real backdrop blur, ONE very thin dim hairline, deep soft shadow */
     background:
       /* cursor spotlight (CardFx writes --mx / --my / --spot) */
       radial-gradient(
@@ -142,14 +144,12 @@ p {
         rgb(160 190 255 / calc(var(--spot) * 0.06)),
         transparent 70%
       ),
-      /* inner vignette: edges slightly darker than the centre */
-      radial-gradient(120% 130% at 50% 45%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.32) 100%),
-      rgba(6, 8, 14, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+      linear-gradient(156deg, rgb(0 0 0 / 0.42) 5.7%, rgb(13 16 24 / 0.34) 99.6%);
+    border: 0.5px solid rgb(255 255 255 / 0.09);
     border-radius: 16px;
-    -webkit-backdrop-filter: blur(24px) saturate(140%);
-    backdrop-filter: blur(24px) saturate(140%);
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    backdrop-filter: blur(18px) saturate(1.35);
+    box-shadow: 0 34px 70px -28px rgb(0 0 0 / 0.9);
     transition: --spot 0.45s var(--ease);
     /* own paint layer: hover / spotlight repaints stay inside the card. The clip margin keeps the 1px rings
        (::after spotlight, .card-pro::before) that sit on the border, outside the padding box */
@@ -172,12 +172,9 @@ p {
     -webkit-mask-composite: xor;
     mask-composite: exclude;
   }
-  /* every card in <main> sits below the hero, where the stars are already defocused and dimmed: the glass blur
-     made no visible difference there (A/B checked Oct 2026), so they keep the same tint without backdrop-filter.
-     The navbar (outside <main>, over the sharp hero stars) keeps its glass. */
-  main .card {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+  /* a modal over page content (the case dialog): the same glass with a denser body so the text stays calm */
+  .card.case-panel {
+    background: linear-gradient(156deg, rgb(6 7 11 / 0.86) 5.7%, rgb(14 17 25 / 0.82) 99.6%);
   }
   /* large cards only: CardFx writes --rx / --ry (max 4°) */
   [data-tilt] {
@@ -188,9 +185,7 @@ p {
   }
   /* navbar: a touch lighter */
   .card-nav {
-    background:
-      radial-gradient(120% 130% at 50% 45%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.28) 100%),
-      rgba(6, 8, 14, 0.6);
+    background: linear-gradient(156deg, rgb(0 0 0 / 0.42) 5.7%, rgb(13 16 24 / 0.34) 99.6%);
   }
   /* Pro plan: same card, thin blue → cyan gradient border, no glow */
   .card-pro {
@@ -608,12 +603,12 @@ html {
 .tool {
   /* Maksym's Figma panel (node 41:8351) with its Figma «Glass» effect, matched pixel by pixel against his render:
      the stars behind stay faintly visible but softened and darkened (frost 4 + the 156° black → navy wash),
-     ONE thin dark hairline (0.5px, white 14%: one device pixel on retina, the glass edge), a faint refraction glow inside the bottom / right edge, deep shadow. */
-  border: 0.5px solid rgb(255 255 255 / 0.14);
+     see-through body + real backdrop blur, ONE very thin dim hairline (0.5px, white 9%), a faint refraction glow inside the bottom / right edge, deep shadow. */
+  border: 0.5px solid rgb(255 255 255 / 0.09);
   border-radius: 18px;
-  background: linear-gradient(156deg, rgb(0 0 0 / 0.6) 5.7%, rgb(13 16 24 / 0.5) 99.6%);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  background: linear-gradient(156deg, rgb(0 0 0 / 0.42) 5.7%, rgb(13 16 24 / 0.34) 99.6%);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  backdrop-filter: blur(16px) saturate(1.35);
   box-shadow:
     inset -14px -14px 16px -14px rgb(170 185 230 / 0.07),
     0 34px 70px -28px rgb(0 0 0 / 0.9);
