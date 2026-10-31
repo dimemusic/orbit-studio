@@ -1,9 +1,6 @@
-import {
-  CheckCircle,
-  EnvelopeSimple,
-} from "@phosphor-icons/react/dist/ssr";
+import { CheckCircle, EnvelopeSimple, GitBranch, TerminalWindow } from "@phosphor-icons/react/dist/ssr";
 import { Caret, ease, expo, seg, typed } from "./util";
-import { box, fly, useB, Visual } from "./shared";
+import { box, BrowserBar, fly, MockNav, useB, Visual } from "./shared";
 
 /* ---------------- 2 · Code ---------------- */
 
@@ -19,45 +16,63 @@ function useTyping(s: number) {
   return { chars, lineK, textOf };
 }
 
+/** the editor panel: tab bar, gutter, the line being typed lit up, and the terminal docked at the bottom */
+const ED = { x: 40, y: 20, w: 640, h: 560 };
+const TAB_H = 44;
+const LINE_H = 31;
+const TERM_H = 92;
+const mono = "font-[ui-monospace,SFMono-Regular,Menlo,monospace]";
+
 export function CodeStage({ s }: { s: number }) {
   const { C, LEN, LINES, START } = useB();
   const { chars, lineK } = useTyping(s);
   const cur = LINES.findIndex((_, i) => chars < START[i] + LEN[i]);
   const term = expo(seg(s, 1.9, 2.2));
+  const ok = expo(seg(s, 2.22, 2.45));
+  const panel = expo(seg(s, 0.02, 0.5));
 
   return (
-    <>
-      {/* code written straight on the background */}
-      <div
-        className="border-l-2 border-[#5aa2ff]/40 pl-6 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[18px] leading-[34px]"
-        style={box(40, 20, 640)}
-      >
+    <div className="tool overflow-hidden" style={{ ...box(ED.x, ED.y, ED.w, ED.h), ...fly(panel, -60, 0, 10) }}>
+      {/* tabs */}
+      <div className="flex items-center gap-1 border-b border-white/[0.06] bg-black/20 px-2" style={{ height: TAB_H }}>
+        {C.files.map((f, i) => (
+          <span
+            key={f}
+            className={`flex h-[30px] items-center gap-2 rounded-lg px-3 text-[13px] ${mono} ${i === 0 ? "bg-white/[0.06] text-fg" : "text-faint"}`}
+          >
+            <span className="size-1.5 rounded-full" style={{ background: i === 0 ? "#5aa2ff" : i === 1 ? "#c792ea" : "#7fdbca", opacity: i === 0 ? 1 : 0.5 }} />
+            {f}
+          </span>
+        ))}
+        <span className={`ml-auto flex items-center gap-1.5 rounded-md px-2 py-1 text-[12px] text-grey ${mono}`}>
+          <GitBranch size={13} /> {C.branch}
+        </span>
+      </div>
+
+      {/* code */}
+      <div className={`relative pt-3 text-[16px] ${mono}`} style={{ lineHeight: `${LINE_H}px` }}>
+        {cur >= 0 && (
+          // the line being typed: a soft bar with a blue edge
+          <span
+            className="absolute inset-x-0 border-l-2 border-[#5aa2ff] bg-white/[0.035]"
+            style={{ top: 12 + cur * LINE_H, height: LINE_H }}
+          />
+        )}
         {LINES.map((line, i) => {
           let left = chars - START[i];
           const k = ease(Math.min(1, lineK(i) * 4));
           return (
-            <div
-              key={i}
-              className="flex"
-              style={{ opacity: chars > START[i] ? 1 : 0.15 }}
-            >
-              <span className="w-9 shrink-0 pr-4 text-right text-faint">
-                {i + 1}
-              </span>
+            <div key={i} className="relative flex" style={{ opacity: chars > START[i] ? 1 : 0.18 }}>
+              <span className={`w-12 shrink-0 pr-4 text-right text-[13px] ${i === cur ? "text-body" : "text-faint"}`}>{i + 1}</span>
               <span
-                className="whitespace-pre"
+                className="whitespace-pre pl-2"
                 style={
                   // small: the typed line only fades in (no per-line blur)
-                  chars > START[i] && k < 1
-                    ? { opacity: 0.35 + 0.65 * k }
-                    : undefined
+                  chars > START[i] && k < 1 ? { opacity: 0.35 + 0.65 * k } : undefined
                 }
               >
                 {line.map(([x, c], j) => {
-                  const show = x.slice(
-                    0,
-                    Math.max(0, Math.min(x.length, left)),
-                  );
+                  const show = x.slice(0, Math.max(0, Math.min(x.length, left)));
                   left -= x.length;
                   return (
                     <span key={j} style={{ color: c }}>
@@ -71,21 +86,25 @@ export function CodeStage({ s }: { s: number }) {
           );
         })}
       </div>
-      {/* terminal */}
+
+      {/* terminal, docked */}
       <div
-        className="tool flex items-center gap-4 px-5 font-[ui-monospace,SFMono-Regular,Menlo,monospace] text-[15px]"
-        style={{ ...box(40, 520, 640, 60), ...fly(term, 0, 40, 12) }}
+        className={`absolute inset-x-0 bottom-0 border-t border-white/[0.07] bg-black/25 px-5 text-[14px] ${mono}`}
+        style={{ height: TERM_H, opacity: Math.min(1, 0.35 + term) }}
       >
-        <span className="text-green">~/your-product $</span>
-        <span className="text-body">{typed(C.cmd, seg(s, 2.02, 2.2))}</span>
-        <span
-          className="ml-auto flex items-center gap-2 text-green"
-          style={fly(expo(seg(s, 2.22, 2.45)), 20, 0, 8)}
-        >
-          <CheckCircle size={17} weight="fill" /> {C.ok}
-        </span>
+        <p className="flex h-9 items-center gap-2 text-[11px] uppercase tracking-[0.12em] text-faint">
+          <TerminalWindow size={13} /> zsh
+        </p>
+        <p className="flex items-center gap-3" style={fly(term, 0, 10, 6)}>
+          <span className="text-green">~/your-product</span>
+          <span className="text-faint">$</span>
+          <span className="text-body">{typed(C.cmd, seg(s, 2.02, 2.2))}</span>
+          <span className="ml-auto flex items-center gap-2 text-green" style={fly(ok, 16, 0, 8)}>
+            <CheckCircle size={16} weight="fill" /> {C.ok}
+          </span>
+        </p>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -95,17 +114,13 @@ export function CodeScreen({ s }: { s: number }) {
   const { lineK, textOf } = useTyping(s);
   return (
     <div className="absolute inset-0 text-[#1a1714]">
-      <div className="flex h-8 items-center gap-1.5 bg-[#e6e0d4] px-3">
-        <i className="size-2 rounded-full bg-black/20" />
-        <i className="size-2 rounded-full bg-black/20" />
-        <i className="size-2 rounded-full bg-black/20" />
-        <span className="ml-2 rounded bg-white/70 px-2 text-[11px] text-[#5c564c]">
-          localhost:3000
-        </span>
-      </div>
-      <div className="p-5">
+      <BrowserBar url="localhost:3000" />
+      <div className="px-5 pb-5 pt-3">
+        <div className="mb-3" style={fly(expo(Math.min(1, lineK(2) * 2)), 0, -6, 4)}>
+          <MockNav brand={BUILD.brand} links={BUILD.design.pages} size={0.85} />
+        </div>
         <div
-          className="relative h-[144px] overflow-hidden rounded-xl"
+          className="relative h-[128px] overflow-hidden rounded-xl"
           style={fly(expo(lineK(2)), 0, 16, 10)}
         >
           <Visual />

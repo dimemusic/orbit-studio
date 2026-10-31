@@ -10,15 +10,15 @@ import {
   UserCircle,
 } from "@phosphor-icons/react/dist/ssr";
 import { along, Caret, ease, expo, seg, smooth, typed } from "./util";
-import { box, fly, useB, Visual } from "./shared";
+import { box, BrowserBar, fly, MockNav, useB, Visual } from "./shared";
 
 /* ---------------- 4 · Launch ---------------- */
 const BR = { x: 540, y: 20, w: 600, h: 560 };
 const PIECES = [
-  { x: 24, y: 64, w: 552, h: 279, dx: 460, dy: -80, c: "#efe9de" },
-  { x: 24, y: 364, w: 170, h: 172, dx: -480, dy: 160, c: "#efe9de" },
-  { x: 215, y: 364, w: 170, h: 172, dx: 0, dy: 320, c: "#efe9de" },
-  { x: 406, y: 364, w: 170, h: 172, dx: 480, dy: 160, c: "#efe9de" },
+  { x: 24, y: 92, w: 552, h: 262, dx: 460, dy: -80, c: "#efe9de" },
+  { x: 24, y: 372, w: 170, h: 166, dx: -480, dy: 160, c: "#efe9de" },
+  { x: 215, y: 372, w: 170, h: 166, dx: 0, dy: 320, c: "#efe9de" },
+  { x: 406, y: 372, w: 170, h: 166, dx: 480, dy: 160, c: "#efe9de" },
 ];
 /** the finale, in seconds of the held final frame: a visitor arrives, a request and an order come in */
 const EVENT_AT = [0.5, 1.5, 2.5];
@@ -27,8 +27,8 @@ const EVENT_COLOR = ["#5aa2ff", "#a78bfa", "#34d399"];
 /** the visitor's cursor in the browser (browser coordinates): enters, clicks the hero button, browses on */
 const VISITOR: [number, number, number][] = [
   [0.2, 560, 600],
-  [1.1, 118, 252],
-  [1.35, 118, 252],
+  [1.1, 112, 262],
+  [1.35, 112, 262],
   [2.6, 300, 470],
   [4.4, 470, 430],
 ];
@@ -80,7 +80,7 @@ export function LaunchStage({ s, hold = 0 }: { s: number; hold?: number }) {
         className="flex items-center justify-between"
         style={{ ...box(40, BR.y, 430, 16), ...fly(expo(seg(s, 0.02, 0.5)), -40, 0, 8) }}
       >
-        <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">{L.listLabel}</span>
+        <span className="tool-label">{L.listLabel}</span>
         <span className="text-[13px] font-semibold tabular-nums text-fg">
           {DONE.filter((d) => s >= d).length}/{L.items.length}
         </span>
@@ -173,10 +173,10 @@ export function LaunchStage({ s, hold = 0 }: { s: number; hold?: number }) {
                 }}
               />
               <span
-                className="absolute inset-0 grid place-items-center rounded-full bg-green text-[#05070d]"
-                style={{ transform: `scale(${done.toFixed(3)})`, opacity: done }}
+                className="absolute inset-0 grid place-items-center rounded-full text-green"
+                style={{ transform: `scale(${done.toFixed(3)})`, opacity: done, background: "rgb(52 211 153 / 0.14)", boxShadow: "inset 0 0 0 1px rgb(52 211 153 / 0.45)" }}
               >
-                <Check size={16} weight="bold" />
+                <Check size={15} weight="bold" />
               </span>
             </span>
           </div>
@@ -202,38 +202,40 @@ export function LaunchScreen({ s, hold = 0 }: { s: number; hold?: number }) {
   const cursorOn = Math.min(seg(hold, 0.2, 0.5), 1 - seg(hold, 4.2, 4.5));
   return (
     <div className="absolute inset-0">
-      <div className="flex h-10 items-center gap-2 bg-[#e6e0d4] px-4">
-        <i className="size-2.5 rounded-full bg-black/20" />
-        <i className="size-2.5 rounded-full bg-black/20" />
-        <i className="size-2.5 rounded-full bg-black/20" />
-        <span className="ml-4 flex h-6 min-w-[220px] items-center gap-1.5 rounded-md bg-white/80 px-3 text-[13px] text-[#3f3a33]">
-          <Lock
-            size={12}
-            weight="fill"
-            className={s > 1.65 ? "text-[#1f8f5f]" : "text-black/25"}
-          />
-          {url}
-          <Caret on={s > 1.25 && s < 1.7} color="#1a1714" />
-        </span>
-        {/* live status: a round ping on the dot, the pill itself stays still */}
-        <span
-          className="ml-auto flex items-center gap-2 rounded-full bg-[#1f8f5f]/12 px-3 py-1 text-[12px] font-semibold text-[#1f8f5f]"
-          style={fly(online, 12, 0, 6)}
-        >
-          <span className="relative grid size-2 place-items-center">
-            {online > 0.5 && <span className="absolute inset-0 animate-ping rounded-full bg-[#1f8f5f]/60" />}
-            <span className="relative size-2 rounded-full bg-[#1f8f5f]" />
-          </span>
-          {/* the finale: «Online» rolls over into a live visitor count */}
-          <span className="grid overflow-hidden">
-            <span className="col-start-1 row-start-1" style={swapOut(count)}>
-              {L.online}
+      <BrowserBar
+        h={40}
+        lock={s > 1.65}
+        url={
+          <>
+            {url}
+            <Caret on={s > 1.25 && s < 1.7} color="#1a1714" />
+          </>
+        }
+        right={
+          // live status: a round ping on the dot, the pill itself stays still
+          <span
+            className="flex items-center gap-2 rounded-full bg-[#1f8f5f]/12 px-3 py-1 text-[12px] font-semibold text-[#1f8f5f]"
+            style={fly(online, 12, 0, 6)}
+          >
+            <span className="relative grid size-2 place-items-center">
+              {online > 0.5 && <span className="absolute inset-0 animate-ping rounded-full bg-[#1f8f5f]/60" />}
+              <span className="relative size-2 rounded-full bg-[#1f8f5f]" />
             </span>
-            <span className="col-start-1 row-start-1 whitespace-nowrap tabular-nums" style={swapIn(count)}>
-              {visitors} {L.visitors}
+            {/* the finale: «Online» rolls over into a live visitor count */}
+            <span className="grid overflow-hidden">
+              <span className="col-start-1 row-start-1" style={swapOut(count)}>
+                {L.online}
+              </span>
+              <span className="col-start-1 row-start-1 whitespace-nowrap tabular-nums" style={swapIn(count)}>
+                {visitors} {L.visitors}
+              </span>
             </span>
           </span>
-        </span>
+        }
+      />
+      {/* the site's own header, there from the start */}
+      <div className="absolute" style={{ ...box(24, 52, 552, 28), ...fly(expo(seg(s, 0.25, 0.7)), 0, -10, 4) }}>
+        <MockNav brand={BUILD.brand} links={BUILD.design.pages} />
       </div>
       {/* deploy progress under the address bar */}
       <span
@@ -297,7 +299,7 @@ export function LaunchScreen({ s, hold = 0 }: { s: number; hold?: number }) {
             )}
             {i >= 1 && (
               <div className="flex h-full flex-col p-3">
-                <div className="relative h-[106px] shrink-0 overflow-hidden rounded-lg">
+                <div className="relative h-[94px] shrink-0 overflow-hidden rounded-lg">
                   <Visual v={i - 1} />
                 </div>
                 <p className="mt-2.5 truncate text-[12px] font-semibold leading-tight text-[#1a1714]">

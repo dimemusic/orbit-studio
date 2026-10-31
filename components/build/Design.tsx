@@ -20,17 +20,18 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { Fragment, memo, type ReactNode } from "react";
 import { along, expo, seg, smooth, Typed } from "./util";
-import { SW, fly, box, INK, Visual, useB } from "./shared";
+import { SW, fly, box, INK, MockNav, Visual, useB } from "./shared";
 
 /* ---------------- 1 · Design ---------------- */
 const AB = { x: 360, y: 20, w: 480, h: 560 };
 /** element rects inside the artboard: assembled AND selected from the same numbers, so the selection always fits */
 type Rc = { x: number; y: number; w: number; h: number };
 const R = {
-  img: { x: 24, y: 24, w: 432, h: 186 },
-  title: { x: 24, y: 262, w: 420, h: 48 },
-  btn: { x: 24, y: 360, w: 150, h: 46 },
-  plans: { x: 24, y: 428, w: 432, h: 74 },
+  nav: { x: 24, y: 16, w: 432, h: 28 },
+  img: { x: 24, y: 56, w: 432, h: 186 },
+  title: { x: 24, y: 294, w: 420, h: 48 },
+  btn: { x: 24, y: 392, w: 150, h: 46 },
+  plans: { x: 24, y: 460, w: 432, h: 74 },
 };
 const PLAN_W = (R.plans.w - 20) / 3;
 const SWATCHES = ["#e8492a", "#a78bfa", "#22d3ee", INK];
@@ -48,8 +49,8 @@ const tile = (i: number) => ({
 /** hairline between sidebar sections */
 const Hr = ({ y }: { y: number }) => <i className="absolute inset-x-0 h-px bg-white/[0.07]" style={{ top: y }} />;
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
-const label = "text-[11px] font-semibold uppercase tracking-[0.1em] text-grey";
-const cell = "flex h-[34px] items-center gap-2 rounded-lg bg-white/[0.05] px-2.5 text-[13px] tabular-nums text-body";
+const label = "tool-label";
+const cell = "tool-cell flex h-[34px] items-center gap-2 px-2.5 text-[13px] tabular-nums text-body";
 
 const VI = "#a78bfa"; // designer
 const CY = "#22d3ee"; // copywriter
@@ -248,8 +249,8 @@ export function DesignStage({ s }: { s: number }) {
           return (
             <div
               key={c}
-              className="absolute flex items-center gap-2.5 rounded-lg border bg-white/[0.04] px-2.5 transition-colors duration-300"
-              style={{ ...box(r.x - LS.x, r.y - LS.y, r.w, r.h), ...fly(pan(3), -20, 0, 4), borderColor: hot ?? "transparent" }}
+              className="tool-cell absolute flex items-center gap-2.5 px-2.5 transition-colors duration-300"
+              style={{ ...box(r.x - LS.x, r.y - LS.y, r.w, r.h), ...fly(pan(3), -20, 0, 4), ...(hot ? { borderColor: hot } : {}) }}
             >
               <span className="grid w-7 shrink-0 place-items-center">
                 {i === 0 && <span className="h-2.5 w-7 rounded-full bg-white/70" />}
@@ -415,10 +416,13 @@ export function DesignStage({ s }: { s: number }) {
 /** the artboard's content (artboard coordinates, 480 × 560): the site assembling itself, from the same rects as the selections.
  *  Lives inside the product frame (build/Product.tsx), which is the artboard itself. */
 export function DesignScreen({ s }: { s: number }) {
-  const { D } = useB();
+  const { BUILD, D } = useB();
   const { img, badge, signup, title, sub, btnFly, more, planFly, btnColor } = beats(s);
   return (
     <div className="absolute inset-0 text-[#1a1714]">
+      <div className="absolute" style={{ ...box(R.nav.x, R.nav.y, R.nav.w, R.nav.h), ...fly(expo(seg(s, 0.9, 1.2)), 0, -8, 4) }}>
+        <MockNav brand={BUILD.brand} links={D.pages} />
+      </div>
       <div
         className="absolute overflow-hidden rounded-xl"
         style={{

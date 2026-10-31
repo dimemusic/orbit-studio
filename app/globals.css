@@ -592,11 +592,31 @@ html {
 /* ---------- «Як ми працюємо» film ---------- */
 /* tool panels float on the page background and get motion blur, so they use an opaque dark surface
    (no backdrop-filter: a filter on a .card would kill its glass) */
+/* Build film UI kit: app surfaces that read as real, well-made software.
+   .tool = a panel (opaque, a light top edge, a dark outer hairline for a crisp silhouette, a deep soft shadow);
+   .tool-cell = an input / value cell inside a panel (inset, never a grey block); .tool-label = section label. */
 .tool {
-  background: rgb(10 13 21 / 0.94);
-  border: 1px solid rgb(255 255 255 / 0.09);
-  border-radius: 16px;
-  box-shadow: 0 24px 60px -18px rgb(0 0 0 / 0.7);
+  background: #0d1018;
+  border: 1px solid rgb(255 255 255 / 0.075);
+  border-radius: 18px;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 0 0 1px rgb(0 0 0 / 0.55),
+    0 2px 4px rgb(0 0 0 / 0.3),
+    0 34px 70px -28px rgb(0 0 0 / 0.9);
+}
+.tool-cell {
+  background: rgb(255 255 255 / 0.028);
+  border: 1px solid rgb(255 255 255 / 0.065);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 0.25);
+}
+.tool-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #7d838f;
 }
 /* boot: nothing pops in piece by piece. Until the star field has its first frame (html.booting),
    the stars, the ambient washes, the nav and the revealed copy stay hidden; then they come in together.

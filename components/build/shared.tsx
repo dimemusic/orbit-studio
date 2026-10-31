@@ -1,4 +1,5 @@
-import { memo, type CSSProperties } from "react";
+import { Lock } from "@phosphor-icons/react/dist/ssr";
+import { memo, type CSSProperties, type ReactNode } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
 import { seg, smooth } from "./util";
@@ -82,61 +83,106 @@ export const box = (x: number, y: number, w?: number, h?: number): CSSProperties
 });
 export const INK = "#1a1714";
 
-/** neutral abstract "product shot" for the mock site (no image files); v picks the palette */
+/** neutral abstract "product shot" for the mock site (no image files); v picks the palette.
+ *  Lit like a studio photo: a window glow, soft contact shadows (radial gradients, no SVG filters: it moves with the film),
+ *  a bevelled object with a top-edge highlight and a glossy sphere. */
 const VIS = [
-  ["#efede9", "#d6d2ca"],
-  ["#e9ecf0", "#c8ced7"],
-  ["#f1ebe5", "#d9cbbf"],
+  ["#f3f0ea", "#d9d3c8"],
+  ["#eef1f5", "#cdd4de"],
+  ["#f5eee7", "#dccdbf"],
 ];
 /** static artwork: memoised, it re-rendered every animation frame with the stage */
 export const Visual = memo(function Visual({ v = 0 }: { v?: number }) {
   const [a, b] = VIS[v % VIS.length];
   const id = `vis${v % VIS.length}`;
   return (
-    <svg
-      viewBox="0 0 432 180"
-      preserveAspectRatio="xMidYMid slice"
-      className="absolute inset-0 h-full w-full"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 432 180" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" aria-hidden="true">
       <defs>
-        <linearGradient id={`${id}bg`} x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={`${id}bg`} x1="0" y1="0" x2="0.9" y2="1">
           <stop offset="0" stopColor={a} />
           <stop offset="1" stopColor={b} />
         </linearGradient>
-        <linearGradient id={`${id}obj`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3a3a3f" />
-          <stop offset="1" stopColor="#0f0f12" />
+        <radialGradient id={`${id}glow`} cx="0.22" cy="0.1" r="0.6">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.75" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id={`${id}floor`} cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stopColor="#000" stopOpacity="0.32" />
+          <stop offset="0.6" stopColor="#000" stopOpacity="0.1" />
+          <stop offset="1" stopColor="#000" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id={`${id}obj`} x1="0.1" y1="0" x2="0.8" y2="1">
+          <stop offset="0" stopColor="#4a4b52" />
+          <stop offset="0.45" stopColor="#202126" />
+          <stop offset="1" stopColor="#0b0b0e" />
         </linearGradient>
-        <radialGradient id={`${id}ball`} cx="0.35" cy="0.3" r="0.75">
+        <linearGradient id={`${id}edge`} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0.5" stopColor="#fff" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+        <radialGradient id={`${id}ball`} cx="0.34" cy="0.28" r="0.8">
           <stop offset="0" stopColor="#ffffff" />
-          <stop offset="1" stopColor="#a9a39a" />
+          <stop offset="0.45" stopColor="#e4e0d9" />
+          <stop offset="1" stopColor="#8f897f" />
         </radialGradient>
       </defs>
       <rect width="432" height="180" fill={`url(#${id}bg)`} />
-      <circle cx="110" cy="40" r="90" fill="#fff" opacity="0.35" />
-      <ellipse cx="292" cy="156" rx="110" ry="14" fill="#000" opacity="0.1" />
+      <rect width="432" height="180" fill={`url(#${id}glow)`} />
+      {/* floor line: where the table meets the wall */}
+      <rect y="128" width="432" height="52" fill="#000" opacity="0.035" />
+      {/* contact shadows */}
+      <ellipse cx="292" cy="150" rx="118" ry="16" fill={`url(#${id}floor)`} />
+      <ellipse cx="370" cy="151" rx="30" ry="6" fill={`url(#${id}floor)`} />
       <g transform="rotate(-9 290 90)">
-        <rect
-          x="226"
-          y="34"
-          width="128"
-          height="104"
-          rx="24"
-          fill={`url(#${id}obj)`}
-        />
-        <rect
-          x="240"
-          y="46"
-          width="100"
-          height="7"
-          rx="3.5"
-          fill="#fff"
-          opacity="0.14"
-        />
+        <rect x="226" y="34" width="128" height="104" rx="24" fill={`url(#${id}obj)`} />
+        {/* bevel: a soft top edge catches the window light */}
+        <rect x="236" y="35.5" width="108" height="2" rx="1" fill={`url(#${id}edge)`} />
+        <rect x="240" y="47" width="100" height="6" rx="3" fill="#fff" opacity="0.1" />
       </g>
       <circle cx="368" cy="126" r="24" fill={`url(#${id}ball)`} />
+      <ellipse cx="360" cy="116" rx="7" ry="4.5" fill="#fff" opacity="0.7" />
     </svg>
+  );
+});
+
+/** browser chrome for the mock site: traffic lights, a centred address field with a lock; `right` for status pills */
+export function BrowserBar({ url, lock = false, right, h = 34 }: { url: ReactNode; lock?: boolean; right?: ReactNode; h?: number }) {
+  return (
+    <div className="relative flex items-center gap-1.5 border-b border-black/[0.06] bg-[#ebe6dc] px-3.5" style={{ height: h }}>
+      <i className="size-[9px] rounded-full bg-[#ff5f57]" />
+      <i className="size-[9px] rounded-full bg-[#febc2e]" />
+      <i className="size-[9px] rounded-full bg-[#28c840]" />
+      <span
+        className="absolute left-1/2 top-1/2 flex h-[22px] min-w-[46%] -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1.5 rounded-md bg-white/80 px-3 text-[12px] text-[#3f3a33] shadow-[0_1px_0_rgb(0_0_0/0.04)]"
+      >
+        {lock && <Lock size={11} weight="fill" className="text-[#1f8f5f]" />}
+        {url}
+      </span>
+      {right && <span className="ml-auto">{right}</span>}
+    </div>
+  );
+}
+
+/** the mock site's own header (logo, brand, page links): the same one on the artboard, in the preview and live.
+ *  `size` scales it with the page it sits in (1 = artboard / browser, 0.85 = the narrower preview). */
+export const MockNav = memo(function MockNav({ brand, links, size = 1 }: { brand: string; links: readonly string[]; size?: number }) {
+  return (
+    <div className="flex items-center justify-between text-[#1a1714]" style={{ fontSize: 12 * size, height: 28 * size }}>
+      <span className="flex items-center gap-2 font-semibold tracking-[-0.02em]" style={{ fontSize: 13.5 * size }}>
+        <span className="grid place-items-center rounded-[6px] bg-[#1a1714]" style={{ width: 18 * size, height: 18 * size }}>
+          <span className="rounded-full bg-[#f4f0e8]" style={{ width: 6 * size, height: 6 * size }} />
+        </span>
+        {brand}
+      </span>
+      <span className="flex items-center text-[#5c564c]" style={{ gap: 16 * size }}>
+        {links.map((l, i) => (
+          <span key={l} className={i === 0 ? "font-semibold text-[#1a1714]" : undefined}>
+            {l}
+          </span>
+        ))}
+      </span>
+    </div>
   );
 });
 

@@ -38,10 +38,10 @@ function Field({
         {right}
       </p>
       <div
-        className="mt-1.5 flex h-10 items-center rounded-xl border bg-white/[0.035] text-[15px] text-fg"
+        className="tool-cell mt-1.5 flex h-10 items-center text-[15px] text-fg"
         style={{
-          borderColor: `color-mix(in srgb, #22d3ee ${(focus * 100).toFixed(0)}%, rgb(255 255 255 / 0.12))`,
-          boxShadow: `0 0 0 ${(focus * 4).toFixed(2)}px rgb(34 211 238 / 0.12)`,
+          borderColor: `color-mix(in srgb, #22d3ee ${(focus * 100).toFixed(0)}%, rgb(255 255 255 / 0.08))`,
+          boxShadow: `0 0 0 ${(focus * 4).toFixed(2)}px rgb(34 211 238 / 0.12), inset 0 1px 1px rgb(0 0 0 / 0.25)`,
         }}
       >
         {children}
@@ -246,11 +246,11 @@ export function CmsStage({ s }: { s: number }) {
 
         {/* description with a small editor toolbar */}
         <div
-          className="rounded-xl border bg-white/[0.035]"
+          className="tool-cell"
           style={{
             ...row(4),
-            borderColor: `color-mix(in srgb, #22d3ee ${(fDesc * 100).toFixed(0)}%, rgb(255 255 255 / 0.12))`,
-            boxShadow: `0 0 0 ${(fDesc * 4).toFixed(2)}px rgb(34 211 238 / 0.12)`,
+            borderColor: `color-mix(in srgb, #22d3ee ${(fDesc * 100).toFixed(0)}%, rgb(255 255 255 / 0.08))`,
+            boxShadow: `0 0 0 ${(fDesc * 4).toFixed(2)}px rgb(34 211 238 / 0.12), inset 0 1px 1px rgb(0 0 0 / 0.25)`,
           }}
         >
           <div className="flex items-center gap-1 border-b border-white/[0.08] px-2 py-1.5 text-grey">
@@ -275,7 +275,7 @@ export function CmsStage({ s }: { s: number }) {
 
         {/* availability */}
         <div
-          className="flex h-12 items-center justify-between rounded-xl bg-white/[0.035] px-4"
+          className="tool-cell flex h-12 items-center justify-between px-4"
           style={row(5)}
         >
           <span className="text-[14px] text-fg">{M.stock}</span>
@@ -339,10 +339,9 @@ export function CmsStage({ s }: { s: number }) {
           ...fly(expo(seg(s, 0.2, 0.75)), 0, 30, 12),
         }}
       >
-        <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-grey">
-          {M.logLabel}
-        </p>
-        <ul className="mt-3 flex flex-col gap-2.5">
+        <p className="tool-label">{M.logLabel}</p>
+        {/* a timeline: one hairline through the dots */}
+        <ul className="relative mt-3 flex flex-col gap-2.5 before:absolute before:bottom-2 before:left-[2.5px] before:top-2 before:w-px before:bg-white/[0.08]">
           {M.log.map((l, i) => {
             const k = expo(seg(s, LOG_AT[i], LOG_AT[i] + 0.3));
             return (
@@ -352,7 +351,7 @@ export function CmsStage({ s }: { s: number }) {
                 style={fly(k, 0, 10, 5)}
               >
                 <span
-                  className={`mt-1.5 size-1.5 shrink-0 rounded-full ${i === 3 ? "bg-green" : "bg-cyan"}`}
+                  className={`relative mt-1.5 size-1.5 shrink-0 rounded-full ring-[3px] ring-[#0d1018] ${i === 3 ? "bg-green" : "bg-cyan"}`}
                 />
                 <span className="leading-tight">
                   <span className="block text-[13px] text-fg">{l}</span>
