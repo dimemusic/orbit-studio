@@ -313,7 +313,113 @@ export const en: Content = {
   PRIVACY: {
     crumb: "Privacy policy",
     title: "Privacy policy",
-    lead: "[Privacy policy text]",
+    lead: "In short: we only collect what you type into the request form, so we can reply. No ads, no tracking, no selling of data.",
+    updated: "Updated October 31, 2026",
+    sections: [
+      {
+        h: "Who we are",
+        p: [
+          "maxartdigital.com belongs to the web studio MaxArt Digital (Lviv, Ukraine). Data controller: [sole proprietor name or company name], [address].", // DRAFT
+          "For any question about your data, write to hello@maxartdigital.com.",
+        ],
+        li: [],
+      },
+      {
+        h: "What data we receive",
+        p: ["When you send the request form:"],
+        li: ["your name or how to address you;", "Telegram or email to reply to;", "the type of website you are interested in;", "a project description, if you left one."],
+      },
+      {
+        h: "",
+        p: [
+          "When you visit the site, the hosting automatically records technical request data: IP address, browser type and time. These are standard server logs; we do not use them to identify you.",
+          "We never ask for or store passwords, payment details or information about health, religion, political views and the like.",
+        ],
+        li: [],
+      },
+      {
+        h: "Why",
+        p: [],
+        li: [
+          "to answer your request, clarify the task and prepare an offer;",
+          "to talk with you about the project if we agree to work together;",
+          "to keep the site stable and protected from spam and attacks.",
+        ],
+      },
+      {
+        h: "",
+        p: ["We send no newsletters, show no ads, and never sell or share your data for marketing."],
+        li: [],
+      },
+      {
+        h: "Legal basis",
+        p: [
+          "We process data under the Law of Ukraine «On Personal Data Protection» and, for visitors from the EU, under the GDPR. The bases are: your consent, given by sending the form; steps taken at your request before a contract; our legitimate interest in keeping the site secure.",
+        ],
+        li: [],
+      },
+      {
+        h: "Who we share data with",
+        p: ["Only the services the site cannot work without:"],
+        li: [
+          "Vercel Inc. (USA): site hosting and technical logs;",
+          "Resend (USA): delivering your request to our inbox;",
+          "our email provider: where the request email is kept.",
+        ],
+      },
+      {
+        h: "",
+        p: [
+          "These services may process data outside Ukraine and the EU. They work under standard contractual clauses for data protection. We share data with anyone else only when the law requires it.",
+        ],
+        li: [],
+      },
+      {
+        h: "Cookies",
+        p: [
+          "The site uses no cookies, analytics or ad trackers. The browser keeps only one technical value in sessionStorage, so the intro plays once per session. It holds no personal data and disappears when you close the tab.",
+        ],
+        li: [],
+      },
+      {
+        h: "How long we keep it",
+        p: [
+          "Requests are kept while we are talking or working together, and no longer than 3 years after the last contact. Then we delete them. Hosting logs are kept for a limited time under Vercel's rules.", // DRAFT: retention period
+        ],
+        li: [],
+      },
+      {
+        h: "Your rights",
+        p: ["At any time you can:"],
+        li: [
+          "learn which of your data we hold and get a copy;",
+          "correct inaccurate data;",
+          "ask us to delete your data or restrict its processing;",
+          "object to processing or withdraw your consent;",
+          "complain to the Ukrainian Parliament Commissioner for Human Rights or to the data protection authority of your EU country.",
+        ],
+      },
+      {
+        h: "",
+        p: ["To use these rights, write to hello@maxartdigital.com. We reply within 30 days."],
+        li: [],
+      },
+      {
+        h: "Security",
+        p: ["The site works only over HTTPS and requests travel over an encrypted connection. Only our team has access to them."],
+        li: [],
+      },
+      {
+        h: "Children",
+        p: ["The site is not meant for children. If you believe a child has sent us their data, write to us and we will delete it."],
+        li: [],
+      },
+      {
+        h: "Changes",
+        p: ["If we change this policy, the new version will appear on this page with a new update date."],
+        li: [],
+      },
+    ],
   },
 
   UI: {

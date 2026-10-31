@@ -14,7 +14,7 @@ We sell design, website development and admin panels, ideally as one package. **
 - Env (`.env.example`): `RESEND_API_KEY`, `CONTACT_TO`, optional `CONTACT_FROM` (contact form → email), `NEXT_PUBLIC_SITE_URL` (canonical / sitemap origin).
 
 ## Structure
-- `app/(uk)/layout.tsx` (`/`, `/privacy`) and `app/(en)/layout.tsx` (`/en`, `/en/privacy`): two root layouts, both render `components/Shell.tsx` (html lang, head boot script, Ambient + StarField background, Nav, main, Footer, RevealRoot, CardFx, `LangProvider`). Pages: `components/HomePage.tsx`, privacy = `PageHero` with placeholder text. Also `app/api/contact/route.ts`, `app/robots.ts`, `app/sitemap.ts`.
+- `app/(uk)/layout.tsx` (`/`, `/privacy`) and `app/(en)/layout.tsx` (`/en`, `/en/privacy`): two root layouts, both render `components/Shell.tsx` (html lang, head boot script, Ambient + StarField background, Nav, main, Footer, RevealRoot, CardFx, `LangProvider`). Pages: `components/HomePage.tsx`, privacy = `PageHero` + `PrivacyBody` (policy text in `PRIVACY.sections`, written for what the site really does: form → Resend, Vercel hosting logs, no cookies / analytics, one sessionStorage flag; controller name / address and the 3-year retention are `// DRAFT`). Also `app/api/contact/route.ts`, `app/robots.ts`, `app/sitemap.ts`.
 - **Copy**: all of it in `lib/content.ts` (uk) and `lib/content.en.ts` (en, typed `Content`, same shape). No copy in components; new copy goes into BOTH files. Components read it with `useContent()` / `useLang()` (`components/Lang.tsx`), server code with `contentFor(lang)` (`lib/i18n.ts`). Small UI strings, locale and plural days live in `UI`.
 - Home order: Hero (`top`) → `Build` («Як ми працюємо», `process`) → `Work` (`work`) → `Pricing` (`services`) → `FinalCta` (`contact`). `NAV` and `HOME_SECTIONS` list only these. `About.tsx`, `Faq.tsx` and `ui/HomeSection.tsx` are parked (not rendered): bring back only when asked. About, admin-panel demo, Team and Guarantees were removed on purpose (too much decoration, too little information).
 - Cross-section event: `PACKAGE_PICK` (`components/home.ts`): «Обрати» on a pricing row → the contact chip of that website type (`CONTACT.chips[i]` = `SERVICES.plans[i]`, last chip «Інше»).
@@ -66,7 +66,7 @@ Spotlight / border light on interactive cards, fine pointers only. **Never set `
 ## SEO
 - Page metadata via `pageMetadata(lang, path, opts)` (`lib/seo.ts`): title / description from `META` in the content files (title ≤ 60 chars, description ≤ 160), canonical, hreflang uk / en / x-default (= uk), Open Graph + Twitter `summary_large_image` with `public/og-uk.png` / `og-en.png` (1200×630; redraw them if the brand or promise changes). `shellMetadata` in Shell only sets metadataBase, title template and app name.
 - `components/JsonLd.tsx` (rendered by `HomePage`): schema.org `ProfessionalService` + offer catalogue from `SERVICES.plans`, plus `WebSite`. Built from content, so prices stay in sync.
-- Privacy pages are `noindex` and left out of `app/sitemap.ts` until the real policy text is in. `app/manifest.ts`, `app/apple-icon.png`, `public/icon-512.png`.
+- Privacy pages are `noindex` and left out of `app/sitemap.ts` until the controller's legal name / address placeholders in `PRIVACY` are filled in. `app/manifest.ts`, `app/apple-icon.png`, `public/icon-512.png`.
 - Case images carry descriptive `alt`. One `h1` per page (hero).
 
 ## Performance
