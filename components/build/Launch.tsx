@@ -10,16 +10,14 @@ import {
   UserCircle,
 } from "@phosphor-icons/react/dist/ssr";
 import { along, Caret, ease, expo, seg, smooth, typed } from "./util";
-import { box, BrowserBar, fly, MockNav, useB, Visual } from "./shared";
+import { ALL_EDITS, DesignScreen, HERO_BTN } from "./Design";
+import { box, BrowserBar, fly, useB } from "./shared";
 
 /* ---------------- 4 · Launch ---------------- */
 const BR = { x: 540, y: 20, w: 600, h: 560 };
-const PIECES = [
-  { x: 24, y: 92, w: 552, h: 262, dx: 460, dy: -80, c: "#efe9de" },
-  { x: 24, y: 372, w: 170, h: 166, dx: -480, dy: 160, c: "#efe9de" },
-  { x: 215, y: 372, w: 170, h: 166, dx: 0, dy: 320, c: "#efe9de" },
-  { x: 406, y: 372, w: 170, h: 166, dx: 480, dy: 160, c: "#efe9de" },
-];
+/** the page inside the browser: the designed 480 × 560 page scaled to the browser's height, centred */
+const PAGE_K = 520 / 560;
+const PAGE = { k: PAGE_K, x: (600 - 480 * PAGE_K) / 2, y: 40 };
 /** the finale, in seconds of the held final frame: a visitor arrives, a request and an order come in */
 const EVENT_AT = [0.5, 1.5, 2.5];
 const EVENT_ICON = [UserCircle, EnvelopeSimple, ShoppingBag];
@@ -27,10 +25,10 @@ const EVENT_COLOR = ["#5aa2ff", "#a78bfa", "#34d399"];
 /** the visitor's cursor in the browser (browser coordinates): enters, clicks the hero button, browses on */
 const VISITOR: [number, number, number][] = [
   [0.2, 560, 600],
-  [1.1, 112, 262],
-  [1.35, 112, 262],
-  [2.6, 300, 470],
-  [4.4, 470, 430],
+  [1.1, PAGE.x + (HERO_BTN.x + HERO_BTN.w * 0.55) * PAGE.k, PAGE.y + (HERO_BTN.y + HERO_BTN.h * 0.6) * PAGE.k],
+  [1.35, PAGE.x + (HERO_BTN.x + HERO_BTN.w * 0.55) * PAGE.k, PAGE.y + (HERO_BTN.y + HERO_BTN.h * 0.6) * PAGE.k],
+  [2.6, 330, 470],
+  [4.4, 420, 500],
 ];
 const PRESS = [1.1, 1.35];
 /** launch checklist: when each item finishes (beats), its colour and icon */
@@ -189,7 +187,7 @@ export function LaunchStage({ s, hold = 0 }: { s: number; hold?: number }) {
 /** the browser (600 × 560): the site assembles, goes live, and (during the held final frame, `hold` seconds)
  *  gets its first visitor. Lives inside the product frame. */
 export function LaunchScreen({ s, hold = 0 }: { s: number; hold?: number }) {
-  const { BUILD, L } = useB();
+  const { L } = useB();
   const url = typed(L.url, seg(s, 1.25, 1.65));
   const deploy = ease(seg(s, 1.6, 2.0));
   const sweep = seg(s, 2.0, 2.45);
@@ -233,9 +231,19 @@ export function LaunchScreen({ s, hold = 0 }: { s: number; hold?: number }) {
           </span>
         }
       />
-      {/* the site's own header, there from the start */}
-      <div className="absolute" style={{ ...box(24, 52, 552, 28), ...fly(expo(seg(s, 0.25, 0.7)), 0, -10, 4) }}>
-        <MockNav brand={BUILD.brand} links={BUILD.design.pages} />
+      {/* the SAME page, with the panel's edits, now on its own domain (centred like a page with a max width) */}
+      <div className="absolute origin-top-left" style={{ left: PAGE.x, top: PAGE.y, width: 480, height: 560, transform: `scale(${PAGE.k})` }}>
+        <DesignScreen s={3} edits={ALL_EDITS} />
+        {/* the first visitor's click on the hero button: a soft ring */}
+        {press > 0 && (
+          <span
+            className="pointer-events-none absolute rounded-full"
+            style={{
+              ...box(HERO_BTN.x, HERO_BTN.y, HERO_BTN.w, HERO_BTN.h),
+              boxShadow: `0 0 0 ${(press * 8).toFixed(1)}px rgb(26 23 20 / ${(press * 0.18).toFixed(3)})`,
+            }}
+          />
+        )}
       </div>
       {/* deploy progress under the address bar */}
       <span
@@ -257,62 +265,6 @@ export function LaunchScreen({ s, hold = 0 }: { s: number; hold?: number }) {
           }}
         />
       )}
-      {PIECES.map((p, i) => {
-        const k = expo(seg(s, 0.3 + i * 0.1, 0.95 + i * 0.1));
-        return (
-          <div
-            key={i}
-            className="absolute rounded-xl"
-            style={{
-              left: p.x,
-              top: p.y,
-              width: p.w,
-              height: p.h,
-              background: p.c,
-              ...fly(
-                k,
-                p.dx,
-                p.dy,
-                22,
-                `rotate(${((1 - k) * (i % 2 ? -10 : 10)).toFixed(1)}deg)`,
-              ),
-            }}
-          >
-            {i === 0 && (
-              <div className="relative flex h-full flex-col justify-center overflow-hidden rounded-xl p-7 text-[#1a1714]">
-                <div className="absolute inset-y-3 right-3 w-[270px] overflow-hidden rounded-lg">
-                  <Visual />
-                </div>
-                <p className="relative text-[30px] font-semibold leading-none tracking-[-0.045em]">
-                  {BUILD.design.title}
-                </p>
-                <p className="relative mt-2.5 text-[13px] text-[#5c564c]">
-                  {BUILD.design.sub}
-                </p>
-                <span
-                  className="relative mt-5 inline-grid h-10 self-start place-items-center rounded-full bg-[#1a1714] px-5 text-[13px] font-semibold text-white"
-                  style={{ transform: `scale(${(1 - press * 0.06).toFixed(4)})` }}
-                >
-                  {BUILD.design.button}
-                </span>
-              </div>
-            )}
-            {i >= 1 && (
-              <div className="flex h-full flex-col p-3">
-                <div className="relative h-[94px] shrink-0 overflow-hidden rounded-lg">
-                  <Visual v={i - 1} />
-                </div>
-                <p className="mt-2.5 truncate text-[12px] font-semibold leading-tight text-[#1a1714]">
-                  {BUILD.design.plans[i - 1].name}
-                </p>
-                <p className="mt-0.5 text-[11px] leading-tight text-[#7a7368]">
-                  {BUILD.design.plans[i - 1].price}
-                </p>
-              </div>
-            )}
-          </div>
-        );
-      })}
       {/* the first visitor's cursor */}
       {cursorOn > 0 && (
         <svg

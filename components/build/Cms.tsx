@@ -80,29 +80,30 @@ function Swap({ k, a, b }: { k: number; a: ReactNode; b: ReactNode }) {
 /** the edit beats shared by the form (CmsStage) and the live page on the phone (CmsScreen) */
 function beats(s: number) {
   return {
-    nameK: seg(s, 0.45, 0.92),
-    priceK: seg(s, 1.03, 1.24),
-    up: seg(s, 1.3, 1.68),
-    photoK: expo(seg(s, 1.66, 1.9)),
-    descK: seg(s, 1.76, 2.02),
-    stockK: expo(seg(s, 2.05, 2.28)),
+    /** the old price is selected, then the new one typed over it */
+    selK: smooth(seg(s, 0.42, 0.55)),
+    priceK: seg(s, 0.6, 0.92),
+    up: seg(s, 1.05, 1.42),
+    photoK: expo(seg(s, 1.4, 1.62)),
+    descK: seg(s, 1.58, 1.95),
+    stockK: expo(seg(s, 2.02, 2.22)),
     pubK: expo(seg(s, 2.3, 2.55)),
   };
 }
+/** the moment the new price lands: the old one gets struck through on the site */
+const saleK = (s: number) => expo(seg(s, 0.9, 1.1));
 
 export function CmsStage({ s }: { s: number }) {
   const { M } = useB();
   const focusK = (a: number, b: number) =>
     smooth(seg(s, a, a + 0.08)) * (1 - smooth(seg(s, b, b + 0.08)));
-  const fName = focusK(0.38, 0.98);
-  const fPrice = focusK(0.98, 1.28);
-  const fDesc = focusK(1.72, 2.05);
-  const { nameK, priceK, up, photoK, descK, stockK, pubK } = beats(s);
-  const name = typed(M.nameVal, nameK);
-  const pressed = s > 2.2 && s < 2.3;
+  const fPrice = focusK(0.36, 1.0);
+  const fDesc = focusK(1.5, 1.98);
+  const { selK, priceK, up, photoK, descK, stockK, pubK } = beats(s);
+  const pressed = s > 2.22 && s < 2.3;
   const row = (i: number) =>
     fly(expo(seg(s, 0.1 + i * 0.045, 0.6 + i * 0.045)), -40, 0, 8);
-  const LOG_AT = [1.0, 1.3, 1.7, 2.32];
+  const LOG_AT = [0.95, 1.6, 1.98, 2.32];
 
   return (
     <>
@@ -144,33 +145,28 @@ export function CmsStage({ s }: { s: number }) {
         <div style={row(1)}>
           <Field
             label={M.name}
-            focus={fName}
+            focus={0}
             right={
               <span className="tabular-nums text-faint">
-                {Array.from(name).length}/{M.max}
+                {Array.from(M.nameVal).length}/{M.max}
               </span>
             }
           >
-            <span className="px-4">
-              <Typed
-                text={M.nameVal}
-                k={nameK}
-                caret={fName > 0.5}
-                color="#22d3ee"
-              />
-            </span>
+            <span className="px-4">{M.nameVal}</span>
           </Field>
         </div>
 
         <div className="grid grid-cols-2 gap-3" style={row(2)}>
           <Field label={M.price} focus={fPrice}>
             <span className="flex-1 px-4 tabular-nums">
-              <Typed
-                text={M.priceVal}
-                k={priceK}
-                caret={fPrice > 0.5}
-                color="#22d3ee"
-              />
+              {priceK > 0 ? (
+                <Typed text={M.priceVal} k={priceK} caret={fPrice > 0.5} color="#22d3ee" />
+              ) : (
+                // the old price, selected before it is typed over
+                <span className="rounded-[3px] px-0.5 -mx-0.5" style={{ background: `rgb(34 211 238 / ${(selK * 0.35).toFixed(3)})` }}>
+                  {M.priceOld}
+                </span>
+              )}
             </span>
             <span className="grid h-full w-11 place-items-center border-l border-white/10 text-grey">
               {M.cur}
@@ -367,85 +363,116 @@ export function CmsStage({ s }: { s: number }) {
   );
 }
 
-/** the phone screen (262 × 536): the product page updates as the form is filled. Lives inside the product frame,
- *  which draws the phone body (bezel, buttons) as it reshapes into a phone. */
+/**
+ * The phone screen (262 × 536): the SAME site, its phone layout. It scrolls down to the plans, and the «Стандарт»
+ * card takes every edit as the form makes it (sale price over the old one, new photo, description, in stock),
+ * lit while it is being edited. Lives inside the product frame, which draws the phone body.
+ */
+const SCROLL = 150;
 export function CmsScreen({ s }: { s: number }) {
-  const { BUILD, M } = useB();
-  const { nameK, priceK, photoK, descK, stockK, pubK } = beats(s);
-  const name = typed(M.nameVal, nameK);
+  const { BUILD, D, M } = useB();
+  const { priceK, photoK, descK, stockK, pubK } = beats(s);
+  const sale = saleK(s);
+  const scroll = smooth(seg(s, 0.05, 0.4)) * SCROLL;
+  const editing = Math.min(smooth(seg(s, 0.3, 0.45)), 1 - smooth(seg(s, 2.3, 2.6)));
   return (
     <div className="absolute inset-0 text-[#1a1714]">
-      <PhoneStatus />
-      <div className="px-4 pt-2">
-        <div className="flex items-center justify-between px-1">
-          <span className="text-[15px] font-semibold">{BUILD.brand}</span>
-          <span
-            className="flex items-center gap-1.5 text-[11px] font-semibold"
-            style={{
-              color: `color-mix(in srgb, #1f8f5f ${(pubK * 100).toFixed(0)}%, rgb(0 0 0 / 0.3))`,
-            }}
-          >
-            <span className="size-1.5 rounded-full bg-current" />
-            {M.live}
-          </span>
-        </div>
-        <div className="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm">
-          <div className="relative grid h-36 place-items-center overflow-hidden bg-[#ebe8e2]">
-            <ImageIcon size={30} className="text-black/20" />
-            <div
-              className="absolute inset-0"
-              style={{
-                opacity: photoK,
-                transform: `scale(${(1.12 - photoK * 0.12).toFixed(4)})`,
-              }}
+      <div className="absolute inset-x-0 bottom-0 top-[46px] overflow-hidden">
+        <div className="px-4" style={{ transform: `translateY(${(-scroll).toFixed(1)}px)` }}>
+          {/* header */}
+          <div className="flex h-8 items-center justify-between">
+            <span className="flex items-center gap-2 text-[13px] font-semibold tracking-[-0.02em]">
+              <span className="grid size-[17px] place-items-center rounded-[5px] bg-[#1a1714]">
+                <span className="size-[6px] rounded-full bg-[#f4f0e8]" />
+              </span>
+              {BUILD.brand}
+            </span>
+            <span
+              className="flex items-center gap-1.5 text-[10px] font-semibold"
+              style={{ color: `color-mix(in srgb, #1f8f5f ${(pubK * 100).toFixed(0)}%, rgb(0 0 0 / 0.3))` }}
             >
-              <Visual />
-            </div>
-            <span className="absolute left-3 top-3 flex gap-1.5">
-              {M.tags.map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-semibold text-[#1a1714]"
-                >
-                  {t}
-                </span>
-              ))}
+              <span className="size-1.5 rounded-full bg-current" />
+              {M.live}
             </span>
           </div>
-          <div className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="min-h-[22px] text-[18px] font-semibold leading-tight">
-                {name || " "}
-              </p>
-              <span
-                className="rounded-full bg-[#1f8f5f]/15 px-2.5 py-1 text-[11px] font-semibold text-[#1f8f5f]"
-                style={fly(stockK, 10, 0, 6)}
-              >
-                {M.stock}
+          {/* hero, as designed */}
+          <div className="relative mt-2 h-[108px] overflow-hidden rounded-xl">
+            <Visual />
+          </div>
+          <p className="mt-3 text-[20px] font-semibold leading-none tracking-[-0.045em]">{D.title}</p>
+          <p className="mt-1.5 text-[11px] leading-snug text-[#5c564c]">{D.sub}</p>
+          <span className="mt-3 inline-grid h-8 place-items-center rounded-full bg-[#1a1714] px-4 text-[11px] font-semibold text-white">{D.button}</span>
+
+          {/* plans */}
+          <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7a7368]">{M.catVal}</p>
+          <PlanRow i={0} />
+          {/* the plan being edited */}
+          <div
+            className="mt-2 overflow-hidden rounded-2xl bg-white"
+            style={{ boxShadow: `0 0 0 ${(editing * 2).toFixed(2)}px rgb(34 211 238 / ${(editing * 0.85).toFixed(3)}), 0 6px 18px -10px rgb(40 30 20 / 0.35)` }}
+          >
+            <div className="relative h-[92px] overflow-hidden">
+              <Visual v={1} />
+              <div className="absolute inset-0" style={{ opacity: photoK, transform: `scale(${(1.12 - photoK * 0.12).toFixed(4)})` }}>
+                <Visual v={3} />
+              </div>
+              <span className="absolute left-2.5 top-2.5 flex gap-1">
+                {M.tags.map((t) => (
+                  <span key={t} className="rounded-full bg-white/90 px-2 py-0.5 text-[9px] font-semibold">
+                    {t}
+                  </span>
+                ))}
               </span>
             </div>
-            <p className="mt-1 text-[18px] font-semibold tabular-nums">
-              {typed(M.priceVal, priceK)}
-              {priceK > 0 && ` ${M.cur}`}
-            </p>
-            <p className="mt-2 min-h-[34px] text-[12px] leading-snug text-[#5c564c]">
-              {typed(M.descVal, descK)}
-            </p>
-            <span className="mt-3 grid h-10 place-items-center rounded-full bg-[#1a1714] text-[13px] font-semibold text-white">
-              {M.buy}
-            </span>
+            <div className="p-3">
+              <div className="flex items-center justify-between">
+                <p className="text-[15px] font-semibold leading-tight">{M.nameVal}</p>
+                <span className="rounded-full bg-[#1f8f5f]/15 px-2 py-0.5 text-[10px] font-semibold text-[#1f8f5f]" style={fly(stockK, 10, 0, 6)}>
+                  {M.stock}
+                </span>
+              </div>
+              <p className="mt-1 flex items-baseline gap-2 text-[15px] font-semibold tabular-nums">
+                {priceK > 0 ? (
+                  <>
+                    <span className="text-[#c2410c]">
+                      {typed(M.priceVal, priceK)} {M.cur}
+                    </span>
+                    <span className="text-[11px] font-medium text-[#7a7368] line-through" style={{ opacity: sale }}>
+                      {M.priceOld} {M.cur}
+                    </span>
+                  </>
+                ) : (
+                  <span>
+                    {M.priceOld} {M.cur}
+                  </span>
+                )}
+              </p>
+              <p className="mt-1.5 min-h-[30px] text-[11px] leading-snug text-[#5c564c]">{typed(M.descVal, descK)}</p>
+              <span className="mt-2 grid h-8 place-items-center rounded-full bg-[#1a1714] text-[11px] font-semibold text-white">{M.buy}</span>
+            </div>
           </div>
-        </div>
-        <div className="mt-3 grid grid-cols-2 gap-2.5 opacity-70">
-          <div className="relative h-16 overflow-hidden rounded-xl">
-            <Visual v={1} />
-          </div>
-          <div className="relative h-16 overflow-hidden rounded-xl">
-            <Visual v={2} />
-          </div>
+          <PlanRow i={2} />
         </div>
       </div>
+      <PhoneStatus />
       <i className="absolute bottom-2 left-1/2 h-[5px] w-[110px] -translate-x-1/2 rounded-full bg-[#1a1714]/80" />
+    </div>
+  );
+}
+
+/** a plan as a compact row on the phone (the ones not being edited) */
+function PlanRow({ i }: { i: number }) {
+  const { D } = useB();
+  const p = D.plans[i];
+  return (
+    <div className="mt-2 flex items-center gap-3 rounded-xl bg-white p-2 shadow-[0_1px_2px_rgb(0_0_0/0.05)]">
+      <span className="relative size-10 shrink-0 overflow-hidden rounded-lg">
+        <Visual v={i} />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[12px] font-semibold leading-tight">{p.name}</span>
+        <span className="mt-0.5 block text-[11px] text-[#7a7368]">{p.price}</span>
+      </span>
     </div>
   );
 }

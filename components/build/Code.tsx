@@ -1,19 +1,16 @@
-import { CheckCircle, EnvelopeSimple, GitBranch, TerminalWindow } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircle, GitBranch, TerminalWindow } from "@phosphor-icons/react/dist/ssr";
 import { Caret, ease, expo, seg, typed } from "./util";
-import { box, BrowserBar, fly, MockNav, useB, Visual } from "./shared";
+import { BLOCKS, DesignScreen } from "./Design";
+import { box, BrowserBar, fly, useB } from "./shared";
 
 /* ---------------- 2 · Code ---------------- */
 
 /** how far the code is typed at beat s: shared by the editor (CodeStage) and the live preview (CodeScreen) */
 function useTyping(s: number) {
-  const { CHARS, LEN, LINES, START } = useB();
+  const { CHARS, LEN, START } = useB();
   const chars = Math.round(seg(s, 0.3, 1.95) * CHARS);
   const lineK = (i: number) => Math.min(1, Math.max(0, (chars - START[i]) / LEN[i]));
-  const textOf = (line: number, tok: number) => {
-    const before = LINES[line].slice(0, tok).reduce((a, [x]) => a + x.length, 0);
-    return typed(LINES[line][tok][0], (chars - START[line] - before) / LINES[line][tok][0].length);
-  };
-  return { chars, lineK, textOf };
+  return { chars, lineK };
 }
 
 /** the editor panel: tab bar, gutter, the line being typed lit up, and the terminal docked at the bottom */
@@ -108,73 +105,36 @@ export function CodeStage({ s }: { s: number }) {
   );
 }
 
-/** the live preview (430 × 560): the page builds itself as the code is typed. Lives inside the product frame. */
+/**
+ * The live preview (430 × 560): the SAME page that was designed, now in a browser. Each block starts as the
+ * static mock (washed out, a dashed outline) and becomes real when its line of code is typed (a short green
+ * flash). Lives inside the product frame.
+ */
+const PREVIEW_K = 430 / 480;
 export function CodeScreen({ s }: { s: number }) {
-  const { BUILD } = useB();
-  const { lineK, textOf } = useTyping(s);
+  const { lineK } = useTyping(s);
   return (
-    <div className="absolute inset-0 text-[#1a1714]">
+    <div className="absolute inset-0">
       <BrowserBar url="localhost:3000" />
-      <div className="px-5 pb-5 pt-3">
-        <div className="mb-3" style={fly(expo(Math.min(1, lineK(2) * 2)), 0, -6, 4)}>
-          <MockNav brand={BUILD.brand} links={BUILD.design.pages} size={0.85} />
-        </div>
-        <div
-          className="relative h-[128px] overflow-hidden rounded-xl"
-          style={fly(expo(lineK(2)), 0, 16, 10)}
-        >
-          <Visual />
-        </div>
-        <div className="pt-3">
-          <p className="min-h-[28px] text-[26px] font-semibold leading-none tracking-[-0.045em]">
-            {textOf(3, 3)}
-          </p>
-          <p className="mt-1.5 min-h-[18px] text-[13px] text-[#5c564c]">
-            {textOf(4, 3)}
-          </p>
-          <span
-            className="mt-3 inline-grid h-9 min-w-[110px] place-items-center rounded-full bg-[#1a1714] px-5 text-[12px] font-semibold text-white"
-            style={fly(expo(Math.min(1, lineK(5) * 2.5)), 0, 12, 8)}
-          >
-            {textOf(5, 3) || " "}
-          </span>
-        </div>
-        <div
-          className="mt-3 flex items-center gap-2 rounded-xl bg-white p-1 pl-3 shadow-[0_6px_16px_-10px_rgb(40_30_20/0.5)]"
-          style={fly(expo(Math.min(1, lineK(6) * 2)), 0, 14, 8)}
-        >
-          <EnvelopeSimple size={13} className="text-[#7a7368]" />
-          <span className="flex-1 text-[11px] text-[#9a9287]">
-            {BUILD.design.email}
-          </span>
-          <span className="grid h-8 place-items-center rounded-lg bg-[#1a1714] px-2.5 text-[11px] font-semibold text-[#f4f0e8]">
-            {BUILD.design.join}
-          </span>
-        </div>
-        <div className="mt-4 grid grid-cols-3 gap-2.5">
-          {[0, 1, 2].map((k) => (
-            <div
-              key={k}
-              className="rounded-lg bg-white p-2"
-              style={fly(
-                expo(seg(lineK(8), k * 0.2, k * 0.2 + 0.6)),
-                0,
-                30,
-                10,
-              )}
-            >
-              <div className="relative h-16 overflow-hidden rounded-md">
-                <Visual v={k} />
-              </div>
-              <p className="mt-2 truncate text-[11px] font-semibold">
-                {BUILD.design.plans[k].name}
-              </p>
-              <p className="text-[10px] text-[#7a7368]">
-                {BUILD.design.plans[k].price}
-              </p>
-            </div>
-          ))}
-        </div>
+      <div className="absolute left-0 top-[34px] origin-top-left" style={{ width: 480, height: 560, transform: `scale(${PREVIEW_K})` }}>
+        <DesignScreen s={3} />
+        {BLOCKS.map(({ r, line }, i) => {
+          const live = ease(Math.min(1, lineK(line) * 1.4));
+          const flash = Math.sin(Math.PI * Math.min(1, Math.max(0, live * 1.6 - 0.6)));
+          if (live >= 1 && flash < 0.01) return null;
+          return (
+            <span
+              key={i}
+              className="pointer-events-none absolute rounded-xl"
+              style={{
+                ...box(r.x - 6, r.y - 6, r.w + 12, r.h + 12),
+                background: `rgb(244 240 232 / ${((1 - live) * 0.62).toFixed(3)})`,
+                outline: live < 1 ? `1.5px dashed rgb(139 92 246 / ${((1 - live) * 0.7).toFixed(3)})` : undefined,
+                boxShadow: flash > 0.01 ? `0 0 0 2px rgb(52 211 153 / ${(flash * 0.9).toFixed(3)})` : undefined,
+              }}
+            />
+          );
+        })}
       </div>
     </div>
   );

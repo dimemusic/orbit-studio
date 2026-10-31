@@ -415,7 +415,26 @@ export function DesignStage({ s }: { s: number }) {
 
 /** the artboard's content (artboard coordinates, 480 × 560): the site assembling itself, from the same rects as the selections.
  *  Lives inside the product frame (build/Product.tsx), which is the artboard itself. */
-export function DesignScreen({ s }: { s: number }) {
+/**
+ * What later stages have done to the site, 0 → 1 each: the panel's edits to the «Стандарт» plan (a sale price,
+ * a new photo). The same page carries them to the launch, nothing is rebuilt.
+ */
+export type Edits = { sale: number; photo: number };
+export const NO_EDITS: Edits = { sale: 0, photo: 0 };
+export const ALL_EDITS: Edits = { sale: 1, photo: 1 };
+/** the page's blocks (artboard coordinates) and the code line that makes each one real (Code.tsx) */
+export const BLOCKS = [
+  { r: R.nav, line: 0 },
+  { r: R.img, line: 2 },
+  { r: { x: R.img.x + 16, y: R.img.y + R.img.h - 24, w: R.img.w - 32, h: 48 }, line: 6 },
+  { r: { x: R.title.x, y: R.title.y, w: R.title.w, h: R.title.h + 30 }, line: 3 },
+  { r: { x: R.btn.x, y: R.btn.y, w: 300, h: R.btn.h }, line: 5 },
+  { r: R.plans, line: 8 },
+];
+/** the hero button, for the first visitor's click (Launch.tsx) */
+export const HERO_BTN = R.btn;
+
+export function DesignScreen({ s, edits = NO_EDITS }: { s: number; edits?: Edits }) {
   const { BUILD, D } = useB();
   const { img, badge, signup, title, sub, btnFly, more, planFly, btnColor } = beats(s);
   return (
@@ -511,7 +530,7 @@ export function DesignScreen({ s }: { s: number }) {
               R.plans.h,
             )}
           >
-            <PlanBody i={k} />
+            <PlanBody i={k} sale={k === 1 ? edits.sale : 0} photo={k === 1 ? edits.photo : 0} />
           </div>
         ) : null,
       )}
@@ -560,19 +579,33 @@ function Mate({ x, y, color, name, down = false, k = 1 }: { x: number; y: number
   );
 }
 
-const PlanBody = memo(function PlanBody({ i }: { i: number }) {
-  const { D } = useB();
+/** a plan card; the «Стандарт» one shows the panel's edits once they are made (sale price, new photo) */
+const PlanBody = memo(function PlanBody({ i, sale = 0, photo = 0 }: { i: number; sale?: number; photo?: number }) {
+  const { D, M } = useB();
   const p = D.plans[i];
   return (
     <>
       <span className="relative size-12 shrink-0 overflow-hidden rounded-lg">
         <Visual v={i} />
+        {photo > 0 && (
+          <span className="absolute inset-0" style={{ opacity: photo }}>
+            <Visual v={3} />
+          </span>
+        )}
       </span>
       <span className="min-w-0">
-        <span className="block truncate text-[13px] font-semibold leading-tight">
-          {p.name}
+        <span className="block truncate text-[13px] font-semibold leading-tight">{p.name}</span>
+        {/* after the panel's edit: the sale price in the accent colour (the phone shows the old one struck through) */}
+        <span className="mt-1 grid whitespace-nowrap text-[12px] text-[#7a7368]">
+          <span className="col-start-1 row-start-1" style={sale > 0 ? { opacity: 1 - sale } : undefined}>
+            {p.price}
+          </span>
+          {sale > 0 && (
+            <span className="col-start-1 row-start-1 font-semibold text-[#c2410c]" style={{ opacity: sale }}>
+              {M.priceVal} {M.cur}
+            </span>
+          )}
         </span>
-        <span className="mt-1 block text-[12px] text-[#7a7368]">{p.price}</span>
       </span>
     </>
   );

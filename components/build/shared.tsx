@@ -90,6 +90,8 @@ const VIS = [
   ["#f3f0ea", "#d9d3c8"],
   ["#eef1f5", "#cdd4de"],
   ["#f5eee7", "#dccdbf"],
+  // 3: the new photo uploaded in the panel (a fresher, sage set)
+  ["#eef2ec", "#c6d3c4"],
 ];
 /** static artwork: memoised, it re-rendered every animation frame with the stage */
 export const Visual = memo(function Visual({ v = 0 }: { v?: number }) {
