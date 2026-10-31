@@ -37,8 +37,41 @@ export function Nav() {
     };
   }, [open]);
 
+  // tucks away while scrolling down (more room for the page), comes back on scroll up, near the top,
+  // when the cursor reaches the top edge, or while the menu is open / focus is inside
+  const bar = useRef<HTMLElement>(null);
+  const [tucked, setTucked] = useState(false);
+  useEffect(() => {
+    let last = window.scrollY;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const y = window.scrollY;
+      const el = bar.current;
+      if (open || (el && el.contains(document.activeElement)) || y < 120) setTucked(false);
+      else if (y > last + 6) setTucked(true);
+      else if (y < last - 6) setTucked(false);
+      if (Math.abs(y - last) > 6 || y < 120) last = y;
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    const onMove = (e: PointerEvent) => e.pointerType === "mouse" && e.clientY < 90 && setTucked(false);
+    const onFocus = () => setTucked(false);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("pointermove", onMove, { passive: true });
+    bar.current?.addEventListener("focusin", onFocus);
+    const el = bar.current;
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("pointermove", onMove);
+      el?.removeEventListener("focusin", onFocus);
+    };
+  }, [open]);
+
   return (
-    <header data-boot className="fixed inset-x-0 top-0 z-30 px-[clamp(12px,2.5vw,32px)] pt-[calc(12px+env(safe-area-inset-top))]">
+    <header ref={bar} data-boot data-tucked={tucked || undefined} className="nav-bar fixed inset-x-0 top-0 z-30 px-[clamp(12px,2.5vw,32px)] pt-[calc(12px+env(safe-area-inset-top))]">
       <a
         href="#main"
         className="sr-only rounded-full bg-fg px-4 py-2 text-sm text-bg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"
@@ -96,12 +129,12 @@ export function Nav() {
           </div>
         </nav>
 
-        <div id={menuId} hidden={!open} className="border-t border-white/10 px-5 pb-7 pt-3 lg:hidden">
+        <div id={menuId} hidden={!open} className="nav-menu border-t border-white/10 px-5 pb-7 pt-3 lg:hidden">
           <ul className="flex flex-col items-center gap-1 text-center">
-            {LINKS.map((l) => {
+            {LINKS.map((l, i) => {
               const on = isActive(l.href, pathname);
               return (
-                <li key={l.href}>
+                <li key={l.href} style={{ ["--i" as string]: i }}>
                   <Link
                     href={l.href}
                     aria-current={on ? "page" : undefined}
@@ -114,10 +147,10 @@ export function Nav() {
               );
             })}
           </ul>
-          <div className="mt-4 flex justify-center xs:hidden">
+          <div className="mt-4 flex justify-center xs:hidden" style={{ ["--i" as string]: LINKS.length }}>
             <LangSwitch />
           </div>
-          <div className="mt-4 flex justify-center">
+          <div className="mt-4 flex justify-center" style={{ ["--i" as string]: LINKS.length + 1 }}>
             <Button href={CTA.primaryHref} onClick={() => setOpen(false)} className="w-full max-w-xs">
               {CTA.primary}
             </Button>

@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
-import { useInView } from "../ui/hooks";
+import { useBooted, useInView } from "../ui/hooks";
 
-const DURATION = 1200;
+const DURATION = 1400;
+/** the stats line comes in 0.48s after the boot (globals.css «hero entrance»): count while it is already visible */
+const DELAY = 350;
 
-/** Counts 0 → value with an ease-out curve once `go` flips true. Reduced motion: final value at once. */
+/** Counts 0 → value with an expo-out curve once `go` flips true. Reduced motion: final value at once. */
 function useCountUp(value: number, go: boolean) {
   const [n, setN] = useState(value);
   useEffect(() => {
@@ -17,10 +19,11 @@ function useCountUp(value: number, go: boolean) {
       return;
     }
     let raf = 0;
-    const start = performance.now();
+    const start = performance.now() + DELAY;
     const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / DURATION);
-      setN(Math.round(value * (1 - Math.pow(1 - t, 3))));
+      const t = Math.min(1, Math.max(0, (now - start) / DURATION));
+      // expo out: most of the count happens early, the last digits settle softly
+      setN(Math.round(value * (t === 1 ? 1 : 1 - Math.pow(2, -10 * t))));
       if (t < 1) raf = requestAnimationFrame(tick);
     };
     setN(0);
@@ -45,7 +48,8 @@ function Stat({ stat, go }: { stat: Content["HERO"]["stats"][number]; go: boolea
 /** Quiet line under the hero promise: no box, just value + label pairs separated by dots. */
 export function LogoStrip() {
   const ref = useRef<HTMLUListElement>(null);
-  const go = useInView(ref, 0.5);
+  const seen = useInView(ref, 0.5);
+  const go = useBooted() && seen;
   const { HERO, UI } = useContent();
   return (
     <ul ref={ref} aria-label={UI.why} className="legible mx-auto grid w-fit grid-cols-1 justify-items-center gap-x-10 gap-y-2.5 sm:grid-cols-2 sm:justify-items-start nav:flex nav:items-center nav:gap-x-0">

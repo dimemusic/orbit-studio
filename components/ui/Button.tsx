@@ -4,14 +4,13 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 type Variant = "primary" | "secondary" | "text";
 type Size = "lg" | "nav";
 
-const base =
-  "inline-flex items-center justify-center whitespace-nowrap rounded-full font-semibold tracking-[-0.01em] " +
-  "transition-[background-color,border-color,color,box-shadow] duration-200 ease-out";
+// transitions (colour + press) live with .btn-primary / .btn-secondary in globals.css
+const base = "inline-flex items-center justify-center whitespace-nowrap rounded-full font-semibold tracking-[-0.01em]";
 
 const variants: Record<Variant, string> = {
   primary: "btn-primary",
   secondary: "btn-secondary",
-  text: "text-body hover:text-fg",
+  text: "text-body transition-colors duration-200 hover:text-fg",
 };
 
 const sizes: Record<Size, string> = {
@@ -28,25 +27,35 @@ export function Button(props: AsLink | AsButton) {
   // big PRIMARY buttons share one minimum width (shrinks on narrow phones); secondary ones stay content-wide
   const wide = size === "lg" && variant === "primary" ? "min-w-[min(17rem,100%)]" : "";
   const cls = `${base} ${variants[variant]} ${sizes[size]} ${wide} ${className}`;
+  // big buttons are magnetic (Motion.tsx): the button leans towards the cursor, its label a little further
+  const mag = size === "lg" && variant !== "text";
+  const magProps = mag ? { "data-magnetic": "" } : {};
+  const label = mag ? (
+    <span data-magnetic-label className="inline-flex items-center justify-center gap-[inherit]">
+      {children}
+    </span>
+  ) : (
+    children
+  );
   if (rest.href !== undefined) {
     // internal routes ("/privacy", "/#contact") use client-side navigation; hashes and mailto stay plain links
     if (rest.href.startsWith("/")) {
       const { href, ...a } = rest as ComponentPropsWithoutRef<"a"> & { href: string };
       return (
-        <Link href={href} className={cls} {...a}>
-          {children}
+        <Link href={href} className={cls} {...magProps} {...a}>
+          {label}
         </Link>
       );
     }
     return (
-      <a className={cls} {...(rest as ComponentPropsWithoutRef<"a">)}>
-        {children}
+      <a className={cls} {...magProps} {...(rest as ComponentPropsWithoutRef<"a">)}>
+        {label}
       </a>
     );
   }
   return (
-    <button type="button" className={cls} {...(rest as ComponentPropsWithoutRef<"button">)}>
-      {children}
+    <button type="button" className={cls} {...magProps} {...(rest as ComponentPropsWithoutRef<"button">)}>
+      {label}
     </button>
   );
 }

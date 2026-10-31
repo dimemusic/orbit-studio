@@ -37,8 +37,13 @@ void main() {
   float hot = clamp(band, 0.0, 1.0);
   float tw = 0.85 + 0.15 * sin(uTime * 1.5 + aTwinkle * 30.0) * uMotion;
 
-  gl_PointSize = (18.0 + aSeed * 24.0 + hov * 14.0) * uDPR / -mv.z;
-  vA = (0.45 + 0.55 * smoothstep(-5.0, 2.5, w.z)) * 1.25 * (1.0 + hov * 1.6) * tw * (1.0 - uDim * 0.45);
+  // sprites never go below 3 device px: a 1-2 px sprite snaps from pixel to pixel as the page scrolls (the background
+  // shimmers); a bigger, fainter one keeps the same light (alpha scaled by the area) but glides smoothly. This is the
+  // anti-aliasing: no multisampling needed (MSAA tripled the first-frame cost on GPU-less devices)
+  float ps = (18.0 + aSeed * 24.0 + hov * 14.0) * uDPR / -mv.z;
+  gl_PointSize = max(ps, 3.0);
+  float area = min(1.0, (ps * ps) / 9.0);
+  vA = (0.45 + 0.55 * smoothstep(-5.0, 2.5, w.z)) * 1.25 * (1.0 + hov * 1.6) * tw * (1.0 - uDim * 0.45) * area;
 
   // half brand blue, half the star's own hue; the wave and the cursor lift it towards white
   vec3 tint = mix(BRAND, min(aColor * 1.85, vec3(1.0)), 0.55);

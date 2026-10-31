@@ -6,7 +6,7 @@ import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
 import { PACKAGE_PICK } from "../home";
 import { Button } from "../ui/Button";
-import { RevealWords } from "../ui/RevealWords";
+import { SplitTitle } from "../ui/SplitTitle";
 
 type Field = "name" | "contact" | "needs";
 
@@ -56,11 +56,11 @@ export function FinalCta() {
         {/* left: the invitation + direct contacts */}
         <div className="min-w-0">
           <h2 id="contact-title" className="legible text-mega font-semibold">
-            <RevealWords text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="teal" stack />
+            <SplitTitle text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="teal" stack />
           </h2>
-          <p data-boot className="legible mt-6 max-w-[40ch] text-lead text-body">{CONTACT.lead}</p>
+          <p data-reveal className="legible mt-6 max-w-[40ch] text-lead text-body">{CONTACT.lead}</p>
 
-          <div data-reveal style={{ ["--d" as string]: "120ms" }} className="mt-12">
+          <div data-reveal className="mt-12">
             <p className="text-[14px] text-grey">{CONTACT.or}</p>
             <ul className="mt-4 flex flex-col gap-3">
               <li>
@@ -145,7 +145,16 @@ function ContactForm() {
     setSubmitted(true);
     const first = (["name", "contact", "needs"] as const).find((f) => errors[f]);
     if (first) {
-      refs[first].current?.focus();
+      const el = refs[first].current;
+      el?.focus();
+      // a short firm shake on the first field that needs attention (2 swings, no bounce)
+      const box = first === "needs" ? el?.closest("fieldset")?.querySelector("[data-chips]") : el;
+      if (box && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        box.animate(
+          [{ transform: "none" }, { transform: "translateX(-7px)" }, { transform: "translateX(6px)" }, { transform: "translateX(-3px)" }, { transform: "none" }],
+          { duration: 380, easing: "ease-in-out" },
+        );
+      }
       return;
     }
     setBusy(true);
@@ -175,7 +184,7 @@ function ContactForm() {
   }
 
   return (
-    <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0 max-w-[40rem] xl:max-w-none">
+    <div data-reveal className="w-full min-w-0 max-w-[40rem] xl:max-w-none">
       <div className="card overflow-hidden text-left">
         {/* form and thanks state share one grid cell, so the card never jumps */}
         <div className="grid p-6 sm:p-9 wide:p-11">
@@ -192,7 +201,7 @@ function ContactForm() {
             <input ref={trap} name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
             <fieldset className="flex flex-col gap-2.5" aria-describedby={`${uid}-needs-err`}>
               <legend className="mb-3 text-[16px] font-medium text-fg">{CONTACT.needs}</legend>
-              <div className="flex flex-wrap gap-2">
+              <div data-chips className="flex flex-wrap gap-2">
                 {CONTACT.chips.map((chip, i) => {
                   const on = needs.has(chip);
                   return (
@@ -210,7 +219,7 @@ function ContactForm() {
                         className="peer sr-only"
                       />
                       <span
-                        className={`flex h-11 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-[15px] font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
+                        className={`chip flex h-11 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-[15px] font-medium peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
                           on ? "border-blue bg-blue/12 text-fg" : "border-white/15 text-body hover:border-white/30 hover:text-fg"
                         }`}
                       >
@@ -218,7 +227,7 @@ function ContactForm() {
                           aria-hidden="true"
                           className={`grid size-4 shrink-0 place-items-center rounded-full transition-colors duration-300 ${on ? "bg-blue text-white" : "border border-white/25"}`}
                         >
-                          {on && <Check size={10} weight="bold" />}
+                          {on && <Check size={10} weight="bold" className="chip-check" />}
                         </span>
                         {chip}
                       </span>
@@ -316,15 +325,18 @@ function ContactForm() {
           >
             {done && (
               <>
-                <CheckCircle size={44} weight="fill" aria-hidden="true" className="animate-[quote-in_0.5s_var(--ease)_both] text-green" />
-                <h3 ref={doneRef} tabIndex={-1} className="mt-5 text-headline font-semibold outline-none">
+                <CheckCircle size={44} weight="fill" aria-hidden="true" className="done-icon text-green" />
+                <h3 ref={doneRef} tabIndex={-1} className="done-step mt-5 text-headline font-semibold outline-none" style={{ ["--s" as string]: 1 }}>
                   {CONTACT.thanksTitle}
                 </h3>
-                <p className="mt-3 max-w-[40ch] text-[16px] text-body">{CONTACT.thanksText}</p>
+                <p className="done-step mt-3 max-w-[40ch] text-[16px] text-body" style={{ ["--s" as string]: 2 }}>
+                  {CONTACT.thanksText}
+                </p>
                 <button
                   type="button"
                   onClick={reset}
-                  className="mt-6 rounded-full py-1 text-[14px] font-medium text-blue transition-colors hover:text-fg"
+                  style={{ ["--s" as string]: 3 }}
+                  className="done-step mt-6 rounded-full py-1 text-[14px] font-medium text-blue transition-colors hover:text-fg"
                 >
                   {CONTACT.again}
                 </button>
