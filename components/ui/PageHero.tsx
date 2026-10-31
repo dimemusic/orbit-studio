@@ -28,10 +28,10 @@ export function PageHero({ crumb, title, lead }: { crumb: string; title: ReactNo
             </li>
           </ol>
         </nav>
-        <h1 id="page-title" data-split className="legible mt-6 max-w-[16ch] text-display font-semibold">
+        <h1 id="page-title" data-reveal style={{ ["--d" as string]: "80ms" }} className="legible mt-6 max-w-[16ch] text-display font-semibold">
           {title}
         </h1>
-        <p data-reveal className="legible mt-6 max-w-[48ch] text-lead text-body">
+        <p data-reveal style={{ ["--d" as string]: "160ms" }} className="legible mt-6 max-w-[48ch] text-lead text-body">
           {lead}
         </p>
       </div>
