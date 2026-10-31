@@ -315,6 +315,12 @@ export const en: Content = {
     title: "Privacy policy",
     lead: "In short: we only collect what you type into the request form, so we can reply. No ads, no tracking, no selling of data.",
     updated: "Updated October 31, 2026",
+    summary: [
+      { t: "Only the request form", d: "Your name, contact and project notes, typed by you." },
+      { t: "No cookies or analytics", d: "No trackers, pixels or ads." },
+      { t: "We never sell data", d: "Only the services the site cannot run without." },
+      { t: "Deleted on request", d: "Write to us, we reply within 30 days." },
+    ],
     sections: [
       {
         h: "Who we are",
