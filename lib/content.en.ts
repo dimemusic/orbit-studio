@@ -252,7 +252,7 @@ export const en: Content = {
         { name: "Pro", price: "3 490 ₴" },
       ],
     },
-    code: { files: ["page.tsx", "Hero.tsx", "globals.css"], branch: "main", cmd: "npm run build", ok: "Ready · 0.9s", h1: "Your product here", p: "A short line on why it beats the rest.", btn: "Try it" },
+    code: { cmd: "npm run build", ok: "Ready · 0.9s", h1: "Your product here", p: "A short line on why it beats the rest.", btn: "Try it" },
     cms: {
       crumb: "Plans / Standard",
       form: "Edit plan",

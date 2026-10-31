@@ -350,7 +350,7 @@ export const BUILD = {
       { name: "Про", price: "3 490 ₴" },
     ],
   },
-  code: { files: ["page.tsx", "Hero.tsx", "globals.css"], branch: "main", cmd: "npm run build", ok: "Ready · 0.9s", h1: "Ваш продукт тут", p: "Коротко про те, чим він кращий за інших.", btn: "Спробувати" },
+  code: { cmd: "npm run build", ok: "Ready · 0.9s", h1: "Ваш продукт тут", p: "Коротко про те, чим він кращий за інших.", btn: "Спробувати" },
   cms: {
     crumb: "Тарифи / Стандарт",
     form: "Редагування тарифу",
