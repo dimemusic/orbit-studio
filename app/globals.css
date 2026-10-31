@@ -144,11 +144,11 @@ p {
         rgb(160 190 255 / calc(var(--spot) * 0.06)),
         transparent 70%
       ),
-      linear-gradient(156deg, rgb(0 0 0 / 0.42) 5.7%, rgb(13 16 24 / 0.34) 99.6%);
+      linear-gradient(156deg, rgb(255 255 255 / 0.07) 5.7%, rgb(255 255 255 / 0.025) 99.6%);
     border: 0.5px solid rgb(255 255 255 / 0.09);
     border-radius: 16px;
-    -webkit-backdrop-filter: blur(18px) saturate(1.35);
-    backdrop-filter: blur(18px) saturate(1.35);
+    -webkit-backdrop-filter: blur(5px) saturate(1.8) brightness(1.15);
+    backdrop-filter: blur(5px) saturate(1.8) brightness(1.15);
     box-shadow: 0 34px 70px -28px rgb(0 0 0 / 0.9);
     transition: --spot 0.45s var(--ease);
     /* own paint layer: hover / spotlight repaints stay inside the card. The clip margin keeps the 1px rings
@@ -185,7 +185,7 @@ p {
   }
   /* navbar: a touch lighter */
   .card-nav {
-    background: linear-gradient(156deg, rgb(0 0 0 / 0.42) 5.7%, rgb(13 16 24 / 0.34) 99.6%);
+    background: linear-gradient(156deg, rgb(255 255 255 / 0.07) 5.7%, rgb(255 255 255 / 0.025) 99.6%);
   }
   /* Pro plan: same card, thin blue → cyan gradient border, no glow */
   .card-pro {
@@ -606,9 +606,11 @@ html {
      see-through body + real backdrop blur, ONE very thin dim hairline (0.5px, white 9%), a faint refraction glow inside the bottom / right edge, deep shadow. */
   border: 0.5px solid rgb(255 255 255 / 0.09);
   border-radius: 18px;
-  background: linear-gradient(156deg, rgb(0 0 0 / 0.42) 5.7%, rgb(13 16 24 / 0.34) 99.6%);
-  -webkit-backdrop-filter: blur(16px) saturate(1.35);
-  backdrop-filter: blur(16px) saturate(1.35);
+  /* frosted, not darkened: a faint light frost over a light backdrop blur, so the grid / stars behind read as soft
+     glass (a black wash over a strong blur looked like a plain dark panel: rejected, «нічого не змінилось») */
+  background: linear-gradient(156deg, rgb(255 255 255 / 0.07) 5.7%, rgb(255 255 255 / 0.025) 99.6%);
+  -webkit-backdrop-filter: blur(5px) saturate(1.8) brightness(1.15);
+  backdrop-filter: blur(5px) saturate(1.8) brightness(1.15);
   box-shadow:
     inset -14px -14px 16px -14px rgb(170 185 230 / 0.07),
     0 34px 70px -28px rgb(0 0 0 / 0.9);
