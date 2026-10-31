@@ -313,118 +313,90 @@ export const en: Content = {
   PRIVACY: {
     crumb: "Privacy policy",
     title: "Privacy policy",
-    lead: "In short: we only collect what you type into the request form, so we can reply. No ads, no tracking, no selling of data.",
+    lead: "We only collect what you type into the request form, so we can reply. No ads, no tracking, no selling of data.",
     updated: "Updated October 31, 2026",
+    toc: "Contents",
     summary: [
-      { t: "Only the request form", d: "Your name, contact and project notes, typed by you." },
-      { t: "No cookies or analytics", d: "No trackers, pixels or ads." },
-      { t: "We never sell data", d: "Only the services the site cannot run without." },
-      { t: "Deleted on request", d: "Write to us, we reply within 30 days." },
+      { t: "Only the request form", d: "Name, contact and project notes" },
+      { t: "No cookies", d: "No analytics or trackers" },
+      { t: "We never sell data", d: "Not to advertisers, not to anyone" },
+      { t: "Deleted on request", d: "Reply within 30 days" },
     ],
-    sections: [
-      {
-        h: "Who we are",
-        p: [
-          "maxartdigital.com belongs to the web studio MaxArt Digital (Lviv, Ukraine). Data controller: [sole proprietor name or company name], [address].", // DRAFT
-          "For any question about your data, write to hello@maxartdigital.com.",
-        ],
-        li: [],
-      },
-      {
-        h: "What data we receive",
-        p: ["When you send the request form:"],
-        li: ["your name or how to address you;", "Telegram or email to reply to;", "the type of website you are interested in;", "a project description, if you left one."],
-      },
-      {
-        h: "",
-        p: [
-          "When you visit the site, the hosting automatically records technical request data: IP address, browser type and time. These are standard server logs; we do not use them to identify you.",
-          "We never ask for or store passwords, payment details or information about health, religion, political views and the like.",
-        ],
-        li: [],
-      },
-      {
-        h: "Why",
-        p: [],
-        li: [
-          "to answer your request, clarify the task and prepare an offer;",
-          "to talk with you about the project if we agree to work together;",
-          "to keep the site stable and protected from spam and attacks.",
-        ],
-      },
-      {
-        h: "",
-        p: ["We send no newsletters, show no ads, and never sell or share your data for marketing."],
-        li: [],
-      },
-      {
-        h: "Legal basis",
-        p: [
-          "We process data under the Law of Ukraine «On Personal Data Protection» and, for visitors from the EU, under the GDPR. The bases are: your consent, given by sending the form; steps taken at your request before a contract; our legitimate interest in keeping the site secure.",
-        ],
-        li: [],
-      },
-      {
-        h: "Who we share data with",
-        p: ["Only the services the site cannot work without:"],
-        li: [
-          "Vercel Inc. (USA): site hosting and technical logs;",
-          "Resend (USA): delivering your request to our inbox;",
-          "our email provider: where the request email is kept.",
-        ],
-      },
-      {
-        h: "",
-        p: [
-          "These services may process data outside Ukraine and the EU. They work under standard contractual clauses for data protection. We share data with anyone else only when the law requires it.",
-        ],
-        li: [],
-      },
-      {
-        h: "Cookies",
-        p: [
-          "The site uses no cookies, analytics or ad trackers. The browser keeps only one technical value in sessionStorage, so the intro plays once per session. It holds no personal data and disappears when you close the tab.",
-        ],
-        li: [],
-      },
-      {
-        h: "How long we keep it",
-        p: [
-          "Requests are kept while we are talking or working together, and no longer than 3 years after the last contact. Then we delete them. Hosting logs are kept for a limited time under Vercel's rules.", // DRAFT: retention period
-        ],
-        li: [],
-      },
-      {
-        h: "Your rights",
-        p: ["At any time you can:"],
-        li: [
-          "learn which of your data we hold and get a copy;",
-          "correct inaccurate data;",
-          "ask us to delete your data or restrict its processing;",
-          "object to processing or withdraw your consent;",
-          "complain to the Ukrainian Parliament Commissioner for Human Rights or to the data protection authority of your EU country.",
-        ],
-      },
-      {
-        h: "",
-        p: ["To use these rights, write to hello@maxartdigital.com. We reply within 30 days."],
-        li: [],
-      },
-      {
-        h: "Security",
-        p: ["The site works only over HTTPS and requests travel over an encrypted connection. Only our team has access to them."],
-        li: [],
-      },
-      {
-        h: "Children",
-        p: ["The site is not meant for children. If you believe a child has sent us their data, write to us and we will delete it."],
-        li: [],
-      },
-      {
-        h: "Changes",
-        p: ["If we change this policy, the new version will appear on this page with a new update date."],
-        li: [],
-      },
+    who: {
+      h: "Who we are",
+      rows: [
+        { k: "Studio", v: "MaxArt Digital, Lviv, Ukraine" },
+        { k: "Data controller", v: "[sole proprietor name or company name]" }, // DRAFT
+        { k: "Address", v: "[address]" }, // DRAFT
+        { k: "Contact", v: "hello@maxartdigital.com" },
+      ],
+    },
+    data: {
+      h: "What data we receive",
+      rows: [
+        { k: "From the form", items: ["Name", "Telegram or email", "Website type", "Project notes"] },
+        { k: "Automatically", items: ["IP address", "Browser type", "Request time"] },
+        { k: "Never", items: ["Passwords", "Payment details", "Sensitive data"] },
+      ],
+      note: "Automatic data are standard hosting logs. We do not use them to identify you.",
+    },
+    purpose: {
+      h: "Why",
+      items: [
+        "To answer your request, clarify the task and prepare an offer",
+        "To talk about the project if we agree to work together",
+        "To protect the site from spam and attacks and keep it stable",
+      ],
+      note: "We send no newsletters, show no ads and never share data for marketing.",
+    },
+    basis: {
+      h: "Legal basis",
+      intro: "The Law of Ukraine «On Personal Data Protection» and, for visitors from the EU, the GDPR.",
+      items: [
+        { t: "Consent", d: "You give it when you send the form." },
+        { t: "Request before a contract", d: "A reply and an offer, at your request." },
+        { t: "Legitimate interest", d: "Security and stable operation of the site." },
+      ],
+    },
+    share: {
+      h: "Who we share data with",
+      cols: ["Service", "Country", "Purpose"],
+      rows: [
+        ["Vercel", "USA", "Site hosting and technical logs"],
+        ["Resend", "USA", "Delivering your request to our inbox"],
+        ["Our email", "[country]", "Keeping the request email"], // DRAFT
+      ],
+      note: "These services work under standard contractual clauses for data protection. We share data with anyone else only when the law requires it.",
+    },
+    cookies: {
+      h: "Cookies",
+      title: "The site uses no cookies, analytics or ad trackers.",
+      text: "The browser keeps only one technical value in sessionStorage, so the intro plays once. It holds no personal data and disappears when you close the tab.",
+    },
+    retention: {
+      h: "How long we keep it",
+      rows: [
+        { k: "Requests", v: "While we are talking or working together, but no longer than 3 years after the last contact" }, // DRAFT: period
+        { k: "Hosting logs", v: "A limited time, under Vercel's rules" },
+      ],
+    },
+    rights: {
+      h: "Your rights",
+      items: [
+        "Learn which data we hold and get a copy",
+        "Correct inaccurate data",
+        "Delete your data",
+        "Restrict or object to processing",
+        "Withdraw your consent",
+        "Complain to the Ukrainian Parliament Commissioner for Human Rights or your EU data protection authority",
+      ],
+      how: "Write to us and we will reply within 30 days.",
+      cta: "Write to us",
+    },
+    more: [
+      { h: "Security", text: "The site works only over HTTPS and requests travel over an encrypted connection. Only our team has access to them." },
+      { h: "Children", text: "The site is not meant for children. If a child has sent us their data, write to us and we will delete it." },
+      { h: "Changes", text: "A new version of this policy will appear on this page with a new update date." },
     ],
   },
 
