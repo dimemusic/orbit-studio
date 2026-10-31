@@ -11,7 +11,7 @@ import {
 import { type ReactNode } from "react";
 import { expo, seg, smooth, Typed, typed } from "./util";
 import { box, fly, useB, Visual } from "./shared";
-import { IPhone } from "./IPhone";
+import { PhoneStatus } from "./IPhone";
 
 /* ---------------- 3 · CMS ---------------- */
 
@@ -77,22 +77,29 @@ function Swap({ k, a, b }: { k: number; a: ReactNode; b: ReactNode }) {
   );
 }
 
+/** the edit beats shared by the form (CmsStage) and the live page on the phone (CmsScreen) */
+function beats(s: number) {
+  return {
+    nameK: seg(s, 0.45, 0.92),
+    priceK: seg(s, 1.03, 1.24),
+    up: seg(s, 1.3, 1.68),
+    photoK: expo(seg(s, 1.66, 1.9)),
+    descK: seg(s, 1.76, 2.02),
+    stockK: expo(seg(s, 2.05, 2.28)),
+    pubK: expo(seg(s, 2.3, 2.55)),
+  };
+}
+
 export function CmsStage({ s }: { s: number }) {
-  const { BUILD, M } = useB();
+  const { M } = useB();
   const focusK = (a: number, b: number) =>
     smooth(seg(s, a, a + 0.08)) * (1 - smooth(seg(s, b, b + 0.08)));
   const fName = focusK(0.38, 0.98);
   const fPrice = focusK(0.98, 1.28);
   const fDesc = focusK(1.72, 2.05);
-  const nameK = seg(s, 0.45, 0.92);
+  const { nameK, priceK, up, photoK, descK, stockK, pubK } = beats(s);
   const name = typed(M.nameVal, nameK);
-  const priceK = seg(s, 1.03, 1.24);
-  const up = seg(s, 1.3, 1.68);
-  const photoK = expo(seg(s, 1.66, 1.9));
-  const descK = seg(s, 1.76, 2.02);
-  const stockK = expo(seg(s, 2.05, 2.28));
   const pressed = s > 2.2 && s < 2.3;
-  const pubK = expo(seg(s, 2.3, 2.55));
   const row = (i: number) =>
     fly(expo(seg(s, 0.1 + i * 0.045, 0.6 + i * 0.045)), -40, 0, 8);
   const LOG_AT = [1.0, 1.3, 1.7, 2.32];
@@ -357,13 +364,20 @@ export function CmsStage({ s }: { s: number }) {
         </ul>
       </div>
 
-      {/* iPhone: the live product page updates */}
-      <IPhone
-        style={{
-          ...box(836, 20, 286, 560),
-          ...fly(expo(seg(s, 0.04, 0.6)), 220, 0, 16),
-        }}
-      >
+    </>
+  );
+}
+
+/** the phone screen (262 × 536): the product page updates as the form is filled. Lives inside the product frame,
+ *  which draws the phone body (bezel, buttons) as it reshapes into a phone. */
+export function CmsScreen({ s }: { s: number }) {
+  const { BUILD, M } = useB();
+  const { nameK, priceK, photoK, descK, stockK, pubK } = beats(s);
+  const name = typed(M.nameVal, nameK);
+  return (
+    <div className="absolute inset-0 text-[#1a1714]">
+      <PhoneStatus />
+      <div className="px-4 pt-2">
         <div className="flex items-center justify-between px-1">
           <span className="text-[15px] font-semibold">{BUILD.brand}</span>
           <span
@@ -431,7 +445,8 @@ export function CmsStage({ s }: { s: number }) {
             <Visual v={2} />
           </div>
         </div>
-      </IPhone>
-    </>
+      </div>
+      <i className="absolute bottom-2 left-1/2 h-[5px] w-[110px] -translate-x-1/2 rounded-full bg-[#1a1714]/80" />
+    </div>
   );
 }

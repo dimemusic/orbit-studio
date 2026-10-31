@@ -1,6 +1,7 @@
 import { memo, type CSSProperties } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
+import { seg, smooth } from "./util";
 
 // Shared by the Build film (components/sections/Build.tsx): timeline, motion blur budget, layout helpers, the derived copy.
 
@@ -24,6 +25,26 @@ export const stageAt = (t: number) => {
 };
 export const SW = 1200;
 export const SH = 620;
+
+/**
+ * The product (the mock site) is ONE object through the whole film: Figma artboard → code preview → phone → browser.
+ * Every stage keeps it in the same band (top 20, height 560), so between stages it slides and reshapes
+ * (width, corner radius, phone bezel) instead of leaving the screen. Rendered by build/Product.tsx.
+ */
+export type Prod = { x: number; y: number; w: number; h: number; r: number; bezel: number };
+export const PROD: Prod[] = [
+  { x: 360, y: 20, w: 480, h: 560, r: 8, bezel: 0 },
+  { x: 730, y: 20, w: 430, h: 560, r: 14, bezel: 0 },
+  { x: 836, y: 20, w: 286, h: 560, r: 54, bezel: 12 },
+  { x: 540, y: 20, w: 600, h: 560, r: 18, bezel: 0 },
+];
+/** stage hand-over window around each boundary (s): the outgoing UI leaves while the next one arrives, no empty beat */
+export const HAND = { before: 0.4, after: 0.5 };
+/** 0 → 1 while stage i hands over to stage i + 1 (0 for the last stage) */
+export const handover = (t: number, i: number) =>
+  i >= STAGE_SEC.length - 1 ? 0 : smooth(seg(t, STAGE_START[i + 1] - HAND.before, STAGE_START[i + 1] + HAND.after));
+/** a stage's own clock in beats (0..BEATS), clamped: before it starts it shows its first frame, after it ends its last */
+export const beatsOf = (t: number, i: number) => Math.min(BEATS, Math.max(0, ((t - STAGE_START[i]) / STAGE_SEC[i]) * BEATS));
 
 /**
  * Motion blur budget. Blur only on big moving things (stage whips, title letters, panels with px ≥ BIG_BLUR);

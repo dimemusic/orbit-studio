@@ -2,11 +2,14 @@ import {
   ChartLineUp,
   ChatCircleDots,
   Check,
+  EnvelopeSimple,
   GraduationCap,
   Lock,
   ShieldCheck,
+  ShoppingBag,
+  UserCircle,
 } from "@phosphor-icons/react/dist/ssr";
-import { Caret, ease, expo, seg, typed } from "./util";
+import { along, Caret, ease, expo, seg, smooth, typed } from "./util";
 import { box, fly, useB, Visual } from "./shared";
 
 /* ---------------- 4 · Launch ---------------- */
@@ -17,6 +20,19 @@ const PIECES = [
   { x: 215, y: 364, w: 170, h: 172, dx: 0, dy: 320, c: "#efe9de" },
   { x: 406, y: 364, w: 170, h: 172, dx: 480, dy: 160, c: "#efe9de" },
 ];
+/** the finale, in seconds of the held final frame: a visitor arrives, a request and an order come in */
+const EVENT_AT = [0.5, 1.5, 2.5];
+const EVENT_ICON = [UserCircle, EnvelopeSimple, ShoppingBag];
+const EVENT_COLOR = ["#5aa2ff", "#a78bfa", "#34d399"];
+/** the visitor's cursor in the browser (browser coordinates): enters, clicks the hero button, browses on */
+const VISITOR: [number, number, number][] = [
+  [0.2, 560, 600],
+  [1.1, 118, 252],
+  [1.35, 118, 252],
+  [2.6, 300, 470],
+  [4.4, 470, 430],
+];
+const PRESS = [1.1, 1.35];
 /** launch checklist: when each item finishes (beats), its colour and icon */
 const DONE = [1.05, 1.4, 1.75, 2.1];
 /** the checklist spans exactly the browser's height: 16px header + 20px gap + 4 rows of 120 with 14px gaps = 558 */
@@ -29,131 +45,36 @@ const CHECK = [
   { color: "#34d399", icon: ChatCircleDots },
 ];
 
-export function LaunchStage({ s }: { s: number }) {
-  const { BUILD, L } = useB();
-  const shell = expo(seg(s, 0.03, 0.55));
-  const url = typed(L.url, seg(s, 1.25, 1.65));
-  const deploy = ease(seg(s, 1.6, 2.0));
-  const sweep = seg(s, 2.0, 2.45);
-  const online = expo(seg(s, 2.0, 2.35));
-  const lift = ease(seg(s, 2.0, 2.4));
+/** the moment the site goes live: the product frame's border turns green with it (build/Product.tsx) */
+export const launchLift = (s: number) => ease(seg(s, 2.0, 2.4));
+
+export function LaunchStage({ s, hold = 0 }: { s: number; hold?: number }) {
+  const { L } = useB();
   return (
     <>
-      {/* browser assembling */}
-      <div
-        className="overflow-hidden rounded-2xl border bg-[#f4f0e8]"
-        style={{
-          ...box(BR.x, BR.y, BR.w, BR.h),
-          ...fly(
-            shell,
-            0,
-            60,
-            18,
-            shell < 1 ? `scale(${0.9 + shell * 0.1})` : "",
-          ),
-          borderColor: `rgb(52 211 153 / ${0.15 + lift * 0.45})`,
-          boxShadow: "0 50px 110px -30px rgb(0 0 0 / 0.95)",
-        }}
-      >
-        <div className="flex h-10 items-center gap-2 bg-[#e6e0d4] px-4">
-          <i className="size-2.5 rounded-full bg-black/20" />
-          <i className="size-2.5 rounded-full bg-black/20" />
-          <i className="size-2.5 rounded-full bg-black/20" />
-          <span className="ml-4 flex h-6 min-w-[220px] items-center gap-1.5 rounded-md bg-white/80 px-3 text-[13px] text-[#3f3a33]">
-            <Lock
-              size={12}
-              weight="fill"
-              className={s > 1.65 ? "text-[#1f8f5f]" : "text-black/25"}
-            />
-            {url}
-            <Caret on={s > 1.25 && s < 1.7} color="#1a1714" />
-          </span>
-          {/* live status: a round ping on the dot, the pill itself stays still */}
-          <span
-            className="ml-auto flex items-center gap-2 rounded-full bg-[#1f8f5f]/12 px-3 py-1 text-[12px] font-semibold text-[#1f8f5f]"
-            style={fly(online, 12, 0, 6)}
+      {/* the finale (held final frame): the first things happen on the live site, newest on top */}
+      {L.events.map((e, i) => {
+        const k = expo(seg(hold, EVENT_AT[i], EVENT_AT[i] + 0.55));
+        if (k <= 0) return null;
+        // pushed down by every newer one that has arrived
+        const below = L.events.reduce((n, _, j) => n + (j > i ? smooth(seg(hold, EVENT_AT[j], EVENT_AT[j] + 0.45)) : 0), 0);
+        const Ic = EVENT_ICON[i];
+        return (
+          <div
+            key={e.t}
+            className="tool z-10 flex items-center gap-3 px-3.5"
+            style={{ ...box(BR.x + BR.w - 24 - 272, BR.y + 56 + below * 66, 272, 56), ...fly(k, 48, 0, 10) }}
           >
-            <span className="relative grid size-2 place-items-center">
-              {online > 0.5 && <span className="absolute inset-0 animate-ping rounded-full bg-[#1f8f5f]/60" />}
-              <span className="relative size-2 rounded-full bg-[#1f8f5f]" />
+            <span className="grid size-9 shrink-0 place-items-center rounded-lg" style={{ background: `${EVENT_COLOR[i]}26`, color: EVENT_COLOR[i] }}>
+              <Ic size={18} weight="fill" />
             </span>
-            {L.online}
-          </span>
-        </div>
-        {/* deploy progress under the address bar */}
-        <span
-          className="absolute left-0 top-10 z-[2] h-[3px] w-full origin-left bg-gradient-to-r from-[#5aa2ff] to-[#34d399]"
-          style={{
-            transform: `scaleX(${deploy})`,
-            opacity: s < 2.4 ? 1 : 1 - seg(s, 2.4, 2.6),
-          }}
-        />
-        {/* light sweep once it is live */}
-        {sweep > 0 && sweep < 1 && (
-          <span
-            className="pointer-events-none absolute inset-y-0 z-[3] w-40 -skew-x-12"
-            style={{
-              left: `${-30 + sweep * 130}%`,
-              // soft edges come from the gradient itself (was a blur(6px) filter on a moving layer)
-              background:
-                "linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12) 25%, rgb(255 255 255 / 0.5) 50%, rgb(255 255 255 / 0.12) 75%, transparent)",
-            }}
-          />
-        )}
-        {PIECES.map((p, i) => {
-          const k = expo(seg(s, 0.3 + i * 0.1, 0.95 + i * 0.1));
-          return (
-            <div
-              key={i}
-              className="absolute rounded-xl"
-              style={{
-                left: p.x,
-                top: p.y,
-                width: p.w,
-                height: p.h,
-                background: p.c,
-                ...fly(
-                  k,
-                  p.dx,
-                  p.dy,
-                  22,
-                  `rotate(${((1 - k) * (i % 2 ? -10 : 10)).toFixed(1)}deg)`,
-                ),
-              }}
-            >
-              {i === 0 && (
-                <div className="relative flex h-full flex-col justify-center overflow-hidden rounded-xl p-7 text-[#1a1714]">
-                  <div className="absolute inset-y-3 right-3 w-[270px] overflow-hidden rounded-lg">
-                    <Visual />
-                  </div>
-                  <p className="relative text-[30px] font-semibold leading-none tracking-[-0.045em]">
-                    {BUILD.design.title}
-                  </p>
-                  <p className="relative mt-2.5 text-[13px] text-[#5c564c]">
-                    {BUILD.design.sub}
-                  </p>
-                  <span className="relative mt-5 inline-grid h-10 self-start place-items-center rounded-full bg-[#1a1714] px-5 text-[13px] font-semibold text-white">
-                    {BUILD.design.button}
-                  </span>
-                </div>
-              )}
-              {i >= 1 && (
-                <div className="flex h-full flex-col p-3">
-                  <div className="relative h-[106px] shrink-0 overflow-hidden rounded-lg">
-                    <Visual v={i - 1} />
-                  </div>
-                  <p className="mt-2.5 truncate text-[12px] font-semibold leading-tight text-[#1a1714]">
-                    {BUILD.design.plans[i - 1].name}
-                  </p>
-                  <p className="mt-0.5 text-[11px] leading-tight text-[#7a7368]">
-                    {BUILD.design.plans[i - 1].price}
-                  </p>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            <span className="min-w-0 leading-tight">
+              <span className="block text-[14px] font-semibold text-fg">{e.t}</span>
+              <span className="mt-0.5 block truncate text-[12px] text-grey">{e.d}</span>
+            </span>
+          </div>
+        );
+      })}
       {/* launch checklist: every item has its own icon and its own little motion */}
       <div
         className="flex items-center justify-between"
@@ -264,3 +185,149 @@ export function LaunchStage({ s }: { s: number }) {
     </>
   );
 }
+
+/** the browser (600 × 560): the site assembles, goes live, and (during the held final frame, `hold` seconds)
+ *  gets its first visitor. Lives inside the product frame. */
+export function LaunchScreen({ s, hold = 0 }: { s: number; hold?: number }) {
+  const { BUILD, L } = useB();
+  const url = typed(L.url, seg(s, 1.25, 1.65));
+  const deploy = ease(seg(s, 1.6, 2.0));
+  const sweep = seg(s, 2.0, 2.45);
+  const online = expo(seg(s, 2.0, 2.35));
+  // the finale (held final frame)
+  const count = expo(seg(hold, 0.35, 0.8));
+  const visitors = Math.max(1, Math.round(1 + 23 * ease(seg(hold, 0.5, 4.2))));
+  const press = Math.sin(Math.PI * seg(hold, PRESS[0], PRESS[1]));
+  const cursor = along(hold, VISITOR);
+  const cursorOn = Math.min(seg(hold, 0.2, 0.5), 1 - seg(hold, 4.2, 4.5));
+  return (
+    <div className="absolute inset-0">
+      <div className="flex h-10 items-center gap-2 bg-[#e6e0d4] px-4">
+        <i className="size-2.5 rounded-full bg-black/20" />
+        <i className="size-2.5 rounded-full bg-black/20" />
+        <i className="size-2.5 rounded-full bg-black/20" />
+        <span className="ml-4 flex h-6 min-w-[220px] items-center gap-1.5 rounded-md bg-white/80 px-3 text-[13px] text-[#3f3a33]">
+          <Lock
+            size={12}
+            weight="fill"
+            className={s > 1.65 ? "text-[#1f8f5f]" : "text-black/25"}
+          />
+          {url}
+          <Caret on={s > 1.25 && s < 1.7} color="#1a1714" />
+        </span>
+        {/* live status: a round ping on the dot, the pill itself stays still */}
+        <span
+          className="ml-auto flex items-center gap-2 rounded-full bg-[#1f8f5f]/12 px-3 py-1 text-[12px] font-semibold text-[#1f8f5f]"
+          style={fly(online, 12, 0, 6)}
+        >
+          <span className="relative grid size-2 place-items-center">
+            {online > 0.5 && <span className="absolute inset-0 animate-ping rounded-full bg-[#1f8f5f]/60" />}
+            <span className="relative size-2 rounded-full bg-[#1f8f5f]" />
+          </span>
+          {/* the finale: «Online» rolls over into a live visitor count */}
+          <span className="grid overflow-hidden">
+            <span className="col-start-1 row-start-1" style={swapOut(count)}>
+              {L.online}
+            </span>
+            <span className="col-start-1 row-start-1 whitespace-nowrap tabular-nums" style={swapIn(count)}>
+              {visitors} {L.visitors}
+            </span>
+          </span>
+        </span>
+      </div>
+      {/* deploy progress under the address bar */}
+      <span
+        className="absolute left-0 top-10 z-[2] h-[3px] w-full origin-left bg-gradient-to-r from-[#5aa2ff] to-[#34d399]"
+        style={{
+          transform: `scaleX(${deploy})`,
+          opacity: s < 2.4 ? 1 : 1 - seg(s, 2.4, 2.6),
+        }}
+      />
+      {/* light sweep once it is live */}
+      {sweep > 0 && sweep < 1 && (
+        <span
+          className="pointer-events-none absolute inset-y-0 z-[3] w-40 -skew-x-12"
+          style={{
+            left: `${-30 + sweep * 130}%`,
+            // soft edges come from the gradient itself (was a blur(6px) filter on a moving layer)
+            background:
+              "linear-gradient(90deg, transparent, rgb(255 255 255 / 0.12) 25%, rgb(255 255 255 / 0.5) 50%, rgb(255 255 255 / 0.12) 75%, transparent)",
+          }}
+        />
+      )}
+      {PIECES.map((p, i) => {
+        const k = expo(seg(s, 0.3 + i * 0.1, 0.95 + i * 0.1));
+        return (
+          <div
+            key={i}
+            className="absolute rounded-xl"
+            style={{
+              left: p.x,
+              top: p.y,
+              width: p.w,
+              height: p.h,
+              background: p.c,
+              ...fly(
+                k,
+                p.dx,
+                p.dy,
+                22,
+                `rotate(${((1 - k) * (i % 2 ? -10 : 10)).toFixed(1)}deg)`,
+              ),
+            }}
+          >
+            {i === 0 && (
+              <div className="relative flex h-full flex-col justify-center overflow-hidden rounded-xl p-7 text-[#1a1714]">
+                <div className="absolute inset-y-3 right-3 w-[270px] overflow-hidden rounded-lg">
+                  <Visual />
+                </div>
+                <p className="relative text-[30px] font-semibold leading-none tracking-[-0.045em]">
+                  {BUILD.design.title}
+                </p>
+                <p className="relative mt-2.5 text-[13px] text-[#5c564c]">
+                  {BUILD.design.sub}
+                </p>
+                <span
+                  className="relative mt-5 inline-grid h-10 self-start place-items-center rounded-full bg-[#1a1714] px-5 text-[13px] font-semibold text-white"
+                  style={{ transform: `scale(${(1 - press * 0.06).toFixed(4)})` }}
+                >
+                  {BUILD.design.button}
+                </span>
+              </div>
+            )}
+            {i >= 1 && (
+              <div className="flex h-full flex-col p-3">
+                <div className="relative h-[106px] shrink-0 overflow-hidden rounded-lg">
+                  <Visual v={i - 1} />
+                </div>
+                <p className="mt-2.5 truncate text-[12px] font-semibold leading-tight text-[#1a1714]">
+                  {BUILD.design.plans[i - 1].name}
+                </p>
+                <p className="mt-0.5 text-[11px] leading-tight text-[#7a7368]">
+                  {BUILD.design.plans[i - 1].price}
+                </p>
+              </div>
+            )}
+          </div>
+        );
+      })}
+      {/* the first visitor's cursor */}
+      {cursorOn > 0 && (
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          className="absolute z-[4] [filter:drop-shadow(0_2px_3px_rgb(0_0_0/0.35))]"
+          style={{ left: cursor.x - 4, top: cursor.y - 2, opacity: cursorOn, transform: `scale(${(1 - press * 0.12).toFixed(3)})`, transformOrigin: "4px 2px" }}
+        >
+          <path d="M4 2v17.2l4.1-3.9 2.9 6.6 2.9-1.25-2.85-6.45h5.9z" fill="#1a1714" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+        </svg>
+      )}
+    </div>
+  );
+}
+
+/** label roll: the old one leaves upwards as the new one rises in (k: 0 → 1) */
+const swapOut = (k: number) => ({ transform: `translateY(${(-k * 110).toFixed(1)}%)`, opacity: 1 - k });
+const swapIn = (k: number) => ({ transform: `translateY(${((1 - k) * 110).toFixed(1)}%)`, opacity: k });

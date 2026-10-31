@@ -1,32 +1,9 @@
-import { memo, type CSSProperties, type ReactNode } from "react";
+import { memo } from "react";
 
-/** iPhone-style device: titanium frame, side buttons, Dynamic Island, status bar, home indicator */
-export function IPhone({
-  style,
-  children,
-}: {
-  style: CSSProperties;
-  children: ReactNode;
-}) {
-  return (
-    <div style={style}>
-      <PhoneButtons />
-      <div className="relative h-full rounded-[54px] bg-[linear-gradient(145deg,#4a4e57,#1d1f24_35%,#2b2e35_70%,#121317)] p-[3px] shadow-[0_50px_100px_-30px_rgb(0_0_0/0.95)]">
-        <div className="relative h-full rounded-[51px] bg-black p-[9px]">
-          <div className="relative h-full overflow-hidden rounded-[43px] bg-[#f4f0e8] text-[#1a1714]">
-            <PhoneStatus />
-            <div className="px-4 pt-2">{children}</div>
-            {/* home indicator */}
-            <i className="absolute bottom-2 left-1/2 h-[5px] w-[110px] -translate-x-1/2 rounded-full bg-[#1a1714]/80" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+// iPhone parts for the product frame (build/Product.tsx draws the body itself as the product reshapes into a phone)
 
 /** iPhone side buttons: static, memoised */
-const PhoneButtons = memo(function PhoneButtons() {
+export const PhoneButtons = memo(function PhoneButtons() {
   return (
     <>
       <i className="absolute -left-[3px] top-[108px] h-7 w-[3px] rounded-l bg-[#3a3d44]" />
@@ -38,7 +15,7 @@ const PhoneButtons = memo(function PhoneButtons() {
 });
 
 /** iPhone status bar + Dynamic Island: static, memoised */
-const PhoneStatus = memo(function PhoneStatus() {
+export const PhoneStatus = memo(function PhoneStatus() {
   return (
     <>
             {/* status bar */}

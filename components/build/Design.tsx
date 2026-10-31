@@ -59,23 +59,34 @@ const swatch = (i: number) => ({ x: RS.x + 32 + i * 42 + 4, y: RS.y + 478 + 6 })
 /** where a hand holds an element it drags */
 const grab = (r: Rc) => ({ x: r.x + r.w * 0.55, y: r.y + r.h * 0.62 });
 
+/** the design beats shared by the tools (DesignStage) and the artboard itself (DesignScreen) */
+function beats(s: number) {
+  const pick = seg(s, 2.24, 2.5);
+  const hover = Math.min(3, Math.floor(pick * 4));
+  return {
+    img: expo(seg(s, 1.02, 1.4)),
+    badge: expo(seg(s, 1.25, 1.5)),
+    signup: expo(seg(s, 1.3, 1.62)),
+    title: seg(s, 1.46, 1.84),
+    sub: expo(seg(s, 1.78, 2.04)),
+    btnFly: smooth(seg(s, 1.85, 2.12)),
+    more: expo(seg(s, 2.0, 2.25)),
+    pick,
+    hover,
+    planFly: (k: number) => smooth(seg(s, 2.22 + k * 0.03, 2.5 + k * 0.03)),
+    btnColor: s >= 2.5 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd",
+  };
+}
+/** the designer drags the artboard frame open (0 → 1): the product frame (build/Product.tsx) clips to it */
+export const designFrame = (s: number) => smooth(seg(s, 0.4, 0.95));
+
 export function DesignStage({ s }: { s: number }) {
   const { D } = useB();
   // a team in one file: the designer, the copywriter and the client work at the same time, each with their own cursor and selection colour
   const pan = (i: number) => expo(seg(s, 0.02 + i * 0.04, 0.55 + i * 0.04));
-  const frame = smooth(seg(s, 0.4, 0.95));
-  const img = expo(seg(s, 1.02, 1.4));
-  const badge = expo(seg(s, 1.25, 1.5));
-  const signup = expo(seg(s, 1.3, 1.62));
-  const title = seg(s, 1.46, 1.84);
-  const sub = expo(seg(s, 1.78, 2.04));
-  const btnFly = smooth(seg(s, 1.85, 2.12));
-  const more = expo(seg(s, 2.0, 2.25));
-  const pick = seg(s, 2.24, 2.5);
-  const planFly = (k: number) => smooth(seg(s, 2.22 + k * 0.03, 2.5 + k * 0.03));
+  const frame = designFrame(s);
+  const { btnFly, pick, planFly, hover, btnColor } = beats(s);
   const comment = expo(seg(s, 2.32, 2.6));
-  const hover = Math.min(3, Math.floor(pick * 4));
-  const btnColor = s >= 2.5 ? SWATCHES[3] : pick > 0 ? SWATCHES[hover] : "#c9c5bd";
 
   const at = (r: Rc): Rc => ({ x: AB.x + r.x, y: AB.y + r.y, w: r.w, h: r.h });
   const glide = (list: Rc[], times: number[]) => {
@@ -360,108 +371,6 @@ export function DesignStage({ s }: { s: number }) {
         </div>
       </div>
 
-      {/* artboard: the site assembling itself (children use the same rects as the selection) */}
-      <div
-        className="overflow-hidden rounded-md bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-40px_rgb(0_0_0/0.9)]"
-        style={{
-          ...box(AB.x, AB.y, AB.w, AB.h),
-          clipPath: `inset(0 ${(1 - frame) * 100}% ${(1 - frame) * 100}% 0)`,
-        }}
-      >
-        <div
-          className="absolute overflow-hidden rounded-xl"
-          style={{
-            ...box(R.img.x, R.img.y, R.img.w, R.img.h),
-            clipPath: `inset(${((1 - img) * 100).toFixed(2)}% 0 0 0 round 12px)`,
-            opacity: Math.min(1, img * 2),
-          }}
-        >
-          <div
-            className="absolute inset-0"
-            style={{ transform: `scale(${(1.12 - img * 0.12).toFixed(4)})` }}
-          >
-            <Visual />
-          </div>
-          <span
-            className="absolute left-3 top-3 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-[#1a1714]"
-            style={fly(badge, -10, 0, 4)}
-          >
-            {D.badge}
-          </span>
-        </div>
-        {/* email signup bar floating over the visual */}
-        <div
-          className="absolute flex items-center gap-2 rounded-2xl bg-white p-1.5 pl-4 shadow-[0_12px_30px_-12px_rgb(40_30_20/0.45)]"
-          style={{
-            ...box(R.img.x + 16, R.img.y + R.img.h - 24, R.img.w - 32, 48),
-            ...fly(signup, 0, 18, 8),
-          }}
-        >
-          <EnvelopeSimple size={16} className="text-[#7a7368]" />
-          <span className="flex-1 text-[13px] text-[#9a9287]">{D.email}</span>
-          <span className="flex h-full items-center rounded-xl bg-[#1a1714] px-4 text-[12px] font-semibold text-[#f4f0e8]">
-            {D.join}
-          </span>
-        </div>
-        <p
-          className="absolute flex items-center whitespace-nowrap text-[40px] font-semibold leading-none tracking-[-0.045em]"
-          style={box(R.title.x, R.title.y, R.title.w, R.title.h)}
-        >
-          <Typed
-            text={D.title}
-            k={title}
-            caret={s > 1.46 && s < 1.9}
-            color="#1a1714"
-          />
-        </p>
-        <p
-          className="absolute text-[15px] text-[#5c564c]"
-          style={{
-            ...box(R.title.x, R.title.y + R.title.h + 8, R.title.w),
-            ...fly(sub, 0, 10, 6),
-          }}
-        >
-          {D.sub}
-        </p>
-        {btnFly >= 1 && (
-          <span
-            className="absolute grid place-items-center whitespace-nowrap rounded-full text-[15px] font-semibold text-white"
-            style={{
-              ...box(R.btn.x, R.btn.y, R.btn.w, R.btn.h),
-              background: btnColor,
-              transition: "background-color .25s",
-            }}
-          >
-            {D.button}
-          </span>
-        )}
-        <span
-          className="absolute flex items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold"
-          style={{
-            ...box(R.btn.x + R.btn.w + 22, R.btn.y, undefined, R.btn.h),
-            ...fly(more, -12, 0, 5),
-          }}
-        >
-          {D.more} <ArrowRight size={14} />
-        </span>
-        {D.plans.map((p, k) =>
-          planFly(k) >= 1 ? (
-            <div
-              key={p.name}
-              className="absolute flex items-center gap-2.5 rounded-xl bg-white p-2 shadow-[0_1px_2px_rgb(0_0_0/0.06)]"
-              style={box(
-                R.plans.x + k * (PLAN_W + 10),
-                R.plans.y,
-                PLAN_W,
-                R.plans.h,
-              )}
-            >
-              <PlanBody i={k} />
-            </div>
-          ) : null,
-        )}
-      </div>
-
       {/* instances in flight */}
       {ghost(
         btnFly,
@@ -500,6 +409,109 @@ export function DesignStage({ s }: { s: number }) {
       <Mate x={cPos.x} y={cPos.y} color={CY} name={D.team[1].name} k={expo(seg(s, 1.08, 1.3))} down={(s > 1.44 && s < 1.5) || (s > 2.22 && s < 2.5)} />
       <Mate x={gPos.x} y={gPos.y} color={GR} name={D.team[2].name} k={expo(seg(s, 1.92, 2.12))} down={s > 2.3 && s < 2.36} />
     </>
+  );
+}
+
+/** the artboard's content (artboard coordinates, 480 × 560): the site assembling itself, from the same rects as the selections.
+ *  Lives inside the product frame (build/Product.tsx), which is the artboard itself. */
+export function DesignScreen({ s }: { s: number }) {
+  const { D } = useB();
+  const { img, badge, signup, title, sub, btnFly, more, planFly, btnColor } = beats(s);
+  return (
+    <div className="absolute inset-0 text-[#1a1714]">
+      <div
+        className="absolute overflow-hidden rounded-xl"
+        style={{
+          ...box(R.img.x, R.img.y, R.img.w, R.img.h),
+          clipPath: `inset(${((1 - img) * 100).toFixed(2)}% 0 0 0 round 12px)`,
+          opacity: Math.min(1, img * 2),
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{ transform: `scale(${(1.12 - img * 0.12).toFixed(4)})` }}
+        >
+          <Visual />
+        </div>
+        <span
+          className="absolute left-3 top-3 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-[#1a1714]"
+          style={fly(badge, -10, 0, 4)}
+        >
+          {D.badge}
+        </span>
+      </div>
+      {/* email signup bar floating over the visual */}
+      <div
+        className="absolute flex items-center gap-2 rounded-2xl bg-white p-1.5 pl-4 shadow-[0_12px_30px_-12px_rgb(40_30_20/0.45)]"
+        style={{
+          ...box(R.img.x + 16, R.img.y + R.img.h - 24, R.img.w - 32, 48),
+          ...fly(signup, 0, 18, 8),
+        }}
+      >
+        <EnvelopeSimple size={16} className="text-[#7a7368]" />
+        <span className="flex-1 text-[13px] text-[#9a9287]">{D.email}</span>
+        <span className="flex h-full items-center rounded-xl bg-[#1a1714] px-4 text-[12px] font-semibold text-[#f4f0e8]">
+          {D.join}
+        </span>
+      </div>
+      <p
+        className="absolute flex items-center whitespace-nowrap text-[40px] font-semibold leading-none tracking-[-0.045em]"
+        style={box(R.title.x, R.title.y, R.title.w, R.title.h)}
+      >
+        <Typed
+          text={D.title}
+          k={title}
+          caret={s > 1.46 && s < 1.9}
+          color="#1a1714"
+        />
+      </p>
+      <p
+        className="absolute text-[15px] text-[#5c564c]"
+        style={{
+          ...box(R.title.x, R.title.y + R.title.h + 8, R.title.w),
+          ...fly(sub, 0, 10, 6),
+        }}
+      >
+        {D.sub}
+      </p>
+      {btnFly >= 1 && (
+        <span
+          className="absolute grid place-items-center whitespace-nowrap rounded-full text-[15px] font-semibold text-white"
+          style={{
+            ...box(R.btn.x, R.btn.y, R.btn.w, R.btn.h),
+            background: btnColor,
+            transition: "background-color .25s",
+          }}
+        >
+          {D.button}
+        </span>
+      )}
+      <span
+        className="absolute flex items-center gap-1.5 whitespace-nowrap text-[14px] font-semibold"
+        style={{
+          ...box(R.btn.x + R.btn.w + 22, R.btn.y, undefined, R.btn.h),
+          ...fly(more, -12, 0, 5),
+        }}
+      >
+        {D.more} <ArrowRight size={14} />
+      </span>
+      {D.plans.map((p, k) =>
+        planFly(k) >= 1 ? (
+          <div
+            key={p.name}
+            className="absolute flex items-center gap-2.5 rounded-xl bg-white p-2 shadow-[0_1px_2px_rgb(0_0_0/0.06)]"
+            style={box(
+              R.plans.x + k * (PLAN_W + 10),
+              R.plans.y,
+              PLAN_W,
+              R.plans.h,
+            )}
+          >
+            <PlanBody i={k} />
+          </div>
+        ) : null,
+      )}
+    </div>
   );
 }
 

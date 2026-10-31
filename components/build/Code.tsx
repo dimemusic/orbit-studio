@@ -7,21 +7,22 @@ import { box, fly, useB, Visual } from "./shared";
 
 /* ---------------- 2 · Code ---------------- */
 
-export function CodeStage({ s }: { s: number }) {
-  const { BUILD, C, CHARS, LEN, LINES, START } = useB();
+/** how far the code is typed at beat s: shared by the editor (CodeStage) and the live preview (CodeScreen) */
+function useTyping(s: number) {
+  const { CHARS, LEN, LINES, START } = useB();
   const chars = Math.round(seg(s, 0.3, 1.95) * CHARS);
-  const lineK = (i: number) =>
-    Math.min(1, Math.max(0, (chars - START[i]) / LEN[i]));
-  const cur = LINES.findIndex((_, i) => chars < START[i] + LEN[i]);
+  const lineK = (i: number) => Math.min(1, Math.max(0, (chars - START[i]) / LEN[i]));
   const textOf = (line: number, tok: number) => {
-    const before = LINES[line]
-      .slice(0, tok)
-      .reduce((a, [x]) => a + x.length, 0);
-    return typed(
-      LINES[line][tok][0],
-      (chars - START[line] - before) / LINES[line][tok][0].length,
-    );
+    const before = LINES[line].slice(0, tok).reduce((a, [x]) => a + x.length, 0);
+    return typed(LINES[line][tok][0], (chars - START[line] - before) / LINES[line][tok][0].length);
   };
+  return { chars, lineK, textOf };
+}
+
+export function CodeStage({ s }: { s: number }) {
+  const { C, LEN, LINES, START } = useB();
+  const { chars, lineK } = useTyping(s);
+  const cur = LINES.findIndex((_, i) => chars < START[i] + LEN[i]);
   const term = expo(seg(s, 1.9, 2.2));
 
   return (
@@ -84,81 +85,82 @@ export function CodeStage({ s }: { s: number }) {
           <CheckCircle size={17} weight="fill" /> {C.ok}
         </span>
       </div>
-      {/* live preview building as the code is written */}
-      <div
-        className="overflow-hidden rounded-xl bg-[#f4f0e8] text-[#1a1714] shadow-[0_40px_90px_-30px_rgb(0_0_0/0.9)]"
-        style={{
-          ...box(730, 20, 430, 560),
-          ...fly(expo(seg(s, 0.06, 0.6)), 220, 0, 18),
-        }}
-      >
-        <div className="flex h-8 items-center gap-1.5 bg-[#e6e0d4] px-3">
-          <i className="size-2 rounded-full bg-black/20" />
-          <i className="size-2 rounded-full bg-black/20" />
-          <i className="size-2 rounded-full bg-black/20" />
-          <span className="ml-2 rounded bg-white/70 px-2 text-[11px] text-[#5c564c]">
-            localhost:3000
+    </>
+  );
+}
+
+/** the live preview (430 × 560): the page builds itself as the code is typed. Lives inside the product frame. */
+export function CodeScreen({ s }: { s: number }) {
+  const { BUILD } = useB();
+  const { lineK, textOf } = useTyping(s);
+  return (
+    <div className="absolute inset-0 text-[#1a1714]">
+      <div className="flex h-8 items-center gap-1.5 bg-[#e6e0d4] px-3">
+        <i className="size-2 rounded-full bg-black/20" />
+        <i className="size-2 rounded-full bg-black/20" />
+        <i className="size-2 rounded-full bg-black/20" />
+        <span className="ml-2 rounded bg-white/70 px-2 text-[11px] text-[#5c564c]">
+          localhost:3000
+        </span>
+      </div>
+      <div className="p-5">
+        <div
+          className="relative h-[144px] overflow-hidden rounded-xl"
+          style={fly(expo(lineK(2)), 0, 16, 10)}
+        >
+          <Visual />
+        </div>
+        <div className="pt-3">
+          <p className="min-h-[28px] text-[26px] font-semibold leading-none tracking-[-0.045em]">
+            {textOf(3, 3)}
+          </p>
+          <p className="mt-1.5 min-h-[18px] text-[13px] text-[#5c564c]">
+            {textOf(4, 3)}
+          </p>
+          <span
+            className="mt-3 inline-grid h-9 min-w-[110px] place-items-center rounded-full bg-[#1a1714] px-5 text-[12px] font-semibold text-white"
+            style={fly(expo(Math.min(1, lineK(5) * 2.5)), 0, 12, 8)}
+          >
+            {textOf(5, 3) || " "}
           </span>
         </div>
-        <div className="p-5">
-          <div
-            className="relative h-[144px] overflow-hidden rounded-xl"
-            style={fly(expo(lineK(2)), 0, 16, 10)}
-          >
-            <Visual />
-          </div>
-          <div className="pt-3">
-            <p className="min-h-[28px] text-[26px] font-semibold leading-none tracking-[-0.045em]">
-              {textOf(3, 3)}
-            </p>
-            <p className="mt-1.5 min-h-[18px] text-[13px] text-[#5c564c]">
-              {textOf(4, 3)}
-            </p>
-            <span
-              className="mt-3 inline-grid h-9 min-w-[110px] place-items-center rounded-full bg-[#1a1714] px-5 text-[12px] font-semibold text-white"
-              style={fly(expo(Math.min(1, lineK(5) * 2.5)), 0, 12, 8)}
+        <div
+          className="mt-3 flex items-center gap-2 rounded-xl bg-white p-1 pl-3 shadow-[0_6px_16px_-10px_rgb(40_30_20/0.5)]"
+          style={fly(expo(Math.min(1, lineK(6) * 2)), 0, 14, 8)}
+        >
+          <EnvelopeSimple size={13} className="text-[#7a7368]" />
+          <span className="flex-1 text-[11px] text-[#9a9287]">
+            {BUILD.design.email}
+          </span>
+          <span className="grid h-8 place-items-center rounded-lg bg-[#1a1714] px-2.5 text-[11px] font-semibold text-[#f4f0e8]">
+            {BUILD.design.join}
+          </span>
+        </div>
+        <div className="mt-4 grid grid-cols-3 gap-2.5">
+          {[0, 1, 2].map((k) => (
+            <div
+              key={k}
+              className="rounded-lg bg-white p-2"
+              style={fly(
+                expo(seg(lineK(8), k * 0.2, k * 0.2 + 0.6)),
+                0,
+                30,
+                10,
+              )}
             >
-              {textOf(5, 3) || " "}
-            </span>
-          </div>
-          <div
-            className="mt-3 flex items-center gap-2 rounded-xl bg-white p-1 pl-3 shadow-[0_6px_16px_-10px_rgb(40_30_20/0.5)]"
-            style={fly(expo(Math.min(1, lineK(6) * 2)), 0, 14, 8)}
-          >
-            <EnvelopeSimple size={13} className="text-[#7a7368]" />
-            <span className="flex-1 text-[11px] text-[#9a9287]">
-              {BUILD.design.email}
-            </span>
-            <span className="grid h-8 place-items-center rounded-lg bg-[#1a1714] px-2.5 text-[11px] font-semibold text-[#f4f0e8]">
-              {BUILD.design.join}
-            </span>
-          </div>
-          <div className="mt-4 grid grid-cols-3 gap-2.5">
-            {[0, 1, 2].map((k) => (
-              <div
-                key={k}
-                className="rounded-lg bg-white p-2"
-                style={fly(
-                  expo(seg(lineK(8), k * 0.2, k * 0.2 + 0.6)),
-                  0,
-                  30,
-                  10,
-                )}
-              >
-                <div className="relative h-16 overflow-hidden rounded-md">
-                  <Visual v={k} />
-                </div>
-                <p className="mt-2 truncate text-[11px] font-semibold">
-                  {BUILD.design.plans[k].name}
-                </p>
-                <p className="text-[10px] text-[#7a7368]">
-                  {BUILD.design.plans[k].price}
-                </p>
+              <div className="relative h-16 overflow-hidden rounded-md">
+                <Visual v={k} />
               </div>
-            ))}
-          </div>
+              <p className="mt-2 truncate text-[11px] font-semibold">
+                {BUILD.design.plans[k].name}
+              </p>
+              <p className="text-[10px] text-[#7a7368]">
+                {BUILD.design.plans[k].price}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

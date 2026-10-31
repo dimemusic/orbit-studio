@@ -392,6 +392,13 @@ export const BUILD = {
       { t: "Навчання", d: "Показуємо, як керувати сайтом" },
       { t: "Підтримка", d: "На зв'язку і після запуску" },
     ],
+    /** the finale: the site is live and the first things happen on it (a demo, not real data) */
+    visitors: "на сайті",
+    events: [
+      { t: "Перший відвідувач", d: "щойно · з Google" },
+      { t: "Нова заявка", d: "Тариф «Стандарт»" },
+      { t: "Нове замовлення", d: "Стандарт · 1 990 ₴" },
+    ],
   },
 };
 

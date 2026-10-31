@@ -14,6 +14,8 @@ const FOCUS = [
 ];
 type Fit = { mobile: boolean; w: number; h: number };
 const FitCtx = createContext<Fit>({ mobile: false, w: 0, h: 0 });
+/** the stage box's fit: `mobile` = cropped phone / tablet mode */
+export const useFit = () => useContext(FitCtx);
 /** mobile crop of stage i: transform for its layer (origin 0 0) */
 const cropOf = (i: number, f: Fit) => {
   const r = FOCUS[i];

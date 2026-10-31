@@ -294,6 +294,12 @@ export const en: Content = {
         { t: "Training", d: "We show how to run the site" },
         { t: "Support", d: "Still here after launch" },
       ],
+      visitors: "on the site",
+      events: [
+        { t: "First visitor", d: "just now · from Google" },
+        { t: "New request", d: "“Standard” plan" },
+        { t: "New order", d: "Standard · 1 990 ₴" },
+      ],
     },
   },
 
