@@ -71,8 +71,8 @@ Spotlight / border light on interactive cards, fine pointers only. **Never set `
 ## Performance
 - No CSS `filter` / `backdrop-filter` on full-screen layers. Background motion is transform-only on its own layers.
 - WebGL: DPR ≤ 1.5, no MSAA (it tripled the first frame on GPU-less devices / PageSpeed); instead the vertex shader keeps every sprite ≥ 3 device px with alpha scaled by its area, so tiny stars glide instead of snapping pixel to pixel (that snapping made the page look like it shakes). Render loop paused while the tab is hidden, no allocations per frame.
-- The hero is the LCP: its copy is server-rendered with `data-in` and shows when the boot ends, never waiting for hydration or WebGL. Below-the-fold heavy UI (the Build film) mounts on first interaction.
-- Lighthouse (Oct 2026, with GSAP motion, local headless without GPU): mobile 77 / desktop 88, TBT 470 / 220 ms; live PageSpeed ran 92 / 90 before GSAP. GSAP never loads before hydration and never touches the hero. Re-check pagespeed.web.dev after big changes.
+- The hero is the LCP: its entrance is pure CSS keyed to the boot end, never waiting for hydration, GSAP or WebGL. Below-the-fold heavy UI (the Build film) mounts on first interaction.
+- Live PageSpeed (Oct 2026, with the GSAP motion): mobile 93 / desktop 94, TBT 10 ms, LCP 2.3s (the intro card costs ~2s by design); local headless Lighthouse without a GPU reads lower (77 / 88). GSAP never loads before hydration and never touches the hero. Re-check pagespeed.web.dev after big changes.
 - Build film: motion blur only on big moving elements (≥ `BIG_BLUR`) and off entirely when DPR > 1.5 or ≤ 4 CPU cores (`MB`); static parts are `memo`ised.
 
 ## Hard rules learned from bugs (do not undo)
