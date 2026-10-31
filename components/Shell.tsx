@@ -7,6 +7,7 @@ import { Nav } from "@/components/Nav";
 import { Scene } from "@/components/Scene";
 import { Footer } from "@/components/sections/Footer";
 import { CardFx } from "@/components/ui/CardFx";
+import { ButtonFx } from "@/components/ui/ButtonFx";
 import { RevealRoot } from "@/components/ui/RevealRoot";
 import type { Lang } from "@/lib/content";
 import { contentFor, SITE_URL } from "@/lib/i18n";
@@ -70,6 +71,7 @@ export function Shell({ lang, children }: { lang: Lang; children: React.ReactNod
           </div>
           <RevealRoot />
           <CardFx />
+          <ButtonFx />
         </LangProvider>
       </body>
     </html>

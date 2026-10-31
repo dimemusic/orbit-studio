@@ -5,13 +5,12 @@ type Variant = "primary" | "secondary" | "text";
 type Size = "lg" | "nav";
 
 const base =
-  "inline-flex items-center justify-center whitespace-nowrap rounded-full font-semibold tracking-[-0.01em] " +
-  "transition-[background-color,border-color,color,box-shadow] duration-200 ease-out";
+  "inline-flex items-center justify-center whitespace-nowrap rounded-full font-semibold tracking-[-0.01em]";
 
 const variants: Record<Variant, string> = {
   primary: "btn-primary",
   secondary: "btn-secondary",
-  text: "text-body hover:text-fg",
+  text: "text-body transition-colors duration-200 hover:text-fg",
 };
 
 const sizes: Record<Size, string> = {

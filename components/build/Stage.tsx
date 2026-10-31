@@ -84,9 +84,13 @@ export function StageBox({ cur, children }: { cur: number; children: ReactNode }
 }
 
 /** one stage layer: whip transform while it moves + the phone crop (if any) */
+/** each stage's glass panels take its own tint (design violet, code blue, panel cyan, launch green): `--tint` in globals.css */
+const TINT = ["139 92 246", "61 139 255", "34 211 238", "52 211 153"];
+
 export function StageLayer({ i, whip, children }: { i: number; whip: CSSProperties | undefined; children: ReactNode }) {
   const f = useContext(FitCtx);
-  if (!f.mobile) return <div className="absolute inset-0" style={whip}>{children}</div>;
+  const tint = { "--tint": TINT[i] } as CSSProperties;
+  if (!f.mobile) return <div className="absolute inset-0" style={{ ...tint, ...whip }}>{children}</div>;
   const { c, tx, ty } = cropOf(i, f);
   const r = FOCUS[i];
   const crop = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${c.toFixed(4)})`;
@@ -94,7 +98,7 @@ export function StageLayer({ i, whip, children }: { i: number; whip: CSSProperti
   // a few px of air so the panels' own rounded corners and shadows are not cut
   const clip = `inset(${r.y - 6}px ${SW - r.x - r.w - 6}px ${SH - r.y - r.h - 6}px ${r.x - 6}px)`;
   return (
-    <div className="absolute inset-0 origin-top-left" style={{ ...whip, clipPath: clip, transform: whip?.transform ? `${whip.transform} ${crop}` : crop }}>
+    <div className="absolute inset-0 origin-top-left" style={{ ...tint, ...whip, clipPath: clip, transform: whip?.transform ? `${whip.transform} ${crop}` : crop }}>
       {children}
     </div>
   );

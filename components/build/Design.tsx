@@ -270,7 +270,7 @@ export function DesignStage({ s }: { s: number }) {
         style={{ ...box(SW / 2 - 112, AB.y + AB.h - 52, 224, 44), ...fly(pan(1), 0, 40, 8), borderRadius: 14 }}
       >
         {TOOLS.map((Ic, i) => (
-          <span key={i} className={`grid size-8 place-items-center rounded-lg transition-colors duration-300 ${i === tool ? "bg-violet text-white" : "text-grey"}`}>
+          <span key={i} className={`grid size-8 place-items-center rounded-lg transition-colors duration-300 ${i === tool ? "tool-glow bg-violet text-white" : "text-grey"}`}>
             <Ic size={16} />
           </span>
         ))}
@@ -300,7 +300,7 @@ export function DesignStage({ s }: { s: number }) {
           <p className={`${label} flex h-4 items-center`}>{D.layout}</p>
           <div className="mt-[6px] grid grid-cols-[auto_1fr_1fr] gap-2">
             <span className="flex h-[34px] items-center gap-0.5 rounded-lg bg-white/[0.05] px-1">
-              <span className="grid size-6 place-items-center rounded-md bg-violet text-white">
+              <span className="tool-glow grid size-6 place-items-center rounded-md bg-violet text-white">
                 <ArrowDown size={12} weight="bold" />
               </span>
               <span className="grid size-6 place-items-center rounded-md text-grey">

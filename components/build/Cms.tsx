@@ -297,8 +297,9 @@ export function CmsStage({ s }: { s: number }) {
             {M.save}
           </span>
           <span
-            className="relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-3 text-[14px] font-semibold text-white"
+            className="tool-glow relative inline-flex items-center gap-2 overflow-hidden rounded-full px-6 py-3 text-[14px] font-semibold text-white"
             style={{
+              ["--tint" as string]: pubK > 0.5 ? "52 211 153" : "61 139 255",
               background: `color-mix(in srgb, #1f9d68 ${(pubK * 100).toFixed(0)}%, #3d8bff)`,
               transform: `scale(${pressed ? 0.95 : 1})`,
               transition: "transform .15s",
