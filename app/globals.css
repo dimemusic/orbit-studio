@@ -608,8 +608,8 @@ html {
 .tool {
   /* Maksym's Figma panel (node 41:8351) with its Figma «Glass» effect, matched pixel by pixel against his render:
      the stars behind stay faintly visible but softened and darkened (frost 4 + the 156° black → navy wash),
-     ONE crisp light hairline (~white 23%), a faint refraction glow inside the bottom / right edge, deep shadow. */
-  border: 1px solid rgb(255 255 255 / 0.23);
+     ONE crisp white hairline at 30%, a faint refraction glow inside the bottom / right edge, deep shadow. */
+  border: 1px solid rgb(255 255 255 / 0.3);
   border-radius: 18px;
   background: linear-gradient(156deg, rgb(0 0 0 / 0.6) 5.7%, rgb(13 16 24 / 0.5) 99.6%);
   -webkit-backdrop-filter: blur(4px);
@@ -617,6 +617,13 @@ html {
   box-shadow:
     inset -14px -14px 16px -14px rgb(170 185 230 / 0.07),
     0 34px 70px -28px rgb(0 0 0 / 0.9);
+}
+.tool.tool-dense {
+  /* the same glass where it sits over the bright mock site (finale toasts, CMS toast, design toolbar):
+     a denser body, so it stays dark glass instead of turning muddy grey over the light page */
+  background: linear-gradient(156deg, rgb(8 9 13 / 0.9) 5.7%, rgb(16 19 28 / 0.86) 99.6%);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
 }
 .tool-cell {
   background: rgb(255 255 255 / 0.03);

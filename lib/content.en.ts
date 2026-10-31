@@ -300,7 +300,7 @@ export const en: Content = {
       events: [
         { t: "First visitor", d: "just now · from Google" },
         { t: "New request", d: "“Standard” plan" },
-        { t: "New order", d: "Standard · 1 990 ₴" },
+        { t: "New order", d: "Standard · 1 790 ₴" },
       ],
     },
   },

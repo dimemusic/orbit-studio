@@ -266,7 +266,7 @@ export function DesignStage({ s }: { s: number }) {
 
       {/* floating toolbar: bottom centre of the canvas, as in Figma */}
       <div
-        className="tool z-20 flex items-center gap-1 p-1.5"
+        className="tool tool-dense z-20 flex items-center gap-1 p-1.5"
         style={{ ...box(SW / 2 - 112, AB.y + AB.h - 52, 224, 44), ...fly(pan(1), 0, 40, 8), borderRadius: 14 }}
       >
         {TOOLS.map((Ic, i) => (

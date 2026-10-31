@@ -60,7 +60,7 @@ export function LaunchStage({ s, hold = 0 }: { s: number; hold?: number }) {
         return (
           <div
             key={e.t}
-            className="tool z-10 flex items-center gap-3 px-3.5"
+            className="tool tool-dense z-10 flex items-center gap-3 px-3.5"
             style={{ ...box(BR.x + BR.w - 24 - 272, BR.y + 56 + below * 66, 272, 56), ...fly(k, 48, 0, 10) }}
           >
             <span className="grid size-9 shrink-0 place-items-center rounded-lg" style={{ background: `${EVENT_COLOR[i]}26`, color: EVENT_COLOR[i] }}>

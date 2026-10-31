@@ -320,7 +320,7 @@ export function CmsStage({ s }: { s: number }) {
 
       {/* toast */}
       <div
-        className="tool flex items-center gap-2 px-4 py-2.5 text-[14px] text-green"
+        className="tool tool-dense flex items-center gap-2 px-4 py-2.5 text-[14px] text-green"
         style={{
           ...box(604, 20),
           ...fly(expo(seg(s, 2.36, 2.66)), 0, -24, 10),
