@@ -2,9 +2,9 @@
 
 import dynamic from "next/dynamic";
 
-// WebGL only runs in the browser: the full-viewport star field behind the site.
-const StarField = dynamic(() => import("./StarField"), { ssr: false });
+// Branch bg-test: the topographic background (Topo.tsx) instead of the star field (StarField.tsx, unchanged).
+const Topo = dynamic(() => import("./Topo"), { ssr: false });
 
 export function Scene() {
-  return <StarField />;
+  return <Topo />;
 }
