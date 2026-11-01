@@ -13,10 +13,13 @@ const variants: Record<Variant, string> = {
   text: "text-body transition-colors duration-200 hover:text-fg",
 };
 
+// fixed whole-pixel boxes (asked: no 184.86 × 48): the width never follows the text.
+// A `w-…` in className (w-full, w-36) replaces the default width.
 const sizes: Record<Size, string> = {
-  lg: "h-16 px-10 text-base",
-  nav: "h-12 px-6 text-sm",
+  lg: "h-16 px-6 text-base",
+  nav: "h-12 px-4 text-sm",
 };
+const widths: Record<Size, string> = { lg: "w-64", nav: "w-48" };
 
 type Common = { variant?: Variant; size?: Size; children: ReactNode; className?: string };
 type AsLink = Common & { href: string } & Omit<ComponentPropsWithoutRef<"a">, "className" | "children">;
@@ -24,8 +27,7 @@ type AsButton = Common & { href?: undefined } & Omit<ComponentPropsWithoutRef<"b
 
 export function Button(props: AsLink | AsButton) {
   const { variant = "primary", size = "lg", className = "", children, ...rest } = props;
-  // big PRIMARY buttons share one minimum width (shrinks on narrow phones); secondary ones stay content-wide
-  const wide = size === "lg" && variant === "primary" ? "min-w-[min(17rem,100%)]" : "";
+  const wide = variant === "text" || /(^|\s)(max-)?w-/.test(className) ? "" : widths[size];
   const cls = `${base} ${variants[variant]} ${sizes[size]} ${wide} ${className}`;
   if (rest.href !== undefined) {
     // internal routes ("/privacy", "/#contact") use client-side navigation; hashes and mailto stay plain links

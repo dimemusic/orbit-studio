@@ -89,7 +89,7 @@ export function Nav() {
               aria-expanded={open}
               aria-controls={menuId}
               onClick={() => setOpen((v) => !v)}
-              className="btn-secondary inline-flex h-11 items-center rounded-full px-4 text-sm lg:hidden"
+              className="btn-secondary inline-flex h-11 w-24 items-center justify-center rounded-full text-sm lg:hidden"
             >
               {open ? UI.close : UI.menu}
             </button>
