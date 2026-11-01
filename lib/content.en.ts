@@ -167,6 +167,8 @@ export const en: Content = {
     currency: "$",
     term: "from",
     choose: "Choose",
+    more: "Details",
+    includes: "What's included",
     hot: "Recommended",
     listLabel: "Plans",
     plans: [
@@ -339,6 +341,7 @@ export const en: Content = {
         { k: "Never", items: ["Passwords", "Payment details", "Sensitive data"] },
       ],
       note: "Automatic data are standard hosting logs. We do not use them to identify you.",
+      voluntary: "Giving us your data is voluntary. Without a name and a contact we simply cannot reply.",
     },
     purpose: {
       h: "Why",
@@ -385,10 +388,12 @@ export const en: Content = {
       items: [
         "Learn which data we hold and get a copy",
         "Correct inaccurate data",
+        "Learn where the data is stored and who received it",
         "Delete your data",
         "Restrict or object to processing",
-        "Withdraw your consent",
-        "Complain to the Ukrainian Parliament Commissioner for Human Rights or your EU data protection authority",
+        "Get your data in a portable format or have it moved to another service",
+        "Withdraw your consent at any time; this does not affect processing that already happened",
+        "Complain to the Ukrainian Parliament Commissioner for Human Rights (ombudsman.gov.ua), to a court or to your EU data protection authority",
       ],
       how: "Write to us and we will reply within 30 days.",
       cta: "Write to us",
@@ -396,6 +401,7 @@ export const en: Content = {
     more: [
       { h: "Security", text: "The site works only over HTTPS and requests travel over an encrypted connection. Only our team has access to them." },
       { h: "Children", text: "The site is not meant for children. If a child has sent us their data, write to us and we will delete it." },
+      { h: "Automated decisions", text: "We make no automated decisions about you and build no profiles. A person reads every request." },
       { h: "Changes", text: "A new version of this policy will appear on this page with a new update date." },
     ],
   },

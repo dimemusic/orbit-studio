@@ -1,7 +1,7 @@
 "use client";
 
-import { Buildings, Check, IdentificationCard, Rocket, ShoppingBag } from "@phosphor-icons/react/dist/ssr";
-import type { CSSProperties } from "react";
+import { Buildings, CheckCircle, IdentificationCard, Rocket, ShoppingBag, X } from "@phosphor-icons/react/dist/ssr";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Plan } from "@/lib/content";
 import { PACKAGE_PICK } from "../home";
 import { useContent } from "../Lang";
@@ -16,12 +16,13 @@ const COLOR: Record<Plan["id"], Accent> = { card: "cyan", landing: "violet", sho
 
 /**
  * Pricing by website type: one full screen (lg+). Title + one line on the right, then 4 plan rows on hairlines
- * (icon, name + who it's for + included pills, «від $N» + term, «Обрати» → the form with that type picked).
+ * (icon, name + who it's for, «від $N» + term, «Детальніше» → PlanDialog with what is included and «Обговорити проєкт», which picks that type in the form).
  * The recommended plan gets a blue stripe, a faint tint, a badge and the primary button. Under the list: one line of extras.
  */
 export function Pricing() {
-  const { SERVICES, CONTACT, UI } = useContent();
-  const pick = (i: number) => window.dispatchEvent(new CustomEvent(PACKAGE_PICK, { detail: [CONTACT.chips[i]] }));
+  const { SERVICES, UI } = useContent();
+  const [open, setOpen] = useState<number | null>(null);
+  const opener = useRef<HTMLElement | null>(null);
 
   return (
     <section
@@ -63,17 +64,6 @@ export function Pricing() {
                     {p.hot && <Tag color="blue">{SERVICES.hot}</Tag>}
                   </div>
                   <p className="mt-1 text-base text-body">{p.for}</p>
-                  <ul className="mt-3 flex flex-wrap gap-2 lg:[@media(max-height:52rem)]:hidden">
-                    {p.features.map((f) => (
-                      <li
-                        key={f}
-                        className={`inline-flex h-7 items-center gap-2 rounded-full border px-3 text-xs font-medium leading-none text-fg/90 ${a.border} ${a.tint}`}
-                      >
-                        <Check size={12} weight="bold" aria-hidden="true" className={a.text} />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
 
                 <div className="col-span-2 flex items-center justify-between gap-5 md:col-span-1 md:gap-8">
@@ -89,8 +79,17 @@ export function Pricing() {
                       {SERVICES.term} {UI.days(p.days)}
                     </span>
                   </p>
-                  <Button href="#contact" size="nav" variant={p.hot ? "primary" : "secondary"} onClick={() => pick(i)} className="w-[9rem] shrink-0">
-                    {SERVICES.choose}
+                  <Button
+                    size="nav"
+                    variant={p.hot ? "primary" : "secondary"}
+                    aria-haspopup="dialog"
+                    onClick={(e) => {
+                      opener.current = e.currentTarget;
+                      setOpen(i);
+                    }}
+                    className="w-36 shrink-0"
+                  >
+                    {SERVICES.more}
                   </Button>
                 </div>
               </article>
@@ -108,6 +107,85 @@ export function Pricing() {
           </span>
         ))}
       </p>
+
+      <PlanDialog open={open} onClose={() => setOpen(null)} returnFocus={opener} />
     </section>
+  );
+}
+
+/** «Детальніше»: what the plan includes, price + term, and «Обговорити проєкт» with that website type picked in the form */
+function PlanDialog({ open, onClose, returnFocus }: { open: number | null; onClose: () => void; returnFocus: React.RefObject<HTMLElement | null> }) {
+  const { SERVICES, CONTACT, CTA, UI } = useContent();
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = dialog.current;
+    if (!d) return;
+    if (open !== null && !d.open) d.showModal();
+    if (open === null && d.open) d.close();
+  }, [open]);
+  const hide = () => {
+    onClose();
+    returnFocus.current?.focus({ preventScroll: true });
+  };
+  const p = open !== null ? SERVICES.plans[open] : null;
+  const a = p ? ACCENT[COLOR[p.id]] : null;
+  const Ic = p ? ICON[p.id] : null;
+  return (
+    <dialog
+      ref={dialog}
+      className="case-dialog plan-dialog"
+      aria-labelledby="plan-dialog-title"
+      onClose={() => open !== null && hide()}
+      onClick={(e) => e.target === e.currentTarget && hide()}
+    >
+      {p && a && Ic && (
+        <div className="case-panel card relative p-6 text-left sm:p-10">
+          <button
+            type="button"
+            onClick={hide}
+            aria-label={UI.close}
+            className="absolute right-4 top-4 grid size-11 place-items-center rounded-full border border-white/10 text-body transition-colors duration-200 hover:border-white/25 hover:text-fg"
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
+          <span className={`grid size-11 place-items-center rounded-xl ${a.tint} ${a.text}`}>
+            <Ic size={22} weight="light" aria-hidden="true" />
+          </span>
+          <h3 id="plan-dialog-title" className="mt-6 text-headline font-semibold">
+            {p.name}
+          </h3>
+          <p className="mt-2 text-base text-body">{p.for}</p>
+          <p className="mt-6 flex items-baseline gap-2">
+            <span className="text-sm text-grey">{SERVICES.pricePrefix}</span>
+            <span className="text-3xl font-semibold leading-none tracking-[-0.03em] text-fg tabular-nums">
+              {SERVICES.currency}
+              {p.price.toLocaleString(UI.locale)}
+            </span>
+            <span className="ml-2 text-sm text-grey">
+              {SERVICES.term} {UI.days(p.days)}
+            </span>
+          </p>
+          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.12em] text-grey">{SERVICES.includes}</p>
+          <ul className="mt-4 flex flex-col gap-3">
+            {p.features.map((f) => (
+              <li key={f} className="flex items-center gap-3 text-base text-fg">
+                <CheckCircle size={20} weight="fill" aria-hidden="true" className={`shrink-0 ${a.text}`} />
+                {f}
+              </li>
+            ))}
+          </ul>
+          <Button
+            href="#contact"
+            className="mt-10 w-full"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent(PACKAGE_PICK, { detail: [CONTACT.chips[open!]] }));
+              onClose();
+            }}
+          >
+            {CTA.primary}
+          </Button>
+        </div>
+      )}
+    </dialog>
   );
 }

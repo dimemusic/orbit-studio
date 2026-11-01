@@ -472,6 +472,9 @@ html {
   /* still scrollable on short screens, but no scrollbar flashing while the panel rises in */
   scrollbar-width: none;
 }
+.plan-dialog {
+  max-width: min(560px, calc(100vw - 32px));
+}
 .case-dialog::-webkit-scrollbar {
   display: none;
 }

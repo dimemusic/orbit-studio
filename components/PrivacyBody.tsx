@@ -50,6 +50,7 @@ export function PrivacyBody() {
             ))}
           </div>
           <Note>{P.data.note}</Note>
+          <Note>{P.data.voluntary}</Note>
         </>
       ),
     },

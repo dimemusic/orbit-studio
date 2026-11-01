@@ -48,7 +48,7 @@ export function LogoStrip() {
   const go = useInView(ref, 0.5);
   const { HERO, UI } = useContent();
   return (
-    <ul ref={ref} aria-label={UI.why} className="legible mx-auto grid w-fit grid-cols-1 justify-items-center gap-x-10 gap-y-3 sm:grid-cols-2 sm:justify-items-start nav:flex nav:items-center nav:gap-x-0">
+    <ul ref={ref} aria-label={UI.why} className="mx-auto grid w-fit grid-cols-1 justify-items-center gap-x-10 gap-y-3 sm:grid-cols-2 sm:justify-items-start nav:flex nav:items-center nav:gap-x-0">
       {HERO.stats.map((s, i) => (
         <li key={s.label} className="flex items-center">
           {i > 0 && <span aria-hidden="true" className="mx-5 hidden size-1 rounded-full bg-white/20 nav:block" />}

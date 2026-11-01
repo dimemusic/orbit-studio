@@ -35,7 +35,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div data-reveal data-in style={{ ["--d" as string]: "280ms" }} className="plate pb-8 lg:pb-12">
+      <div data-reveal data-in style={{ ["--d" as string]: "280ms" }} className="pb-8 lg:pb-12">
         <LogoStrip />
       </div>
     </section>
