@@ -523,6 +523,76 @@ export const PRIVACY = {
   ],
 };
 
+/** «Як ми працюємо», film v3 («Студія в одному вікні»): the studio's glass workspace where app windows open one after
+ * another and hand the client's site on: brief → design → code → admin → launch → support. The client (café «Зерно»)
+ * and its numbers are a fictional demo, not a real case. */
+export const STUDIO = {
+  label: "Як ми працюємо",
+  title: ["Від повідомлення", "до перших замовлень."],
+  lead: "Одна команда веде ваш проєкт від першого повідомлення до живого сайту і не зникає після запуску: дизайн, розробка, адмінка і підтримка в одних руках.",
+  project: { name: "Кав'ярня «Зерно»", kind: "Сайт + адмінка", team: "Команда MaxArt" },
+  steps: [
+    { id: "brief", name: "Бриф", color: "#22d3ee", get: "Розбираємо задачу і даємо план сторінок, терміни і ціну." },
+    { id: "design", name: "Дизайн", color: "#a78bfa", get: "Макет у Figma, який ви бачите наживо і коментуєте." },
+    { id: "code", name: "Розробка", color: "#3d8bff", get: "Швидкий адаптивний сайт, прогрес видно на тестовому посиланні." },
+    { id: "admin", name: "Адмінка", color: "#2dd4bf", get: "Панель, де ви самі змінюєте тексти, ціни і фото." },
+    { id: "launch", name: "Запуск", color: "#34d399", get: "Домен, SSL, аналітика і навчання вашої команди." },
+    { id: "care", name: "Підтримка", color: "#fb7185", get: "Правки, оновлення і нові сторінки після запуску." },
+  ],
+  chat: {
+    app: "Повідомлення",
+    who: "Олена, кав'ярня «Зерно»",
+    msg: "Привіт! Потрібен сайт для нашої кав'ярні: меню, доставка і онлайн-замовлення.",
+    reply: "Вітаю! Зібрали бриф, глянете план?",
+    online: "в мережі",
+  },
+  brief: { app: "Бриф", title: "Сайт кав'ярні «Зерно»", items: ["Меню з цінами", "Доставка", "Онлайн-замовлення", "Instagram"], pages: "Сторінки", pagesVal: "Головна, Меню, Доставка, Контакти" },
+  cursors: { designer: "Дизайнер", client: "Олена" },
+  figma: { app: "Figma", layersLabel: "Шари", autoLabel: "Автолейаут", file: "Зерно / Головна", layers: ["Навігація", "Перший екран", "Фото", "Меню", "Кнопка"], fill: "Заливка", font: "Шрифт", fontVal: "Geologica" },
+  code: {
+    app: "Редактор",
+    file: "app/page.tsx",
+    url: "zerno.vercel.app",
+    lines: [
+      "export default function Home() {",
+      "  return (",
+      "    <Hero title=\"Кава, яку хочеться повторити\" />",
+      "    <Order button=\"Замовити\" />",
+      "    <Menu items={menu} />",
+      "  )",
+      "}",
+    ],
+    checks: ["Адаптив", "SEO", "Швидкість"],
+  },
+  admin: { app: "Адмінка", section: "Меню", seasonal: "Сезонне меню", saved: "Збережено. Вже на сайті", price: "Ціна" },
+  launch: { app: "Браузер", url: "zerno-coffee.com", online: "Онлайн", stats: "Відвідувачі", week: "за тиждень", checks: ["Домен", "SSL", "Аналітика"] },
+  care: {
+    ask: "Додайте сторінку вакансій?",
+    done: "Готово, вже на сайті.",
+    events: [
+      { t: "Нове замовлення", d: "2 × Капучино, доставка" },
+      { t: "Оновлення встановлено", d: "Безпека і швидкість" },
+      { t: "Нова сторінка", d: "«Вакансії» вже на сайті" },
+    ],
+    final: "Проєкт здано. Ми поруч.",
+  },
+  site: {
+    brand: "Зерно",
+    nav: ["Меню", "Доставка", "Контакти"],
+    jobs: "Вакансії",
+    h1: "Кава, яку хочеться повторити",
+    sub: "Свіжа обсмажка щотижня і доставка по місту.",
+    cta: "Замовити",
+    menu: "Меню",
+    items: [
+      { n: "Капучино", p: "65 ₴", np: "59 ₴" },
+      { n: "Флет вайт", p: "75 ₴" },
+      { n: "Лате", p: "70 ₴" },
+    ],
+    seasonal: { n: "Гарбузовий лате", p: "89 ₴" },
+  },
+};
+
 /** Home page story: order shared by section headers, the ambient background and the bottom section indicator. */
 export const HOME_SECTIONS = [
   { id: "top", label: "Головна" },
@@ -533,6 +603,6 @@ export const HOME_SECTIONS = [
 ] as const;
 
 /** everything the live pages read, per language */
-export const uk = { BRAND, META, CTA, NAV, HERO, WORK, SERVICES, CONTACT, BUILD, FOOTER, PRIVACY, UI };
+export const uk = { BRAND, META, CTA, NAV, HERO, WORK, SERVICES, CONTACT, BUILD, STUDIO, FOOTER, PRIVACY, UI };
 export type Content = typeof uk;
 export type Lang = "uk" | "en";

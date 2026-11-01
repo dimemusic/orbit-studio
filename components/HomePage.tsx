@@ -1,4 +1,4 @@
-import { Build } from "@/components/sections/Build";
+import { Studio } from "@/components/sections/Studio";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { Hero } from "@/components/sections/Hero";
 import { Pricing } from "@/components/sections/Pricing";
@@ -13,7 +13,7 @@ export function HomePage({ lang }: { lang: Lang }) {
     <>
       <JsonLd lang={lang} />
       <Hero />
-      <Build />
+      <Studio />
       <Work />
       <Pricing />
       <FinalCta />
