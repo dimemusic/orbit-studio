@@ -38,10 +38,10 @@ export function PrivacyBody() {
           <div className={`divide-y divide-white/[0.08] border-y ${hair}`}>
             {P.data.rows.map((r, i) => (
               <div key={r.k} className="grid gap-3 py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-center">
-                <p className="text-[15px] font-semibold text-fg">{r.k}</p>
+                <p className="text-base font-semibold text-fg">{r.k}</p>
                 <ul className="flex flex-wrap gap-2">
                   {r.items.map((t) => (
-                    <li key={t} className={`rounded-full px-3 py-1.5 text-[14px] ${DATA_TONE[i]}`}>
+                    <li key={t} className={`rounded-full px-3 py-2 text-sm ${DATA_TONE[i]}`}>
                       {t}
                     </li>
                   ))}
@@ -60,8 +60,8 @@ export function PrivacyBody() {
         <>
           <ul className="flex flex-col gap-4">
             {P.purpose.items.map((t) => (
-              <li key={t} className="flex gap-3 text-[17px] leading-relaxed text-fg">
-                <CheckCircle size={22} weight="fill" className="mt-0.5 shrink-0 text-green" />
+              <li key={t} className="flex gap-3 text-base text-fg">
+                <CheckCircle size={22} weight="fill" className="mt-1 shrink-0 text-green" />
                 {t}
               </li>
             ))}
@@ -75,12 +75,12 @@ export function PrivacyBody() {
       h: P.basis.h,
       body: (
         <>
-          <p className="text-[16px] leading-relaxed text-body">{P.basis.intro}</p>
+          <p className="text-base text-body">{P.basis.intro}</p>
           <ul className="mt-6 grid gap-3 sm:grid-cols-3">
             {P.basis.items.map((it) => (
               <li key={it.t} className={`rounded-2xl border ${hair} p-5`}>
-                <p className="text-[16px] font-semibold text-fg">{it.t}</p>
-                <p className="mt-1.5 text-[15px] leading-relaxed text-body">{it.d}</p>
+                <p className="text-base font-semibold text-fg">{it.t}</p>
+                <p className="mt-2 text-base text-body">{it.d}</p>
               </li>
             ))}
           </ul>
@@ -95,7 +95,7 @@ export function PrivacyBody() {
           <div className={`overflow-hidden rounded-2xl border ${hair}`}>
             <table className="w-full text-left">
               <thead>
-                <tr className={`border-b ${hair} text-[13px] text-grey`}>
+                <tr className={`border-b ${hair} text-xs text-grey`}>
                   {P.share.cols.map((c) => (
                     <th key={c} scope="col" className="px-4 py-3 font-medium sm:px-5">
                       {c}
@@ -105,7 +105,7 @@ export function PrivacyBody() {
               </thead>
               <tbody className="divide-y divide-white/[0.08]">
                 {P.share.rows.map((r) => (
-                  <tr key={r[0]} className="text-[15px]">
+                  <tr key={r[0]} className="text-base">
                     <th scope="row" className="px-4 py-4 align-top font-semibold text-fg sm:px-5">
                       {r[0]}
                     </th>
@@ -129,8 +129,8 @@ export function PrivacyBody() {
             <Cookie size={22} weight="light" />
           </span>
           <div>
-            <p className="text-[17px] font-semibold text-fg">{P.cookies.title}</p>
-            <p className="mt-2 text-[15px] leading-relaxed text-body">{P.cookies.text}</p>
+            <p className="text-base font-semibold text-fg">{P.cookies.title}</p>
+            <p className="mt-2 text-base text-body">{P.cookies.text}</p>
           </div>
         </div>
       ),
@@ -143,14 +143,14 @@ export function PrivacyBody() {
         <>
           <ul className="grid gap-3 sm:grid-cols-2">
             {P.rights.items.map((t) => (
-              <li key={t} className={`flex gap-3 rounded-2xl border ${hair} p-4 text-[15px] leading-relaxed text-fg`}>
-                <ShieldCheck size={20} weight="light" className="mt-0.5 shrink-0 text-blue" />
+              <li key={t} className={`flex gap-3 rounded-2xl border ${hair} p-4 text-base text-fg`}>
+                <ShieldCheck size={20} weight="light" className="mt-1 shrink-0 text-blue" />
                 {t}
               </li>
             ))}
           </ul>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white/[0.03] px-6 py-5">
-            <p className="text-[16px] text-body">
+            <p className="text-base text-body">
               {P.rights.how} <span className="text-fg">{BRAND.email}</span>
             </p>
             <Button variant="secondary" size="nav" href={`mailto:${BRAND.email}`}>
@@ -163,7 +163,7 @@ export function PrivacyBody() {
     ...P.more.map((m, i) => ({
       id: `more-${i}`,
       h: m.h,
-      body: <p className="max-w-[62ch] text-[16px] leading-relaxed text-body">{m.text}</p>,
+      body: <p className="max-w-[36rem] text-base text-body">{m.text}</p>,
     })),
   ];
 
@@ -190,14 +190,14 @@ export function PrivacyBody() {
         {/* contents (desktop) */}
         <nav aria-label={P.toc} className="hidden lg:block">
           <div className="sticky top-32">
-            <p className="text-[13px] font-semibold text-grey">{P.toc}</p>
+            <p className="text-xs font-semibold text-grey">{P.toc}</p>
             <ol className={`mt-4 border-l ${hair}`}>
               {sections.map((s) => (
                 <li key={s.id}>
                   <a
                     href={`#${s.id}`}
                     aria-current={active === s.id ? "true" : undefined}
-                    className={`-ml-px block border-l py-2 pl-4 text-[14px] transition-colors ${
+                    className={`-ml-px block border-l py-2 pl-4 text-sm transition-colors ${
                       active === s.id ? "border-blue text-fg" : "border-transparent text-grey hover:text-body"
                     }`}
                   >
@@ -220,22 +220,22 @@ export function PrivacyBody() {
                   key={it.t}
                   className={`flex flex-col gap-3 p-5 sm:p-6 ${i % 2 ? `border-l ${hair}` : ""} ${i > 1 ? `border-t md:border-t-0 ${hair}` : ""} ${i === 2 ? `md:border-l` : ""}`}
                 >
-                  <span className={`grid size-10 place-items-center rounded-xl ${c.tint} ${c.text}`}>
+                  <span className={`grid size-11 place-items-center rounded-xl ${c.tint} ${c.text}`}>
                     <I size={20} weight="light" />
                   </span>
                   <span>
-                    <span className="block text-[16px] font-semibold text-fg">{it.t}</span>
-                    <span className="mt-1 block text-[14px] leading-snug text-grey">{it.d}</span>
+                    <span className="block text-base font-semibold text-fg">{it.t}</span>
+                    <span className="mt-1 block text-sm text-grey">{it.d}</span>
                   </span>
                 </li>
               );
             })}
           </ul>
-          <p className="mt-6 text-[14px] text-grey">{P.updated}</p>
+          <p className="mt-6 text-sm text-grey">{P.updated}</p>
 
           {sections.map((s) => (
             <section key={s.id} id={s.id} aria-labelledby={`${s.id}-h`} className={`scroll-mt-32 border-t ${hair} pt-12 first-of-type:mt-10 [&+&]:mt-12`}>
-              <h2 id={`${s.id}-h`} className="mb-6 text-[clamp(24px,2.2vw,30px)] font-semibold tracking-[-0.02em] text-fg">
+              <h2 id={`${s.id}-h`} className="mb-6 text-headline font-semibold text-fg">
                 {s.h}
               </h2>
               {s.body}
@@ -253,8 +253,8 @@ function Rows({ rows, email }: { rows: { k: string; v: string }[]; email: string
     <dl className={`divide-y divide-white/[0.08] border-y ${hair}`}>
       {rows.map((r) => (
         <div key={r.k} className="grid gap-1 py-4 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-6">
-          <dt className="text-[15px] text-grey">{r.k}</dt>
-          <dd className={`text-[16px] leading-relaxed ${r.v.startsWith("[") ? "text-grey" : "text-fg"}`}>
+          <dt className="text-base text-grey">{r.k}</dt>
+          <dd className={`text-base ${r.v.startsWith("[") ? "text-grey" : "text-fg"}`}>
             {r.v === email ? (
               <a href={`mailto:${email}`} className="underline decoration-white/30 underline-offset-4 transition-colors hover:decoration-white">
                 {email}
@@ -270,5 +270,5 @@ function Rows({ rows, email }: { rows: { k: string; v: string }[]; email: string
 }
 
 function Note({ children }: { children: ReactNode }) {
-  return <p className="mt-5 max-w-[62ch] text-[15px] leading-relaxed text-grey">{children}</p>;
+  return <p className="mt-5 max-w-[36rem] text-base text-grey">{children}</p>;
 }

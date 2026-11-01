@@ -23,16 +23,16 @@ function validate(CONTACT: Content["CONTACT"], v: { name: string; contact: strin
 }
 
 const inputCls =
-  "h-12 w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 text-[16px] text-fg outline-none transition-[border-color,background-color] duration-300 " +
+  "h-12 w-full rounded-xl border border-white/15 bg-white/[0.03] px-4 text-base text-fg outline-none transition-[border-color,background-color] duration-300 " +
   "placeholder:text-faint hover:border-white/25 focus:border-blue focus-visible:outline-offset-2 aria-[invalid=true]:border-[#fb7185]";
 
-const labelCls = "text-[14px] text-body";
+const labelCls = "text-sm text-body";
 
 /** rendered only when there is a message, so an untouched form shows no error rows */
 function Err({ id, children }: { id: string; children?: string }) {
   if (!children) return <span id={id} hidden />;
   return (
-    <p id={id} role="alert" className="text-[13px] leading-snug text-[#fb7185]">
+    <p id={id} role="alert" className="text-sm text-[#fb7185]">
       {children}
     </p>
   );
@@ -52,23 +52,23 @@ export function FinalCta() {
       aria-labelledby="contact-title"
       className="relative flex w-full flex-col px-gutter pb-12 pt-24"
     >
-      <div className="relative z-[1] grid w-full min-w-0 items-center gap-x-[clamp(48px,7vw,140px)] gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)] wide:grid-cols-[minmax(0,38rem)_minmax(0,46rem)] wide:justify-center">
+      <div className="relative z-[1] grid w-full min-w-0 items-center xl:gap-x-24 2xl:gap-x-32 gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)] wide:grid-cols-[minmax(0,38rem)_minmax(0,46rem)] wide:justify-center">
         {/* left: the invitation + direct contacts */}
         <div className="min-w-0">
           <h2 id="contact-title" className="legible text-mega font-semibold">
             <RevealWords text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="teal" stack />
           </h2>
-          <p data-boot className="legible mt-6 max-w-[40ch] text-lead text-body">{CONTACT.lead}</p>
+          <p data-boot className="legible mt-6 max-w-[26rem] text-lead text-body">{CONTACT.lead}</p>
 
           <div data-reveal style={{ ["--d" as string]: "120ms" }} className="mt-12">
-            <p className="text-[14px] text-grey">{CONTACT.or}</p>
+            <p className="text-sm text-grey">{CONTACT.or}</p>
             <ul className="mt-4 flex flex-col gap-3">
               <li>
                 <a
                   href={BRAND.telegramUrl}
-                  className="group inline-flex items-center gap-3 rounded-full py-1 text-[clamp(18px,1.6vw,22px)] font-medium tracking-[-0.02em] text-fg"
+                  className="group inline-flex items-center gap-3 rounded-full py-1 text-lg font-medium xl:text-xl tracking-[-0.02em] text-fg"
                 >
-                  <span className="grid size-11 place-items-center rounded-full bg-blue/12 text-blue">
+                  <span className="grid size-11 place-items-center rounded-xl bg-blue/12 text-blue">
                     <TelegramLogo size={20} weight="light" aria-hidden="true" />
                   </span>
                   <span className="underline decoration-white/20 underline-offset-4 transition-colors group-hover:decoration-fg">{BRAND.telegram}</span>
@@ -77,9 +77,9 @@ export function FinalCta() {
               <li>
                 <a
                   href={`mailto:${BRAND.email}`}
-                  className="group inline-flex items-center gap-3 rounded-full py-1 text-[clamp(18px,1.6vw,22px)] font-medium tracking-[-0.02em] text-fg"
+                  className="group inline-flex items-center gap-3 rounded-full py-1 text-lg font-medium xl:text-xl tracking-[-0.02em] text-fg"
                 >
-                  <span className="grid size-11 place-items-center rounded-full bg-violet/12 text-violet-soft">
+                  <span className="grid size-11 place-items-center rounded-xl bg-violet/12 text-violet-soft">
                     <EnvelopeSimple size={20} weight="light" aria-hidden="true" />
                   </span>
                   <span className="underline decoration-white/20 underline-offset-4 transition-colors group-hover:decoration-fg">{BRAND.email}</span>
@@ -178,7 +178,7 @@ function ContactForm() {
     <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0 max-w-[40rem] xl:max-w-none">
       <div className="card overflow-hidden text-left">
         {/* form and thanks state share one grid cell, so the card never jumps */}
-        <div className="grid p-6 sm:p-9 wide:p-11">
+        <div className="grid p-6 sm:p-10 wide:p-12">
           <form
             noValidate
             onSubmit={onSubmit}
@@ -190,8 +190,8 @@ function ContactForm() {
           >
             {/* honeypot for bots: off-screen, out of the tab order and hidden from assistive tech */}
             <input ref={trap} name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
-            <fieldset className="flex flex-col gap-2.5" aria-describedby={`${uid}-needs-err`}>
-              <legend className="mb-3 text-[16px] font-medium text-fg">{CONTACT.needs}</legend>
+            <fieldset className="flex flex-col gap-3" aria-describedby={`${uid}-needs-err`}>
+              <legend className="mb-3 text-base font-medium text-fg">{CONTACT.needs}</legend>
               <div className="flex flex-wrap gap-2">
                 {CONTACT.chips.map((chip, i) => {
                   const on = needs.has(chip);
@@ -210,7 +210,7 @@ function ContactForm() {
                         className="peer sr-only"
                       />
                       <span
-                        className={`flex h-11 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-[15px] font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
+                        className={`flex h-11 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
                           on ? "border-blue bg-blue/12 text-fg" : "border-white/15 text-body hover:border-white/30 hover:text-fg"
                         }`}
                       >
@@ -232,7 +232,7 @@ function ContactForm() {
             <div className="h-px bg-white/[0.08]" aria-hidden="true" />
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <label htmlFor={`${uid}-name`} className={labelCls}>
                   {CONTACT.name}
                 </label>
@@ -251,7 +251,7 @@ function ContactForm() {
                 />
                 <Err id={`${uid}-name-err`}>{shown("name")}</Err>
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2">
                 <label htmlFor={`${uid}-contact`} className={labelCls}>
                   {CONTACT.contact}
                 </label>
@@ -272,7 +272,7 @@ function ContactForm() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <label htmlFor={`${uid}-message`} className={labelCls}>
                 {CONTACT.message}
               </label>
@@ -284,7 +284,7 @@ function ContactForm() {
                 placeholder={CONTACT.messagePh}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className={`${inputCls} h-auto resize-none py-3 leading-snug`}
+                className={`${inputCls} h-auto resize-none py-3 `}
               />
             </div>
 
@@ -294,14 +294,14 @@ function ContactForm() {
             <Button type="submit" disabled={busy} className="w-full disabled:cursor-progress disabled:opacity-80">
               {busy ? CONTACT.sending : CONTACT.submit}
             </Button>
-            <p className="-mt-1 text-center text-[13px] leading-snug text-grey">
+            <p className="-mt-1 text-center text-xs text-grey">
               {CONTACT.consent}{" "}
               <a href={BRAND.privacyHref} className="text-body underline decoration-white/20 underline-offset-2 transition-colors hover:text-fg">
                 {CONTACT.consentLink}
               </a>
             </p>
             {failed && (
-              <p role="alert" className="text-[14px] leading-snug text-[#fb7185]">
+              <p role="alert" className="text-sm text-[#fb7185]">
                 {CONTACT.errSend}
               </p>
             )}
@@ -320,11 +320,11 @@ function ContactForm() {
                 <h3 ref={doneRef} tabIndex={-1} className="mt-5 text-headline font-semibold outline-none">
                   {CONTACT.thanksTitle}
                 </h3>
-                <p className="mt-3 max-w-[40ch] text-[16px] text-body">{CONTACT.thanksText}</p>
+                <p className="mt-3 max-w-[26rem] text-base text-body">{CONTACT.thanksText}</p>
                 <button
                   type="button"
                   onClick={reset}
-                  className="mt-6 rounded-full py-1 text-[14px] font-medium text-blue transition-colors hover:text-fg"
+                  className="mt-6 rounded-full py-1 text-sm font-medium text-blue transition-colors hover:text-fg"
                 >
                   {CONTACT.again}
                 </button>

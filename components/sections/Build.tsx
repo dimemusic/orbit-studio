@@ -136,7 +136,7 @@ export function Build() {
               >
                 {s.step}
               </span>
-              <span className="block h-[3px] w-[clamp(40px,5vw,72px)] overflow-hidden rounded-full bg-white/10">
+              <span className="block h-[3px] w-12 lg:w-16 overflow-hidden rounded-full bg-white/10">
                 <span
                   className="block h-full origin-left rounded-full"
                   style={{

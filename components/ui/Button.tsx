@@ -14,8 +14,8 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  lg: "h-16 px-10 text-[17px]",
-  nav: "h-12 px-6 text-[15px]",
+  lg: "h-16 px-10 text-base",
+  nav: "h-12 px-6 text-sm",
 };
 
 type Common = { variant?: Variant; size?: Size; children: ReactNode; className?: string };

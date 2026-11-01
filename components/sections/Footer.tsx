@@ -11,28 +11,28 @@ export function Footer() {
         <ul className="flex flex-wrap justify-center gap-x-8 gap-y-1">
           {NAV.map(({ label, href }) => (
             <li key={label}>
-              <Link href={href} className="inline-block py-2 text-[14px] text-body transition-colors hover:text-fg">
+              <Link href={href} className="inline-block py-2 text-sm text-body transition-colors hover:text-fg">
                 {label}
               </Link>
             </li>
           ))}
           <li>
-            <a href={BRAND.telegramUrl} className="inline-block py-2 text-[14px] text-body transition-colors hover:text-fg">
+            <a href={BRAND.telegramUrl} className="inline-block py-2 text-sm text-body transition-colors hover:text-fg">
               Telegram
             </a>
           </li>
           <li>
-            <a href={`mailto:${BRAND.email}`} className="inline-block py-2 text-[14px] text-body transition-colors hover:text-fg">
+            <a href={`mailto:${BRAND.email}`} className="inline-block py-2 text-sm text-body transition-colors hover:text-fg">
               Email
             </a>
           </li>
         </ul>
       </nav>
 
-      <p className="mt-10 text-[14px] text-body">
+      <p className="mt-10 text-sm text-body">
         {FOOTER.copy} <span translate="no">{BRAND.name}</span> · {BRAND.city}
       </p>
-      <p className="mt-1 text-[13px]">
+      <p className="mt-1 text-xs">
         <Link href={BRAND.privacyHref} className="text-grey underline decoration-white/20 underline-offset-4 transition-colors hover:text-fg">
           {FOOTER.privacy}
         </Link>

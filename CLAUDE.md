@@ -39,7 +39,7 @@ We sell design, website development and admin panels, ideally as one package. **
 ### Hard rules
 - **Never use the Unbounded font.** Font: Geologica (next/font, Latin + Cyrillic), display 600 with negative tracking.
 - **No arbitrary breakpoints** (`min-[1100px]:` sorts before `md:`). Use rem breakpoints from `@theme`: `xs` 25rem, `nav` 68.75rem, `wide` 90rem (plus Tailwind's).
-- No max-width container: sections are full-bleed with `px-gutter` (clamp(24px, 5.5vw, 80px)); only text measures are limited.
+- No max-width container: sections are full-bleed with `px-gutter` (24 / 32 md / 48 lg / 64 xl / 80 2xl); only text measures are limited (in rem, never `ch`).
 - Dark only. The star canvas covers the whole viewport; no vignette, overlay, frame or opaque section background on top of it.
 - **No gradients** (Oct 2026): key words in headings are one solid colour per section via `<G tone>` (`--tc`): hero / intro / pricing violet `#a78bfa`, Build intro + contact turquoise `#2dd4bf`, work coral `#fb7185` (class `tg-amber`). `.card-pro` border and the intro underline are solid blue.
 
@@ -48,7 +48,10 @@ Eyebrow pills above headings («NN · Назва»), HUD / mono / coordinate lab
 
 ### Tokens
 - Colours: bg `#05070d`, fg `#f5f7fa`, body `#c4cad4`, grey `#8b919c`, faint `#5b616c`, hairline `rgba(255,255,255,.09)`. Accents: blue `#3d8bff` (links, accents), cyan `#22d3ee`, violet `#8b5cf6` (`violet-soft #a78bfa`), green `#34d399` (`components/ui/accent.ts`).
-- Type: `text-mega` (clamp(44px, 6vw, 104px)) for the hero and every big section title · `text-display` inner pages · `text-headline` · `text-title` · `text-lead`.
+- **Design system (Nov 2026, asked: clear text hierarchy, even spacing, whole-pixel sizes, no 166.31)**: every size is a whole pixel and steps at the breakpoints (`:root` media queries in globals.css), never `clamp(…vw…)` or fractional line heights; a script check found 0 fractional font sizes / line heights / paddings / margins / gaps / radii at 390, 1024, 1440, 1920 and on /privacy. Keep it that way.
+  - Type (6 levels): `text-mega` section titles + hero + inner h1 (40 / 48 sm / 56 md / 72 lg / 88 xl / 104 2xl, line height 1) · `text-headline` 28/36 → 32/40 lg (dialog titles, privacy h2) · `text-title` 20/28 → 24/32 lg (card / plan / case names) · `text-lead` 18/28 → 20/32 xl (section leads) · `text-base` 16/24 body · `text-sm` 14/20 meta, labels, nav · `text-xs` 12/16 pills, captions. Prices `text-2xl`/`lg:text-3xl`. No other sizes, no `text-[Npx]`, no `leading-snug/relaxed/tight` on them.
+  - Spacing: Tailwind's 4px grid only (no `.5` steps). Section rhythm `pt-24 pb-12`, header → content `mt-12`, title → lead `mt-6`.
+  - Radii: 12 `rounded-xl` (fields, icon tiles 44px, inner frames) · 16 `.card` · 24 `rounded-3xl` (outer containers, e.g. a work card around its 12px frame) · `rounded-full` (pills 24px tall `h-6`, buttons). Pricing feature pills `h-7`.
 - Surfaces: one `.card` utility for every card and panel (`.card-nav` for the navbar, `.card-pro` blue border). Since Oct 2026 `.card` uses the same glass as the film `.tool` (asked: one style site-wide): see-through 156° gradient black/.42 → navy/.34, backdrop blur 18px + saturate, 0.5px white/9% hairline; the case dialog panel gets a denser body (`.card.case-panel`). Pills: ≥12px, 6px 12px, coloured text on a 12% tint. Headings on the stars use `.legible` / `.plate`.
 - Buttons (`ui/Button.tsx`): primary 64px (lg) / 48px (nav), background `#2a6fe8` (a shade deeper than `--blue` so white text passes WCAG AA), hover violet `#7c3aed`, big primaries share a min width; secondary transparent + hairline. Liquid morph on `.btn-primary` / `.btn-secondary` (`ui/ButtonFx.tsx`, CSS vars only): stretches toward the cursor with a following light, squashes on press, springs back. Main CTA «Обговорити проєкт» → `#contact`.
 

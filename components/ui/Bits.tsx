@@ -1,15 +1,15 @@
 import type { ReactNode } from "react";
 import { ACCENT, type Accent } from "./accent";
 
-// Pills: ≥12px text, 6px 12px padding, coloured text on a 12% tint of the same colour.
-const PILL = "inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-semibold leading-none";
+// Pills: 12px text, 24px tall, 12px side padding, coloured text on a 12% tint of the same colour.
+const PILL = "inline-flex h-6 items-center rounded-full px-3 text-xs font-semibold leading-none";
 
 /** Section eyebrow: tinted pill, coloured dot, uppercase label. */
 export function Eyebrow({ color = "blue", children }: { color?: Accent; children: ReactNode }) {
   const a = ACCENT[color];
   return (
     <span className={`${PILL} gap-2 uppercase tracking-[0.12em] ${a.text} ${a.tint}`}>
-      <span aria-hidden="true" className={`size-1.5 rounded-full ${a.dot}`} />
+      <span aria-hidden="true" className={`size-2 rounded-full ${a.dot}`} />
       {children}
     </span>
   );

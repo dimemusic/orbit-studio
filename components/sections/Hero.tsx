@@ -22,7 +22,7 @@ export function Hero() {
             <br />
             {second} <G tone="violet">{last}</G>
           </h1>
-          <p data-reveal data-in style={{ ["--d" as string]: "80ms" }} className="legible mt-8 max-w-[64ch] text-lead text-body">
+          <p data-reveal data-in style={{ ["--d" as string]: "80ms" }} className="legible mt-8 max-w-[40rem] text-lead text-body">
             {HERO.lead}
           </p>
         </div>
@@ -35,7 +35,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div data-reveal data-in style={{ ["--d" as string]: "280ms" }} className="plate pb-[clamp(28px,4vw,48px)]">
+      <div data-reveal data-in style={{ ["--d" as string]: "280ms" }} className="plate pb-8 lg:pb-12">
         <LogoStrip />
       </div>
     </section>

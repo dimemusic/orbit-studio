@@ -38,7 +38,7 @@ export function Nav() {
   }, [open]);
 
   return (
-    <header data-boot className="fixed inset-x-0 top-0 z-30 px-[clamp(12px,2.5vw,32px)] pt-[calc(12px+env(safe-area-inset-top))]">
+    <header data-boot className="fixed inset-x-0 top-0 z-30 px-3 md:px-6 lg:px-8 pt-[calc(12px+env(safe-area-inset-top))]">
       <a
         href="#main"
         className="sr-only rounded-full bg-fg px-4 py-2 text-sm text-bg focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50"
@@ -48,13 +48,13 @@ export function Nav() {
 
       {/* floating card bar (slightly lighter than content cards) */}
       <div className="card card-nav">
-        <nav aria-label={UI.mainNav} className="flex h-16 items-center gap-6 pl-5 pr-2.5">
+        <nav aria-label={UI.mainNav} className="flex h-16 items-center gap-6 pl-5 pr-3">
           <Link href={CTA.home} aria-label={`${BRAND.name}, ${UI.toHome}`} className="shrink-0">
             <Logo />
           </Link>
 
           {/* gap grows with width: 40px floor, 64px at 1280, 76px from 1440; below lg the links live in the mobile menu */}
-          <ul className="hidden flex-1 items-center justify-center gap-6 lg:flex lg:gap-[clamp(40px,calc(7.5vw_-_32px),76px)]">
+          <ul className="hidden flex-1 items-center justify-center gap-6 lg:flex lg:gap-10 xl:gap-16">
             {LINKS.map((l) => {
               const on = isActive(l.href, pathname);
               return (
@@ -62,12 +62,12 @@ export function Nav() {
                   <Link
                     href={l.href}
                     aria-current={on ? "page" : undefined}
-                    className={`relative inline-block whitespace-nowrap py-2.5 text-[14px] transition-colors duration-300 hover:text-fg ${
+                    className={`relative inline-block whitespace-nowrap py-3 text-sm transition-colors duration-300 hover:text-fg ${
                       on ? "text-fg" : "text-body"
                     }`}
                   >
                     {l.label}
-                    {on && <span aria-hidden="true" className="absolute inset-x-0 -bottom-0.5 mx-auto size-1 rounded-full bg-blue" />}
+                    {on && <span aria-hidden="true" className="absolute inset-x-0 -bottom-1 mx-auto size-1 rounded-full bg-blue" />}
                   </Link>
                 </li>
               );
@@ -89,7 +89,7 @@ export function Nav() {
               aria-expanded={open}
               aria-controls={menuId}
               onClick={() => setOpen((v) => !v)}
-              className="btn-secondary inline-flex h-11 items-center rounded-full px-4 text-[14px] lg:hidden"
+              className="btn-secondary inline-flex h-11 items-center rounded-full px-4 text-sm lg:hidden"
             >
               {open ? UI.close : UI.menu}
             </button>
@@ -106,7 +106,7 @@ export function Nav() {
                     href={l.href}
                     aria-current={on ? "page" : undefined}
                     onClick={() => setOpen(false)}
-                    className={`block py-2.5 text-[20px] tracking-[-0.02em] ${on ? "text-blue" : "text-fg"}`}
+                    className={`block py-3 text-title ${on ? "text-blue" : "text-fg"}`}
                   >
                     {l.label}
                   </Link>
@@ -134,7 +134,7 @@ function LangSwitch({ className = "flex" }: { className?: string }) {
   const lang = useLang();
   const { UI } = useContent();
   return (
-    <span role="group" aria-label={UI.lang} className={`${className} items-center rounded-full border border-white/[0.12] p-1 text-[13px] font-semibold`}>
+    <span role="group" aria-label={UI.lang} className={`${className} items-center rounded-full border border-white/[0.12] p-1 text-xs font-semibold`}>
       {(["uk", "en"] as const).map((l) => (
         <a
           key={l}

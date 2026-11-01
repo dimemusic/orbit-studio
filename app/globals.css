@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 /* ================================================================
-   Orbit.studio (UI forked 1:1 from Cloud Sphere) · minimal full-bleed tokens
-   Primary blue #3d8bff. Category accents: cyan, violet, green (security / OK).
+   MaxArt Digital design system (Nov 2026). Every size is a whole pixel and steps at the breakpoints
+   (sm 40rem · md 48rem · lg 64rem · xl 80rem · 2xl 96rem) instead of scaling with vw, so nothing ends up 166.31px.
+   Type: mega (section titles) · headline · title · lead · base 16/24 · sm 14/20 · xs 12/16 (Tailwind defaults).
+   Spacing: the 4px grid (Tailwind steps 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32; no .5 steps).
+   Radii: 12 (fields, tiles, inner frames) · 16 (.card) · 24 (outer containers) · full (pills, buttons).
    ================================================================ */
 :root {
   --bg: #05070d; /* = particle scene clear colour */
@@ -17,10 +20,15 @@
   --violet: #8b5cf6;
   --violet-soft: #a78bfa; /* violet for small text: 6.6:1 vs 4.3:1 */
   --green: #34d399;
-  --mint: #4fe3c1; /* Free tier + «фінальна» version in the app */
-  --rose: #ff7ab6; /* app: «Потрібні правки», overdue */
-  --amber: #fbbf24; /* app: deadline in ≤ 2 days, stale comment */
-  --gutter: clamp(24px, 5.5vw, 80px);
+  --gutter: 24px;
+  /* stepped type: whole pixels per breakpoint (see the header) */
+  --fs-mega: 40px;
+  --fs-headline: 28px;
+  --lh-headline: 36px;
+  --fs-title: 20px;
+  --lh-title: 28px;
+  --fs-lead: 18px;
+  --lh-lead: 28px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   color-scheme: dark;
 }
@@ -55,9 +63,6 @@
   --color-violet: var(--violet);
   --color-violet-soft: var(--violet-soft);
   --color-green: var(--green);
-  --color-mint: var(--mint);
-  --color-rose: var(--rose);
-  --color-amber: var(--amber);
 
   --font-sans: var(--font-geologica), system-ui, -apple-system, sans-serif;
 
@@ -68,26 +73,42 @@
   --breakpoint-nav: 68.75rem; /* 1100px: hero stats in one row */
   --breakpoint-wide: 90rem; /* 1440px: contact columns become one centred pair */
 
-  /* display scale: huge and tight */
-  /* hero + final CTA headline: big but not shouting (~86px at 1440, max 104px) */
-  --text-mega: clamp(44px, 6vw, 104px);
-  --text-mega--line-height: 0.98;
+  /* type scale (values step at the breakpoints in :root media queries below) */
+  --text-mega: var(--fs-mega);
+  --text-mega--line-height: 1;
   --text-mega--letter-spacing: -0.045em;
-  --text-display: clamp(42px, 6.6vw, 120px);
-  --text-display--line-height: 0.95;
-  --text-display--letter-spacing: -0.048em;
-  /* home section headings: calm, max 2 lines (only the hero uses mega) */
-  --text-section: clamp(36px, 4vw, 60px);
-  --text-section--line-height: 1.05;
-  --text-section--letter-spacing: -0.04em;
-  --text-headline: clamp(28px, 3.4vw, 52px);
-  --text-headline--line-height: 1.08;
-  --text-headline--letter-spacing: -0.035em;
-  --text-title: clamp(19px, 1.5vw, 23px);
-  --text-title--line-height: 1.3;
-  --text-title--letter-spacing: -0.015em;
-  --text-lead: clamp(17px, 1.35vw, 21px);
-  --text-lead--line-height: 1.55;
+  /* inner page h1 = the same size as a section title */
+  --text-display: var(--fs-mega);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.045em;
+  /* parked sections (About / FAQ) */
+  --text-section: var(--fs-headline);
+  --text-section--line-height: var(--lh-headline);
+  --text-section--letter-spacing: -0.03em;
+  --text-headline: var(--fs-headline);
+  --text-headline--line-height: var(--lh-headline);
+  --text-headline--letter-spacing: -0.03em;
+  --text-title: var(--fs-title);
+  --text-title--line-height: var(--lh-title);
+  --text-title--letter-spacing: -0.02em;
+  --text-lead: var(--fs-lead);
+  --text-lead--line-height: var(--lh-lead);
+}
+
+@media (min-width: 40rem) {
+  :root { --fs-mega: 48px; }
+}
+@media (min-width: 48rem) {
+  :root { --gutter: 32px; --fs-mega: 56px; }
+}
+@media (min-width: 64rem) {
+  :root { --gutter: 48px; --fs-mega: 72px; --fs-headline: 32px; --lh-headline: 40px; --fs-title: 24px; --lh-title: 32px; }
+}
+@media (min-width: 80rem) {
+  :root { --gutter: 64px; --fs-mega: 88px; --fs-lead: 20px; --lh-lead: 32px; }
+}
+@media (min-width: 96rem) {
+  :root { --gutter: 80px; --fs-mega: 104px; }
 }
 
 html {
@@ -100,7 +121,7 @@ body {
   background: var(--bg);
   font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 24px;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -584,7 +605,7 @@ html {
 .device-deck {
   display: block;
   width: 116%;
-  height: clamp(8px, 1.4vw, 14px);
+  height: 12px;
   margin-top: -1px;
   border-radius: 2px 2px 14px 14px;
   background: linear-gradient(180deg, #3a3f4a 0%, #1b1e25 45%, #0d0f13 100%);
@@ -749,7 +770,16 @@ html {
 
 /* Work cards: the full-page screenshot scrolls inside the frame on hover (mini preview) */
 .work-grid {
-  --fh: clamp(180px, 26dvh, 340px);
+  --fh: 200px;
+}
+@media (min-width: 64rem) and (min-height: 50rem) {
+  .work-grid { --fh: 240px; }
+}
+@media (min-width: 80rem) and (min-height: 56rem) {
+  .work-grid { --fh: 280px; }
+}
+@media (min-width: 96rem) and (min-height: 62rem) {
+  .work-grid { --fh: 320px; }
 }
 .work-view {
   height: var(--fh);

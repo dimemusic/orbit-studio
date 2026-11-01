@@ -34,10 +34,10 @@ export function Work() {
         <h2 id="work-title" className="legible text-mega font-semibold">
           <RevealWords text={WORK.title[0]} accent={WORK.title[1]} tone="amber" />
         </h2>
-        <div data-boot className="mb-[0.4em]">
+        <div data-boot className="mb-2">
           <a
             href="#contact"
-            className="group/more inline-flex items-center gap-2 rounded-full py-2 text-[15px] font-medium text-blue transition-colors hover:text-fg"
+            className="group/more inline-flex items-center gap-2 rounded-full py-2 text-base font-medium text-blue transition-colors hover:text-fg"
           >
             {WORK.more}
             <ArrowRight size={18} aria-hidden="true" className="transition-transform duration-300 group-hover/more:translate-x-1" />
@@ -47,7 +47,7 @@ export function Work() {
 
       <ul
         aria-label={WORK.listLabel}
-        className="work-grid relative z-[1] mt-12 grid w-full min-w-0 gap-[clamp(20px,2.2vw,36px)] md:grid-cols-2 lg:grid-cols-4"
+        className="work-grid relative z-[1] mt-12 grid w-full min-w-0 gap-6 xl:gap-8 md:grid-cols-2 lg:grid-cols-4"
       >
         {CASES.map((c, i) => (
           <li key={c.id} data-reveal style={{ "--d": `${i * 80}ms` } as CSSProperties} className="flex min-w-0">
@@ -77,14 +77,14 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       onClick={(e) => onOpen(e.currentTarget)}
       aria-haspopup="dialog"
       aria-label={`${WORK.open}: ${c.name}, ${c.kind}`}
-      className="card work-card group/card flex h-full w-full min-w-0 flex-col rounded-[22px] p-3 text-left"
+      className="card work-card group/card flex h-full w-full min-w-0 flex-col rounded-3xl p-3 text-left"
     >
       <span
         aria-hidden="true"
-        className="work-frame relative block overflow-hidden rounded-[14px] border border-white/[0.09] bg-bg transition-colors duration-300 md:group-hover/card:border-white/25"
+        className="work-frame relative block overflow-hidden rounded-xl border border-white/[0.09] bg-bg transition-colors duration-300 md:group-hover/card:border-white/25"
       >
         {/* browser bar */}
-        <span className="relative z-[1] flex h-7 items-center gap-1.5 border-b border-white/[0.07] bg-[#0b0e15] px-3">
+        <span className="relative z-[1] flex h-7 items-center gap-2 border-b border-white/[0.07] bg-[#0b0e15] px-3">
           {[0, 1, 2].map((k) => (
             <span key={k} className="size-2 rounded-full bg-white/15" />
           ))}
@@ -104,7 +104,7 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
             <Image src={c.media} alt={`${c.name}: ${c.type}`} fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)" className="object-cover object-top" />
           )}
           {/* kind of website */}
-          <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-[rgb(5_7_13/0.82)] px-3 py-1.5 text-[12px] font-semibold leading-none text-fg">
+          <span className="absolute left-3 top-3 inline-flex h-6 items-center rounded-full border border-white/15 bg-[rgb(5_7_13/0.82)] px-3 text-xs font-semibold leading-none text-fg">
             {c.type}
           </span>
         </span>
@@ -113,13 +113,13 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       {/* text, tags and the «view» pill sit in the card's padding */}
       <span className="flex flex-1 flex-col px-3 pb-2">
       <span className="mt-5 block min-w-0">
-          <span className="block text-[clamp(22px,1.8vw,28px)] font-medium leading-tight tracking-[-0.03em] text-fg" translate="no">
+          <span className="block text-title font-medium text-fg" translate="no">
             {c.name}
           </span>
-          <span className="mt-1 block text-[14px] text-grey">{c.kind}</span>
+          <span className="mt-1 block text-sm text-grey">{c.kind}</span>
       </span>
-      <span className="mt-3 block text-[15px] leading-snug text-body">{c.text}</span>
-      <span className="mt-4 flex flex-wrap gap-1.5">
+      <span className="mt-3 block text-base text-body">{c.text}</span>
+      <span className="mt-4 flex flex-wrap gap-2">
         {c.tags.map((t, k) => (
           <Tag key={t} color={k === 0 ? c.accent : undefined}>
             {t}
@@ -128,7 +128,7 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       </span>
       {/* «view» pill (the whole card is the button); pinned to the bottom so the four cards line up */}
       <span className="mt-auto block pt-5">
-        <span className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/[0.18] px-5 text-[15px] font-semibold text-fg transition-colors duration-300 md:group-hover/card:border-[#2a6fe8] md:group-hover/card:bg-[#2a6fe8] md:group-hover/card:text-white">
+        <span className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/[0.18] px-5 text-base font-semibold text-fg transition-colors duration-300 md:group-hover/card:border-[#2a6fe8] md:group-hover/card:bg-[#2a6fe8] md:group-hover/card:text-white">
           {WORK.view}
           <ArrowUpRight size={16} aria-hidden="true" />
         </span>
@@ -174,17 +174,17 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
               <X size={18} aria-hidden="true" className="transition-transform duration-300 ease-[var(--ease)] group-hover/x:rotate-90" />
             </button>
           </div>
-          <div className="grid gap-8 p-6 sm:p-9 md:grid-cols-[1.3fr_1fr]">
+          <div className="grid gap-8 p-6 sm:p-10 md:grid-cols-[1.3fr_1fr]">
             <div>
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <h3 id="case-title" className="text-headline font-semibold" translate="no">
                   {c.name}
                 </h3>
-                <span className="text-[13px] text-grey">{c.kind}</span>
+                <span className="text-sm text-grey">{c.kind}</span>
               </div>
-              <p className="mt-5 text-[12px] font-semibold uppercase tracking-[0.12em] text-grey">{WORK.taskLabel}</p>
-              <p className="mt-2 text-[16px] leading-relaxed text-body">{c.task}</p>
-              <ul aria-label={UI.tags} className="mt-5 flex flex-wrap gap-1.5">
+              <p className="mt-5 text-xs font-semibold uppercase tracking-[0.12em] text-grey">{WORK.taskLabel}</p>
+              <p className="mt-2 text-base text-body">{c.task}</p>
+              <ul aria-label={UI.tags} className="mt-5 flex flex-wrap gap-2">
                 {c.tags.map((t, k) => (
                   <li key={t}>
                     <Tag color={k === 0 ? c.accent : undefined}>{t}</Tag>
@@ -194,10 +194,10 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
             </div>
             <div className="flex flex-col gap-6">
               <div>
-                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-grey">{WORK.doneLabel}</p>
-                <ul className="mt-3 flex flex-col gap-2.5">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-grey">{WORK.doneLabel}</p>
+                <ul className="mt-3 flex flex-col gap-3">
                   {c.done.map((d) => (
-                    <li key={d} className="flex items-center gap-2.5 text-[15px] text-body">
+                    <li key={d} className="flex items-center gap-3 text-base text-body">
                       <CheckCircle size={18} weight="fill" aria-hidden="true" className="shrink-0" style={{ color: c.color }} />
                       {d}
                     </li>
@@ -207,8 +207,8 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
               <dl className="grid grid-cols-2 gap-3">
                 {c.facts.map((f) => (
                   <div key={f.label} className="rounded-xl border border-white/[0.07] px-4 py-3">
-                    <dt className="text-[12px] text-grey">{f.label}</dt>
-                    <dd className="mt-0.5 text-[17px] font-semibold tracking-[-0.02em] text-fg">{f.value}</dd>
+                    <dt className="text-xs text-grey">{f.label}</dt>
+                    <dd className="mt-1 text-lg font-semibold tracking-[-0.02em] text-fg">{f.value}</dd>
                   </div>
                 ))}
               </dl>
@@ -221,7 +221,7 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
                     href={c.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full py-1 text-[15px] font-medium text-blue transition-colors hover:text-fg"
+                    className="inline-flex items-center gap-1 rounded-full py-1 text-base font-medium text-blue transition-colors hover:text-fg"
                   >
                     {WORK.visit} <ArrowUpRight size={15} aria-hidden="true" />
                   </a>

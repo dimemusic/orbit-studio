@@ -33,11 +33,11 @@ export function Pricing() {
         <h2 id="services-title" className="legible text-mega font-semibold">
           <RevealWords text={SERVICES.title[0]} accent={SERVICES.title[1]} tone="violet" />
         </h2>
-        <p data-boot className="legible max-w-[34ch] text-lead text-body">{SERVICES.lead}</p>
+        <p data-boot className="legible max-w-[22rem] text-lead text-body">{SERVICES.lead}</p>
       </header>
 
       {/* plans as rows on hairlines: icon · name + who it's for + included · price + term · «Обрати» */}
-      <ul aria-label={SERVICES.listLabel} className="relative z-[1] mt-10 w-full min-w-0">
+      <ul aria-label={SERVICES.listLabel} className="relative z-[1] mt-12 w-full min-w-0">
         {SERVICES.plans.map((p, i) => {
           const a = ACCENT[COLOR[p.id]];
           const Ic = ICON[p.id];
@@ -45,7 +45,7 @@ export function Pricing() {
             <li key={p.id} data-reveal style={delay(i)} className="min-w-0 border-t border-white/[0.09] last:border-b">
               <article
                 aria-labelledby={`plan-${p.id}`}
-                className={`relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-5 pl-4 pr-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-6 md:px-5 ${
+                className={`relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-6 pl-4 pr-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-6 md:px-5 ${
                   p.hot ? "bg-linear-to-r from-white/[0.035] via-white/[0.015] to-transparent" : ""
                 }`}
               >
@@ -57,17 +57,17 @@ export function Pricing() {
 
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <h3 id={`plan-${p.id}`} className="text-[clamp(22px,2vw,30px)] font-medium leading-tight tracking-[-0.03em] text-fg">
+                    <h3 id={`plan-${p.id}`} className="text-title font-medium text-fg">
                       {p.name}
                     </h3>
                     {p.hot && <Tag color="blue">{SERVICES.hot}</Tag>}
                   </div>
-                  <p className="mt-1 text-[15px] leading-snug text-body">{p.for}</p>
+                  <p className="mt-1 text-base text-body">{p.for}</p>
                   <ul className="mt-3 flex flex-wrap gap-2 lg:[@media(max-height:52rem)]:hidden">
                     {p.features.map((f) => (
                       <li
                         key={f}
-                        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium leading-none text-fg/90 ${a.border} ${a.tint}`}
+                        className={`inline-flex h-7 items-center gap-2 rounded-full border px-3 text-xs font-medium leading-none text-fg/90 ${a.border} ${a.tint}`}
                       >
                         <Check size={12} weight="bold" aria-hidden="true" className={a.text} />
                         {f}
@@ -78,14 +78,14 @@ export function Pricing() {
 
                 <div className="col-span-2 flex items-center justify-between gap-5 md:col-span-1 md:gap-8">
                   <p className="md:text-right">
-                    <span className="flex items-baseline gap-1.5 md:justify-end">
-                      <span className="text-[14px] text-grey">{SERVICES.pricePrefix}</span>
-                      <span className="text-[clamp(24px,2vw,30px)] font-semibold leading-none tracking-[-0.03em] text-fg tabular-nums">
+                    <span className="flex items-baseline gap-2 md:justify-end">
+                      <span className="text-sm text-grey">{SERVICES.pricePrefix}</span>
+                      <span className="text-2xl font-semibold leading-none tracking-[-0.03em] lg:text-3xl text-fg tabular-nums">
                         {SERVICES.currency}
                         {p.price.toLocaleString(UI.locale)}
                       </span>
                     </span>
-                    <span className="mt-1.5 block text-[14px] text-grey">
+                    <span className="mt-2 block text-sm text-grey">
                       {SERVICES.term} {UI.days(p.days)}
                     </span>
                   </p>
@@ -100,7 +100,7 @@ export function Pricing() {
       </ul>
 
       {/* extras: one quiet line under the list */}
-      <p data-boot className="legible relative z-[1] mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px] text-body">
+      <p data-boot className="legible relative z-[1] mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-base text-body">
         <span className="text-grey">{SERVICES.extrasLabel}:</span>
         {SERVICES.extras.map((e) => (
           <span key={e.name}>
