@@ -35,8 +35,8 @@ export const en: Content = {
   ],
 
   HERO: {
-    title: ["Digital solutions", "for", "your business."],
-    lead: "Turnkey websites: design, development and an admin panel from one team. You get a website you can edit yourself.",
+    title: ["Turnkey websites", "for", "your business."],
+    lead: "Design, development and an admin panel from one team. You get a website you can edit yourself.",
     stats: [
       { prefix: "", value: 2, suffix: " weeks", label: "fastest launch" },
       { prefix: "3 in 1", value: null, suffix: "", label: "design + code + CMS" },

@@ -41,8 +41,8 @@ export const NAV = [
 
 export const HERO = {
   /** line 1 · plain start of line 2 · gradient end of line 2 */
-  title: ["Цифрові рішення", "для", "вашого бізнесу."],
-  lead: "Створюємо сайти під ключ: дизайн, розробка й адмін-панель в одних руках. Ви отримуєте сайт, який редагуєте самі.",
+  title: ["Сайти під\u00a0ключ", "для", "вашого бізнесу."],
+  lead: "Дизайн, розробка й адмін-панель в одних руках. Ви отримуєте сайт, який редагуєте самі.",
   /** count-up parts: prefix · value (animated) · suffix. `value: null` = static text in `prefix`. */
   stats: [
     { prefix: "", value: 2, suffix: " тижні", label: "мінімальний термін запуску" },
