@@ -2,9 +2,9 @@
 
 import dynamic from "next/dynamic";
 
-// WebGL only runs in the browser: the full-viewport star field behind the site.
-const StarField = dynamic(() => import("./StarField"), { ssr: false });
+// Branch bg-gradient: the soft interactive gradient (Glow.tsx) instead of the star field (StarField.tsx, unchanged).
+const Glow = dynamic(() => import("./Glow"), { ssr: false });
 
 export function Scene() {
-  return <StarField />;
+  return <Glow />;
 }
