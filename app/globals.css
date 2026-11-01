@@ -242,7 +242,9 @@ p {
     position: relative;
     isolation: isolate;
   }
+  /* bg-gradient: the dark halo read as a stain over the lit background */
   .plate::before {
+    display: none;
     content: "";
     position: absolute;
     inset: -14% -12%;
