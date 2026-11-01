@@ -47,7 +47,7 @@ export function Work() {
 
       <ul
         aria-label={WORK.listLabel}
-        className="work-grid relative z-[1] mt-10 grid w-full min-w-0 gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-4"
+        className="work-grid relative z-[1] mt-12 grid w-full min-w-0 gap-[clamp(20px,2.2vw,36px)] md:grid-cols-2 lg:grid-cols-4"
       >
         {CASES.map((c, i) => (
           <li key={c.id} data-reveal style={{ "--d": `${i * 80}ms` } as CSSProperties} className="flex min-w-0">
@@ -77,11 +77,11 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       onClick={(e) => onOpen(e.currentTarget)}
       aria-haspopup="dialog"
       aria-label={`${WORK.open}: ${c.name}, ${c.kind}`}
-      className="work-card group/card flex h-full w-full min-w-0 flex-col text-left"
+      className="card work-card group/card flex h-full w-full min-w-0 flex-col rounded-[22px] p-3 text-left"
     >
       <span
         aria-hidden="true"
-        className="work-frame relative block overflow-hidden rounded-2xl border border-white/[0.09] bg-bg transition-colors duration-300 md:group-hover/card:border-white/25"
+        className="work-frame relative block overflow-hidden rounded-[14px] border border-white/[0.09] bg-bg transition-colors duration-300 md:group-hover/card:border-white/25"
       >
         {/* browser bar */}
         <span className="relative z-[1] flex h-7 items-center gap-1.5 border-b border-white/[0.07] bg-[#0b0e15] px-3">
@@ -110,6 +110,8 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
         </span>
       </span>
 
+      {/* text, tags and the «view» pill sit in the card's padding */}
+      <span className="flex flex-1 flex-col px-3 pb-2">
       <span className="mt-5 block min-w-0">
           <span className="block text-[clamp(22px,1.8vw,28px)] font-medium leading-tight tracking-[-0.03em] text-fg" translate="no">
             {c.name}
@@ -130,6 +132,7 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
           {WORK.view}
           <ArrowUpRight size={16} aria-hidden="true" />
         </span>
+      </span>
       </span>
     </button>
   );
