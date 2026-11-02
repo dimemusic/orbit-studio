@@ -97,10 +97,9 @@ export const en: Content = {
         text: "Website for a maker of sandwich panels, vans and trailers. We planned the structure and user flows, the product catalogue and a quote request form so clients find what they need fast.", // DRAFT
         short: "A product catalogue and a quote request form so clients quickly find what they need.",
         tags: ["UI/UX", "Design"],
-        media: "/cases/avtoban.webp",
+        media: "/cases/avtoban-hero.webp",
         shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
         full: { src: "/cases/avtoban-full.webp", w: 720, h: 2283 },
-        hero: 404,
         url: "https://avtoban-trailers.vercel.app/",
         status: "UI/UX",
         result: "[RESULT]",

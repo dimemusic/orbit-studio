@@ -771,37 +771,27 @@ html {
   }
 }
 
-/* Work cards: the full-page screenshot scrolls inside the frame on hover (mini preview) */
-.work-grid {
-  --fh: 200px;
-}
-@media (min-width: 64rem) and (min-height: 50rem) {
-  .work-grid { --fh: 240px; }
-}
-@media (min-width: 80rem) and (min-height: 56rem) {
-  .work-grid { --fh: 280px; }
-}
-@media (min-width: 96rem) and (min-height: 62rem) {
-  .work-grid { --fh: 320px; }
-}
-.work-view {
-  height: var(--fh);
-}
+/* Work cards: at rest the first-screen shot; on hover the full page fades in and scrolls inside the frame.
+   --fh = the frame's pixel height (set by CaseCard), --dur = scroll time. */
 .work-scroll {
-  /* --z (Work.tsx): the resting zoom that shows only the first screen; hover goes back to 1 and scrolls the page */
-  transform: translateY(0) scale(var(--z, 1));
-  transform-origin: 0 0;
-  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+  opacity: 0;
+  transform: translateY(0);
+  transition:
+    opacity 0.4s ease,
+    transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
 }
 @media (hover: hover) and (pointer: fine) {
   .work-card:hover .work-scroll {
-    transform: translateY(calc(var(--fh) - 100%)) scale(1);
-    transition: transform var(--dur, 4s) cubic-bezier(0.45, 0, 0.55, 1);
+    opacity: 1;
+    transform: translateY(calc(var(--fh, 0px) - 100%));
+    transition:
+      opacity 0.3s ease,
+      transform var(--dur, 4s) cubic-bezier(0.45, 0, 0.55, 1) 0.15s;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .work-card .work-scroll {
-    transform: scale(var(--z, 1)) !important;
+    display: none;
   }
 }
 

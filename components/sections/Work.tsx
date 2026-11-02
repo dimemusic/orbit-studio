@@ -47,7 +47,7 @@ export function Work() {
 
       <ul
         aria-label={WORK.listLabel}
-        className="work-grid relative z-[1] mt-12 grid w-full min-w-0 gap-6 xl:gap-8 md:grid-cols-2 lg:grid-cols-4"
+        className="work-grid relative z-[1] mt-12 grid w-full min-w-0 gap-6 xl:gap-8 md:grid-cols-2 xl:grid-cols-4"
       >
         {CASES.map((c, i) => (
           <li key={c.id} data-reveal style={{ "--d": `${i * 80}ms` } as CSSProperties} className="flex min-w-0">
@@ -71,19 +71,18 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
   const { WORK } = useContent();
   // ~1.3s of scroll per screen-width of page length, never under 2.5s
   const dur = c.full ? Math.max(2.5, (c.full.h / c.full.w) * 1.3) : 0;
-  // resting state: zoom in so only the site's first screen fills the frame (no strip of the next section under it)
+  // the frame keeps the 16:10 shape of the 1440 × 900 first-screen shot; its pixel height drives the hover scroll
   const view = useRef<HTMLSpanElement>(null);
-  const [zoom, setZoom] = useState(1);
+  const [fh, setFh] = useState(0);
   useEffect(() => {
     const el = view.current;
-    if (!el || !c.full || !c.hero) return;
-    const hero = c.hero;
-    const fit = () => setZoom(Math.max(1, el.clientHeight / ((hero * el.clientWidth) / c.full!.w)));
+    if (!el) return;
+    const fit = () => setFh(el.clientHeight);
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [c.full, c.hero]);
+  }, []);
   return (
     <button
       type="button"
@@ -93,19 +92,34 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       className="card work-card group/card flex h-full w-full min-w-0 flex-col overflow-hidden rounded-3xl text-left"
     >
       {/* the screenshot runs edge to edge at the top of the card: no inner frame, no browser bar (asked) */}
-      <span ref={view} aria-hidden="true" className="work-view relative block overflow-hidden border-b border-white/[0.07] bg-bg">
-        {c.full ? (
+      {/* at rest: the sharp 1440 × 900 first screen, whole and uncropped (16:10 frame); on hover the full page fades in
+          and scrolls inside the frame. No inner frame, no browser bar (asked). */}
+      <span
+        ref={view}
+        aria-hidden="true"
+        className="work-view relative block aspect-[16/10] overflow-hidden border-b border-white/[0.07] bg-bg"
+        style={fh ? ({ "--fh": `${fh}px` } as CSSProperties) : undefined}
+      >
+        <Image
+          src={c.media}
+          alt={`${c.name}: ${c.type}`}
+          fill
+          quality={90}
+          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
+          className="object-cover object-top"
+        />
+        {c.full && (
           <Image
             src={c.full.src}
-            alt={`${c.name}: ${c.type}`}
+            alt=""
             width={c.full.w}
             height={c.full.h}
+            quality={90}
+            loading="lazy"
             sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
             className="work-scroll absolute left-0 top-0 h-auto w-full"
-            style={{ "--dur": `${dur.toFixed(1)}s`, "--z": zoom.toFixed(3) } as CSSProperties}
+            style={{ "--dur": `${dur.toFixed(1)}s` } as CSSProperties}
           />
-        ) : (
-          <Image src={c.media} alt={`${c.name}: ${c.type}`} fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)" className="object-cover object-top" />
         )}
       </span>
 
