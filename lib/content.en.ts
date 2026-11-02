@@ -63,16 +63,13 @@ export const en: Content = {
     close: "Close",
     taskLabel: "Task",
     doneLabel: "What we did",
-    spec: { niche: "Niche", stack: "Stack", term: "Timeline" },
     cases: [
       {
         id: "maina",
         name: "Maina by Rivka",
         kind: "Frozen food shop", // DRAFT
         type: "Online store",
-        did: ["UX and structure", "UI design", "Development", "Admin panel"], // DRAFT
-        niche: "Food & delivery",
-        stack: ["Next.js", "Sanity", "Vercel"],
+        did: ["UX and structure", "UI design", "Next.js development", "Sanity admin"], // DRAFT
         text: "An online store for frozen and ready meals with delivery across Ukraine. A catalogue with categories, ordering in a few clicks, and the owner updates products and prices herself in Sanity.", // DRAFT
         short: "A catalogue with categories, ordering in a few clicks, and the owner updates prices herself.",
         tags: ["Design", "Next.js", "Sanity"],
@@ -97,8 +94,6 @@ export const en: Content = {
         kind: "Manufacturer website",
         type: "Corporate website",
         did: ["UX structure", "UI design", "Product catalogue", "Request form"], // DRAFT
-        niche: "Trailer manufacturing",
-        stack: ["Figma"],
         text: "Website for a maker of sandwich panels, vans and trailers. We planned the structure and user flows, the product catalogue and a quote request form so clients find what they need fast.", // DRAFT
         short: "A product catalogue and a quote request form so clients quickly find what they need.",
         tags: ["UI/UX", "Design"],
@@ -123,8 +118,6 @@ export const en: Content = {
         kind: "Architecture studio (concept)", // DRAFT
         type: "Portfolio website",
         did: ["Art direction", "UI design", "Animations", "Development"], // DRAFT
-        niche: "Architecture",
-        stack: ["Next.js", "Vercel"],
         text: "Portfolio website for a studio of futuristic houses. Video on the first screen, a project gallery and animations that present every house as an event.", // DRAFT
         short: "Video on the first screen, a project gallery and animations that present every house as an event.",
         tags: ["Design", "Next.js"],
@@ -149,8 +142,6 @@ export const en: Content = {
         kind: "Home bakery landing page", // DRAFT
         type: "Landing page",
         did: ["Illustrated style", "UI design", "Responsive", "Development"], // DRAFT
-        niche: "Café & bakery",
-        stack: [],
         text: "Landing page for a café with its own bakery, in a warm cartoon style. Menu and range, delivery and contacts: everything leads to an order or a visit.", // DRAFT
         short: "Menu, delivery and contacts in a warm cartoon style: everything leads to an order.",
         tags: ["Design", "Landing page"],

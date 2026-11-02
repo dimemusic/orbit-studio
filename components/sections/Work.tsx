@@ -69,12 +69,6 @@ export function Work() {
 
 function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void }) {
   const { WORK } = useContent();
-  const term = c.facts[0]?.value ?? "";
-  const spec = [
-    [WORK.spec.niche, c.niche],
-    [WORK.spec.stack, c.stack.join(" · ")],
-    [WORK.spec.term, term.startsWith("[") ? "" : term],
-  ].map(([k, v]) => [k, v || "—"]); // always three rows, so the cards line up; unknown = a dash
   return (
     <button
       type="button"
@@ -127,19 +121,10 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
           </span>
         </span>
         <span className="mt-4 block text-sm text-body">{c.short}</span>
-        {/* the facts a client compares: field, tech, time; then what we did */}
         <span className="mt-auto block pt-5">
           <span className="block border-t border-white/[0.08] pt-4">
-            <span className="grid grid-cols-[5rem_minmax(0,1fr)] gap-x-3 gap-y-2 text-sm">
-              {spec.map(([k, v]) => (
-                <span key={k} className="contents">
-                  <span className="text-grey">{k}</span>
-                  <span className="text-fg">{v}</span>
-                </span>
-              ))}
-            </span>
-            <span className="mt-4 flex flex-wrap gap-2">
-              {c.did.map((t, k) => (
+            <span className="flex flex-wrap gap-2">
+              {c.tags.map((t, k) => (
                 <Tag key={t} color={k === 0 ? c.accent : undefined}>
                   {t}
                 </Tag>
