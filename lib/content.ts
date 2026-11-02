@@ -117,7 +117,7 @@ export const WORK = {
       tags: ["Дизайн", "Next.js", "Sanity"],
       media: "/cases/maina.webp",
       shots: ["/cases/maina.webp"],
-      full: { src: "/cases/maina-full.webp", w: 720, h: 1910 },
+      full: { src: "/cases/maina-full.webp", w: 720, h: 1929 },
       url: null,
       status: "Живий проєкт",
       result: "[РЕЗУЛЬТАТ]",
