@@ -788,18 +788,20 @@ html {
   height: var(--fh);
 }
 .work-scroll {
-  transform: translateY(0);
+  /* --z (Work.tsx): the resting zoom that shows only the first screen; hover goes back to 1 and scrolls the page */
+  transform: translateY(0) scale(var(--z, 1));
+  transform-origin: 0 0;
   transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
 }
 @media (hover: hover) and (pointer: fine) {
   .work-card:hover .work-scroll {
-    transform: translateY(calc(var(--fh) - 100%));
+    transform: translateY(calc(var(--fh) - 100%)) scale(1);
     transition: transform var(--dur, 4s) cubic-bezier(0.45, 0, 0.55, 1);
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .work-card .work-scroll {
-    transform: none !important;
+    transform: scale(var(--z, 1)) !important;
   }
 }
 

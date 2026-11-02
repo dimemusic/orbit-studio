@@ -71,6 +71,19 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
   const { WORK } = useContent();
   // ~1.3s of scroll per screen-width of page length, never under 2.5s
   const dur = c.full ? Math.max(2.5, (c.full.h / c.full.w) * 1.3) : 0;
+  // resting state: zoom in so only the site's first screen fills the frame (no strip of the next section under it)
+  const view = useRef<HTMLSpanElement>(null);
+  const [zoom, setZoom] = useState(1);
+  useEffect(() => {
+    const el = view.current;
+    if (!el || !c.full || !c.hero) return;
+    const hero = c.hero;
+    const fit = () => setZoom(Math.max(1, el.clientHeight / ((hero * el.clientWidth) / c.full!.w)));
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [c.full, c.hero]);
   return (
     <button
       type="button"
@@ -80,7 +93,7 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       className="card work-card group/card flex h-full w-full min-w-0 flex-col overflow-hidden rounded-3xl text-left"
     >
       {/* the screenshot runs edge to edge at the top of the card: no inner frame, no browser bar (asked) */}
-      <span aria-hidden="true" className="work-view relative block overflow-hidden border-b border-white/[0.07] bg-bg">
+      <span ref={view} aria-hidden="true" className="work-view relative block overflow-hidden border-b border-white/[0.07] bg-bg">
         {c.full ? (
           <Image
             src={c.full.src}
@@ -89,7 +102,7 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
             height={c.full.h}
             sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
             className="work-scroll absolute left-0 top-0 h-auto w-full"
-            style={{ "--dur": `${dur.toFixed(1)}s` } as CSSProperties}
+            style={{ "--dur": `${dur.toFixed(1)}s`, "--z": zoom.toFixed(3) } as CSSProperties}
           />
         ) : (
           <Image src={c.media} alt={`${c.name}: ${c.type}`} fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)" className="object-cover object-top" />

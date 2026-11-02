@@ -100,6 +100,7 @@ export const en: Content = {
         media: "/cases/avtoban.webp",
         shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
         full: { src: "/cases/avtoban-full.webp", w: 720, h: 2283 },
+        hero: 404,
         url: "https://avtoban-trailers.vercel.app/",
         status: "UI/UX",
         result: "[RESULT]",

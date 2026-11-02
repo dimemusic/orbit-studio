@@ -62,6 +62,8 @@ export type Case = {
   text: string;
   /** one line for the card (the full text lives in the case window) */
   short: string;
+  /** where the site's first screen ends in `full` (source px): the resting card zooms so only it shows */
+  hero?: number;
   /** four short items in the Work list row («що зробили») */
   did: string[];
   tags: string[];
@@ -143,6 +145,7 @@ export const WORK = {
       media: "/cases/avtoban.webp",
       shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
       full: { src: "/cases/avtoban-full.webp", w: 720, h: 2283 },
+      hero: 404,
       url: "https://avtoban-trailers.vercel.app/",
       status: "UI/UX",
       result: "[РЕЗУЛЬТАТ]",
