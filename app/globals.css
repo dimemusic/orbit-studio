@@ -771,6 +771,24 @@ html {
   }
 }
 
+/* Work cards: hover scrolls the tall page image inside the 16:10 frame (100cqh = frame height, container query unit);
+   one image only, so nothing swaps and nothing jumps */
+.work-scroll {
+  transform: translateY(0);
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .work-card:hover .work-scroll {
+    transform: translateY(calc(100cqh - 100%));
+    transition: transform var(--dur, 6s) cubic-bezier(0.45, 0, 0.55, 1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-card .work-scroll {
+    transform: none !important;
+  }
+}
+
 /* Build (phones): the stage note fades up on every stage change */
 .build-note {
   animation: build-note 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;

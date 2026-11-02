@@ -78,19 +78,33 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       className="card work-card group/card flex h-full w-full min-w-0 flex-col overflow-hidden rounded-3xl text-left"
     >
       {/* the screenshot runs edge to edge at the top of the card: no inner frame, no browser bar (asked) */}
-      {/* the sharp 1440 × 900 first screen, whole and uncropped (16:10 frame); it never changes on hover (asked) */}
+      {/* 16:10 frame: at rest the whole first screen; on hover the page scrolls down smoothly (asked) */}
       <span
         aria-hidden="true"
-        className="work-view relative block aspect-[16/10] overflow-hidden border-b border-white/[0.07] bg-bg"
+        className="work-view relative block aspect-[16/10] overflow-hidden [container-type:size] border-b border-white/[0.07] bg-bg"
       >
-        <Image
-          src={c.media}
-          alt={`${c.name}: ${c.type}`}
-          fill
-          quality={90}
-          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
-          className="object-cover object-top"
-        />
+        {c.full ? (
+          // one tall image: the sharp first screen on top, then the rest of the page; hover scrolls it, nothing swaps
+          <Image
+            src={c.full.src}
+            alt={`${c.name}: ${c.type}`}
+            width={c.full.w}
+            height={c.full.h}
+            quality={85}
+            sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
+            className="work-scroll absolute left-0 top-0 h-auto w-full"
+            style={{ "--dur": `${Math.max(3, (c.full.h / c.full.w) * 1.6).toFixed(1)}s` } as CSSProperties}
+          />
+        ) : (
+          <Image
+            src={c.media}
+            alt={`${c.name}: ${c.type}`}
+            fill
+            quality={85}
+            sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
+            className="object-cover object-top"
+          />
+        )}
       </span>
 
       <span className="flex flex-1 flex-col p-6">
