@@ -7,7 +7,7 @@ import { SH, SW } from "./shared";
  * The desktop layout is untouched; the crop is applied per stage layer so the whips between stages stay smooth.
  */
 const FOCUS = [
-  { x: 360, y: 20, w: 480, h: 560 },
+  { x: 360, y: 20, w: 480, h: 560 }, // brief: its own phone layout lives in this rect (Brief.tsx MOB)
   { x: 360, y: 20, w: 480, h: 560 },
   { x: 40, y: 20, w: 640, h: 560 },
   { x: 40, y: 20, w: 540, h: 560 },
