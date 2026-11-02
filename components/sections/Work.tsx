@@ -30,7 +30,7 @@ export function Work() {
       aria-labelledby="work-title"
       className="relative flex w-full flex-col px-gutter pb-12 pt-24"
     >
-      <header className="relative z-[1] flex w-full min-w-0 flex-wrap items-end justify-between gap-x-6 gap-y-3">
+      <header data-parallax="0.06" className="relative z-[1] flex w-full min-w-0 flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <h2 id="work-title" className="legible text-mega font-semibold">
           <RevealWords text={WORK.title[0]} accent={WORK.title[1]} tone="amber" />
         </h2>

@@ -30,7 +30,7 @@ export function Pricing() {
       aria-labelledby="services-title"
       className="relative flex w-full flex-col px-gutter pb-12 pt-24"
     >
-      <header className="relative z-[1] flex w-full min-w-0 flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
+      <header data-parallax="0.06" className="relative z-[1] flex w-full min-w-0 flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
         <h2 id="services-title" className="legible text-mega font-semibold">
           <RevealWords text={SERVICES.title[0]} accent={SERVICES.title[1]} tone="violet" />
         </h2>

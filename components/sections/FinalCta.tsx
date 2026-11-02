@@ -54,7 +54,7 @@ export function FinalCta() {
     >
       <div className="relative z-[1] grid w-full min-w-0 items-center xl:gap-x-24 2xl:gap-x-32 gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)] wide:grid-cols-[minmax(0,38rem)_minmax(0,46rem)] wide:justify-center">
         {/* left: the invitation + direct contacts */}
-        <div className="min-w-0">
+        <div data-parallax="0.06" className="min-w-0">
           <h2 id="contact-title" className="legible text-mega font-semibold">
             <RevealWords text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="teal" stack />
           </h2>

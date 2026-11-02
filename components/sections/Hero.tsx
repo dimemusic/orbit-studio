@@ -15,7 +15,8 @@ export function Hero() {
   const [first, second, last] = HERO.title;
   return (
     <section id="top" aria-labelledby="hero-title" className="relative flex min-h-[100dvh] w-full flex-col px-gutter text-center">
-      <div className="flex flex-1 flex-col items-center justify-center pb-10 pt-32">
+      {/* parallax: the copy lags behind the scroll and fades as the film comes up (desktop only, ParallaxRoot) */}
+      <div data-parallax="0.3" data-pfrom="top" data-pmax="400" data-pfade className="flex flex-1 flex-col items-center justify-center pb-10 pt-32">
         <div className="plate flex flex-col items-center px-4 py-8">
           <h1 id="hero-title" data-reveal data-in className="legible text-mega font-semibold">
             {first}
@@ -35,8 +36,10 @@ export function Hero() {
         </div>
       </div>
 
-      <div data-reveal data-in style={{ ["--d" as string]: "280ms" }} className="pb-8 lg:pb-12">
-        <LogoStrip />
+      <div data-parallax="0.12" data-pfrom="top" data-pmax="200" data-pfade>
+        <div data-reveal data-in style={{ ["--d" as string]: "280ms" }} className="pb-8 lg:pb-12">
+          <LogoStrip />
+        </div>
       </div>
     </section>
   );
