@@ -71,6 +71,7 @@ export const en: Content = {
         type: "Online store",
         did: ["UX and structure", "UI design", "Next.js development", "Sanity admin"], // DRAFT
         text: "An online store for frozen and ready meals with delivery across Ukraine. A catalogue with categories, ordering in a few clicks, and the owner updates products and prices herself in Sanity.", // DRAFT
+        short: "A catalogue with categories, ordering in a few clicks, and the owner updates prices herself.",
         tags: ["Design", "Next.js", "Sanity"],
         media: "/cases/maina.webp",
         shots: ["/cases/maina.webp"],
@@ -94,6 +95,7 @@ export const en: Content = {
         type: "Corporate website",
         did: ["UX structure", "UI design", "Product catalogue", "Request form"], // DRAFT
         text: "Website for a maker of sandwich panels, vans and trailers. We planned the structure and user flows, the product catalogue and a quote request form so clients find what they need fast.", // DRAFT
+        short: "A product catalogue and a quote request form so clients quickly find what they need.",
         tags: ["UI/UX", "Design"],
         media: "/cases/avtoban.webp",
         shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
@@ -117,6 +119,7 @@ export const en: Content = {
         type: "Portfolio website",
         did: ["Art direction", "UI design", "Animations", "Development"], // DRAFT
         text: "Portfolio website for a studio of futuristic houses. Video on the first screen, a project gallery and animations that present every house as an event.", // DRAFT
+        short: "Video on the first screen, a project gallery and animations that present every house as an event.",
         tags: ["Design", "Next.js"],
         media: "/cases/biganskiy.webp",
         shots: ["/cases/biganskiy.webp"],
@@ -140,6 +143,7 @@ export const en: Content = {
         type: "Landing page",
         did: ["Illustrated style", "UI design", "Responsive", "Development"], // DRAFT
         text: "Landing page for a café with its own bakery, in a warm cartoon style. Menu and range, delivery and contacts: everything leads to an order or a visit.", // DRAFT
+        short: "Menu, delivery and contacts in a warm cartoon style: everything leads to an order.",
         tags: ["Design", "Landing page"],
         media: "/cases/krendel.webp",
         shots: ["/cases/krendel.webp"],

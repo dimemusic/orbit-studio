@@ -77,62 +77,50 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       onClick={(e) => onOpen(e.currentTarget)}
       aria-haspopup="dialog"
       aria-label={`${WORK.open}: ${c.name}, ${c.kind}`}
-      className="card work-card group/card flex h-full w-full min-w-0 flex-col rounded-3xl p-3 text-left"
+      className="card work-card group/card flex h-full w-full min-w-0 flex-col overflow-hidden rounded-3xl text-left"
     >
-      <span
-        aria-hidden="true"
-        className="work-frame relative block overflow-hidden rounded-xl border border-white/[0.09] bg-bg transition-colors duration-300 md:group-hover/card:border-white/25"
-      >
-        {/* browser bar */}
-        <span className="relative z-[1] flex h-7 items-center gap-2 border-b border-white/[0.07] bg-[#0b0e15] px-3">
-          {[0, 1, 2].map((k) => (
-            <span key={k} className="size-2 rounded-full bg-white/15" />
-          ))}
-        </span>
-        <span className="work-view relative block overflow-hidden">
-          {c.full ? (
-            <Image
-              src={c.full.src}
-              alt={`${c.name}: ${c.type}`}
-              width={c.full.w}
-              height={c.full.h}
-              sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
-              className="work-scroll absolute left-0 top-0 h-auto w-full"
-              style={{ "--dur": `${dur.toFixed(1)}s` } as CSSProperties}
-            />
-          ) : (
-            <Image src={c.media} alt={`${c.name}: ${c.type}`} fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)" className="object-cover object-top" />
-          )}
-          {/* kind of website */}
-          <span className="absolute left-3 top-3 inline-flex h-6 items-center rounded-full border border-white/15 bg-[rgb(5_7_13/0.82)] px-3 text-xs font-semibold leading-none text-fg">
-            {c.type}
-          </span>
-        </span>
+      {/* the screenshot runs edge to edge at the top of the card: no inner frame, no browser bar (asked) */}
+      <span aria-hidden="true" className="work-view relative block overflow-hidden border-b border-white/[0.07] bg-bg">
+        {c.full ? (
+          <Image
+            src={c.full.src}
+            alt={`${c.name}: ${c.type}`}
+            width={c.full.w}
+            height={c.full.h}
+            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
+            className="work-scroll absolute left-0 top-0 h-auto w-full"
+            style={{ "--dur": `${dur.toFixed(1)}s` } as CSSProperties}
+          />
+        ) : (
+          <Image src={c.media} alt={`${c.name}: ${c.type}`} fill sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)" className="object-cover object-top" />
+        )}
       </span>
 
-      {/* text, tags and the «view» pill sit in the card's padding */}
-      <span className="flex flex-1 flex-col px-3 pb-2">
-      <span className="mt-5 block min-w-0">
-          <span className="block text-title font-medium text-fg" translate="no">
-            {c.name}
+      <span className="flex flex-1 flex-col p-6">
+        <span className="flex items-start justify-between gap-4">
+          <span className="min-w-0">
+            <span className="block text-title font-medium text-fg" translate="no">
+              {c.name}
+            </span>
+            <span className="mt-1 block text-sm text-grey">{c.kind}</span>
           </span>
-          <span className="mt-1 block text-sm text-grey">{c.kind}</span>
-      </span>
-      <span className="mt-3 block text-base text-body">{c.text}</span>
-      <span className="mt-4 flex flex-wrap gap-2">
-        {c.tags.map((t, k) => (
-          <Tag key={t} color={k === 0 ? c.accent : undefined}>
-            {t}
-          </Tag>
-        ))}
-      </span>
-      {/* «view» pill (the whole card is the button); pinned to the bottom so the four cards line up */}
-      <span className="mt-auto block pt-5">
-        <span className="flex h-12 w-full items-center justify-center gap-2 rounded-full border border-white/[0.18] px-5 text-base font-semibold text-fg transition-colors duration-300 md:group-hover/card:border-[#2a6fe8] md:group-hover/card:bg-[#2a6fe8] md:group-hover/card:text-white">
-          {WORK.view}
-          <ArrowUpRight size={16} aria-hidden="true" />
+          {/* the whole card is the button; the arrow only shows it */}
+          <span className="grid size-11 shrink-0 place-items-center rounded-full border border-white/[0.18] text-fg transition-colors duration-300 md:group-hover/card:border-[#2a6fe8] md:group-hover/card:bg-[#2a6fe8]">
+            <ArrowUpRight size={18} aria-hidden="true" />
+          </span>
         </span>
-      </span>
+        <span className="mt-4 block text-sm text-body">{c.short}</span>
+        <span className="mt-auto block pt-5">
+          <span className="block border-t border-white/[0.08] pt-4">
+            <span className="flex flex-wrap gap-2">
+              {c.tags.map((t, k) => (
+                <Tag key={t} color={k === 0 ? c.accent : undefined}>
+                  {t}
+                </Tag>
+              ))}
+            </span>
+          </span>
+        </span>
       </span>
     </button>
   );
