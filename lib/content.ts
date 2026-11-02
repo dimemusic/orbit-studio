@@ -89,6 +89,12 @@ export const WORK = {
   /** plain start · accent end (in the active case's colour) */
   title: ["З чим ми", "працюємо."],
   listLabel: "Проєкти",
+  /** general info under the cases: three columns in one card */
+  info: [
+    { id: "niches", title: "Ніші", items: ["Їжа й доставка", "Виробництво", "Архітектура", "Кав'ярні й пекарні", "Послуги", "Ваша ніша"] }, // DRAFT
+    { id: "stack", title: "Технології", items: ["Figma", "Next.js", "React", "TypeScript", "Tailwind CSS", "Sanity", "Vercel"] },
+    { id: "always", title: "У кожному проєкті", items: ["Адаптив під телефони", "Швидке завантаження", "Базове SEO", "Доступи й навчання після здачі"] }, // DRAFT
+  ],
   /** link in the section header */
   more: "Обговорити проєкт",
   /** closing row of the list */

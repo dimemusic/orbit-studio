@@ -49,6 +49,11 @@ export const en: Content = {
     label: "Our work",
     title: ["What we", "build."],
     listLabel: "Projects",
+    info: [
+      { id: "niches", title: "Niches", items: ["Food & delivery", "Manufacturing", "Architecture", "Cafés & bakeries", "Services", "Your niche"] }, // DRAFT
+      { id: "stack", title: "Technology", items: ["Figma", "Next.js", "React", "TypeScript", "Tailwind CSS", "Sanity", "Vercel"] },
+      { id: "always", title: "In every project", items: ["Mobile-ready layout", "Fast loading", "Basic SEO", "Access and training at handover"] }, // DRAFT
+    ],
     more: "Discuss a project",
     next: {
       name: "Your website could be here",

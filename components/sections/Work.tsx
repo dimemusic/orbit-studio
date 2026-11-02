@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ArrowUpRight, CheckCircle, X } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, ArrowUpRight, CheckCircle, Code, Storefront, X } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Case } from "@/lib/content";
@@ -18,6 +18,13 @@ import { RevealWords } from "../ui/RevealWords";
  * (speed follows the page length), and slides back on leave. Click opens the case window.
  * Cases without a full-page shot show their cover, no scroll. Reduced motion: no scroll.
  */
+/** icon + tint per info column */
+const INFO = {
+  niches: { Icon: Storefront, tone: "bg-[#fb7185]/12 text-[#fb7185]" },
+  stack: { Icon: Code, tone: "bg-blue/12 text-blue" },
+  always: { Icon: CheckCircle, tone: "bg-green/12 text-green" },
+} as const;
+
 export function Work() {
   const { WORK } = useContent();
   const CASES = WORK.cases;
@@ -61,6 +68,43 @@ export function Work() {
           </li>
         ))}
       </ul>
+
+      {/* general info under the cases: niches we know, the tech we build with, what every project gets */}
+      <div data-reveal style={{ "--d": "120ms" } as CSSProperties} className="relative z-[1] mt-6 w-full min-w-0 xl:mt-8">
+        <div className="card grid lg:grid-cols-3">
+          {WORK.info.map((b, i) => {
+            const { Icon, tone } = INFO[b.id as keyof typeof INFO];
+            return (
+              <div key={b.id} className={`p-6 lg:p-8 ${i ? "border-t border-white/[0.08] lg:border-l lg:border-t-0" : ""}`}>
+                <p className="flex items-center gap-3 text-base font-semibold text-fg">
+                  <span className={`grid size-11 place-items-center rounded-xl ${tone}`}>
+                    <Icon size={20} weight="light" aria-hidden="true" />
+                  </span>
+                  {b.title}
+                </p>
+                {b.id === "always" ? (
+                  <ul className="mt-6 flex flex-col gap-3">
+                    {b.items.map((t) => (
+                      <li key={t} className="flex items-center gap-3 text-base text-body">
+                        <CheckCircle size={20} weight="fill" aria-hidden="true" className="shrink-0 text-green" />
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <ul className="mt-6 flex flex-wrap gap-2">
+                    {b.items.map((t) => (
+                      <li key={t} className="rounded-full bg-white/[0.06] px-3 py-2 text-sm text-fg">
+                        {t}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <CaseDialog open={open} onClose={() => setOpen(null)} returnFocus={opener} />
     </section>
