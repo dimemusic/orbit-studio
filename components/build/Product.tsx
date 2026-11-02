@@ -21,9 +21,10 @@ const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 const RIM = 3;
 
 function Screen({ i, s, hold }: { i: number; s: number; hold: number }) {
-  if (i === 0) return <DesignScreen s={s} />;
-  if (i === 1) return <CodeScreen s={s} />;
-  if (i === 2) return <CmsScreen s={s} />;
+  if (i === 0) return null; // brief: no product yet
+  if (i === 1) return <DesignScreen s={s} />;
+  if (i === 2) return <CodeScreen s={s} />;
+  if (i === 3) return <CmsScreen s={s} />;
   return <LaunchScreen s={s} hold={hold} />;
 }
 
@@ -39,10 +40,10 @@ function Body({ from, m, t, hold, style }: { from: number; m: number; t: number;
   const innerW = w - bezel * 2;
   const innerH = a.h - bezel * 2;
   // the browser's border turns green as the site goes live
-  const launchW = from === 3 ? 1 : from === 2 ? m : 0;
-  const lift = launchLift(beatsOf(t, 3));
-  // stage 0, before any hand-over: the designer is still dragging the artboard open
-  const frame = from === 0 && m === 0 ? designFrame(beatsOf(t, 0)) : 1;
+  const launchW = from === 4 ? 1 : from === 3 ? m : 0;
+  const lift = launchLift(beatsOf(t, 4));
+  // the design stage, before any hand-over: the designer is still dragging the artboard open
+  const frame = from === 1 && m === 0 ? designFrame(beatsOf(t, 1)) : 1;
   if (frame <= 0) return null;
   const screens = [
     { i: from, o: 1 - smooth(seg(m, 0.05, 0.55)) },
@@ -112,6 +113,8 @@ export function ProductFrame({ t, fin, hold }: { t: number; fin: number; hold: n
   const cur = stageAt(t);
   const from = cur > 0 && handover(t, cur - 1) < 1 && t < STAGE_START[cur] + 1 ? cur - 1 : cur;
   const m = handover(t, from);
+  // brief: no product; it appears when the designer drags the artboard open in the design stage
+  if (from === 0) return null;
   // end of the lap: the whole product whips out with the launch stage
   const out = fin * fin * fin;
   return (
@@ -137,6 +140,6 @@ export function ProductFrame({ t, fin, hold }: { t: number; fin: number; hold: n
 /** phones / tablets: stage i's product inside its own cropped stage layer (no hand-over) */
 export function ProductAt({ i, t, hold }: { i: number; t: number; hold: number }) {
   const fit = useFit();
-  if (!fit.mobile) return null;
+  if (!fit.mobile || i === 0) return null;
   return <Body from={i} m={0} t={t} hold={hold} />;
 }

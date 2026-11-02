@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { G } from "../ui/Bits";
+import { BriefStage } from "../build/Brief";
 import { CmsStage } from "../build/Cms";
 import { CodeStage } from "../build/Code";
 import { DesignStage } from "../build/Design";
@@ -205,10 +206,11 @@ function Stages({ t, fin, hold }: { t: number; fin: number; hold: number }) {
       >
         {/* phones: this stage's product inside its cropped layer */}
         <ProductAt i={i} t={t} hold={hold} />
-        {i === 0 && <DesignStage s={beatsOf(t, 0)} />}
-        {i === 1 && <CodeStage s={beatsOf(t, 1)} />}
-        {i === 2 && <CmsStage s={beatsOf(t, 2)} />}
-        {i === 3 && <LaunchStage s={beatsOf(t, 3)} hold={hold} />}
+        {i === 0 && <BriefStage s={beatsOf(t, 0)} />}
+        {i === 1 && <DesignStage s={beatsOf(t, 1)} />}
+        {i === 2 && <CodeStage s={beatsOf(t, 2)} />}
+        {i === 3 && <CmsStage s={beatsOf(t, 3)} />}
+        {i === 4 && <LaunchStage s={beatsOf(t, 4)} hold={hold} />}
       </StageLayer>
     );
     return { layer, leaving: !last && exitK > 0 };

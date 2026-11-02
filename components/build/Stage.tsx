@@ -3,10 +3,11 @@ import { SH, SW } from "./shared";
 
 /**
  * Phones and tablets (< 1024px): the 1200×620 desktop stage shrinks to nothing, so each stage instead shows ONE part of itself,
- * cropped and scaled to fill the box (design: the artboard, code: the editor + terminal, CMS: the product form, launch: the browser).
+ * cropped and scaled to fill the box (brief: the research column, design: the artboard, code: the editor + terminal, CMS: the product form, launch: the browser).
  * The desktop layout is untouched; the crop is applied per stage layer so the whips between stages stay smooth.
  */
 const FOCUS = [
+  { x: 360, y: 20, w: 480, h: 560 },
   { x: 360, y: 20, w: 480, h: 560 },
   { x: 40, y: 20, w: 640, h: 560 },
   { x: 40, y: 20, w: 540, h: 560 },
@@ -85,7 +86,7 @@ export function StageBox({ cur, children }: { cur: number; children: ReactNode }
 
 /** one stage layer: whip transform while it moves + the phone crop (if any) */
 /** each stage's glass panels take its own tint (design violet, code blue, panel cyan, launch green): `--tint` in globals.css */
-const TINT = ["139 92 246", "61 139 255", "34 211 238", "52 211 153"];
+const TINT = ["251 113 133", "139 92 246", "61 139 255", "34 211 238", "52 211 153"];
 
 export function StageLayer({ i, whip, children }: { i: number; whip: CSSProperties | undefined; children: ReactNode }) {
   const f = useContext(FitCtx);

@@ -9,7 +9,7 @@ import { seg, smooth } from "./util";
 /** each stage's inner timeline is 3 beats; this is how many real seconds each one gets.
  *  Design (the craft) and the panel (the client's benefit) get more time, code and launch read at a glance. */
 export const BEATS = 3;
-export const STAGE_SEC = [5.0, 3.2, 4.0, 3.4];
+export const STAGE_SEC = [4.2, 5.0, 3.2, 4.0, 3.4];
 export const STAGE_START = STAGE_SEC.map((_, i) =>
   STAGE_SEC.slice(0, i).reduce((a, b) => a + b, 0),
 );
@@ -34,6 +34,8 @@ export const SH = 620;
  */
 export type Prod = { x: number; y: number; w: number; h: number; r: number; bezel: number };
 export const PROD: Prod[] = [
+  // brief: no product yet (the design stage drags the artboard open), same rect as the artboard
+  { x: 360, y: 20, w: 480, h: 560, r: 8, bezel: 0 },
   { x: 360, y: 20, w: 480, h: 560, r: 8, bezel: 0 },
   { x: 730, y: 20, w: 430, h: 560, r: 14, bezel: 0 },
   { x: 836, y: 20, w: 286, h: 560, r: 54, bezel: 12 },
