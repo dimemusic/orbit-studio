@@ -1,6 +1,8 @@
 import { CheckCircle, ListChecks, MagnifyingGlass, Sparkle, TrendUp } from "@phosphor-icons/react/dist/ssr";
-import { box, fly, useB } from "./shared";
-import { Caret, expo, seg, typed } from "./util";
+import type { CSSProperties } from "react";
+import { box, fly, STAGE_SEC, useB } from "./shared";
+import { useFit } from "./Stage";
+import { Caret, expo, seg, smooth, typed } from "./util";
 
 /* ---------------- 1 · Brief & research ---------------- */
 
@@ -10,28 +12,47 @@ const GOOD = "#34d399";
 const BAR = [1, 0.55, 0.25, 0.17];
 
 /**
+ * One panel at a time, so each can be read: brief → search demand → competitors → findings → plan.
+ * T = when each panel comes in (seconds into the stage); the one before it then dims to 40%.
+ * At LIT the plan is ready and everything lights up again together. Phones: the panels replace each other in the
+ * centre crop (one full panel on screen), no dimming.
+ */
+const T = [0.1, 2.0, 3.5, 6.0, 8.0];
+const LIT = 9.4;
+
+/**
  * Before any design. Left: the brief fills in, then what people search for in the niche. Centre: competitors checked
  * on prices / mobile / speed with real-looking values, then findings that turn each weakness into a decision.
  * Right: the page plan (every block with its job) that the design stage then draws.
  * The centre column (x 360..840) is the phone crop. Every panel's content fits its box with explicit line heights.
  */
-/** s = beats 0..3 (beatsOf); everything has landed by 2.1, the rest is read time before the hand-over */
+/** s = beats 0..3 (beatsOf), paced in seconds (`sec`) */
 export function BriefStage({ s }: { s: number }) {
   const { BUILD } = useB();
   const B = BUILD.brief;
-  const pan = (i: number) => expo(seg(s, 0.02 + i * 0.06, 0.35 + i * 0.06));
+  const { mobile } = useFit();
+  const sec = (s * STAGE_SEC[0]) / 3; // beats → seconds, easier to pace
+  /** panel n at rect (x, y, w, h), flying in from (dx, dy) */
+  const panel = (n: number, x: number, y: number, w: number, h: number, dx: number, dy: number): CSSProperties => {
+    const f = fly(expo(seg(sec, T[n], T[n] + 0.45)), mobile ? 0 : dx, mobile ? 24 : dy, 12);
+    const next = n < T.length - 1 ? T[n + 1] : 1e6; // not Infinity: seg() would give NaN
+    const keep = mobile
+      ? 1 - seg(sec, next - 0.05, next + 0.25)
+      : 1 - 0.6 * smooth(seg(sec, next, next + 0.4)) + 0.6 * smooth(seg(sec, Math.max(next, LIT), LIT + 0.4));
+    return { ...(mobile ? box(360, 20 + (560 - h) / 2, 480, h) : box(x, y, w, h)), ...f, opacity: Number(f.opacity ?? 1) * keep };
+  };
 
   return (
     <>
       {/* the brief: the client's answers */}
-      <div className="tool flex flex-col p-5" style={{ ...box(40, 20, 296, 316), ...fly(pan(0), -60, 0, 12) }}>
+      <div className="tool flex flex-col p-5" style={panel(0, 40, 20, 296, 316, -60, 0)}>
         <p className="tool-label flex items-center gap-2 leading-4">
           <ListChecks size={14} weight="bold" style={{ color: ACC }} />
           {B.form}
         </p>
         <div className="mt-4 flex flex-col gap-2">
           {B.rows.map((r, i) => {
-            const k = seg(s, 0.15 + i * 0.12, 0.3 + i * 0.12);
+            const k = seg(sec, 0.45 + i * 0.3, 0.8 + i * 0.3);
             return (
               <div key={r.k} className="tool-cell flex h-[52px] flex-col justify-center px-3">
                 <span className="text-[11px] leading-4 text-grey">{r.k}</span>
@@ -46,14 +67,14 @@ export function BriefStage({ s }: { s: number }) {
       </div>
 
       {/* demand: what people search for, with monthly volume */}
-      <div className="tool flex flex-col p-5" style={{ ...box(40, 352, 296, 228), ...fly(pan(3), -60, 0, 12) }}>
+      <div className="tool flex flex-col p-5" style={panel(1, 40, 352, 296, 228, -60, 0)}>
         <p className="tool-label flex items-center gap-2 leading-4">
           <TrendUp size={14} weight="bold" style={{ color: ACC }} />
           {B.search}
         </p>
         <div className="mt-4 flex flex-col gap-3">
           {B.queries.map((q, i) => {
-            const k = expo(seg(s, 0.45 + i * 0.08, 0.75 + i * 0.08));
+            const k = expo(seg(sec, 2.3 + i * 0.2, 2.8 + i * 0.2));
             return (
               <div key={q.q} style={{ opacity: 0.3 + 0.7 * k }}>
                 <div className="flex items-baseline justify-between gap-3 text-[13px] leading-4">
@@ -75,7 +96,7 @@ export function BriefStage({ s }: { s: number }) {
       </div>
 
       {/* competitors: prices, mobile, speed */}
-      <div className="tool flex flex-col p-5" style={{ ...box(360, 20, 480, 300), ...fly(pan(1), 0, 30, 12) }}>
+      <div className="tool flex flex-col p-5" style={panel(2, 360, 20, 480, 300, 0, 30)}>
         <p className="tool-label flex items-center gap-2 leading-4">
           <MagnifyingGlass size={14} weight="bold" style={{ color: ACC }} />
           {B.market}
@@ -90,7 +111,7 @@ export function BriefStage({ s }: { s: number }) {
         </div>
         <div className="mt-2 flex flex-col gap-2">
           {B.rivals.map((r, i) => {
-            const row = expo(seg(s, 0.35 + i * 0.08, 0.55 + i * 0.08));
+            const row = expo(seg(sec, 3.7 + i * 0.15, 4.0 + i * 0.15));
             return (
               <div
                 key={r.name}
@@ -106,7 +127,7 @@ export function BriefStage({ s }: { s: number }) {
                   <span className="truncate">{r.name}</span>
                 </span>
                 {r.cells.map((c, j) => {
-                  const m = expo(seg(s, 0.55 + i * 0.08 + j * 0.05, 0.7 + i * 0.08 + j * 0.05));
+                  const m = expo(seg(sec, 4.1 + i * 0.3 + j * 0.1, 4.35 + i * 0.3 + j * 0.1));
                   return (
                     <span key={j} className="grid place-items-center">
                       <span
@@ -130,14 +151,14 @@ export function BriefStage({ s }: { s: number }) {
       </div>
 
       {/* findings: each rival weakness becomes a decision for the site */}
-      <div className="tool flex flex-col p-5" style={{ ...box(360, 336, 480, 244), ...fly(pan(2), 0, 30, 12) }}>
+      <div className="tool flex flex-col p-5" style={panel(3, 360, 336, 480, 244, 0, 30)}>
         <p className="tool-label flex items-center gap-2 leading-4">
           <Sparkle size={14} weight="bold" style={{ color: ACC }} />
           {B.found}
         </p>
         <div className="mt-4 flex flex-col gap-2">
           {B.insights.map((x, i) => {
-            const k = expo(seg(s, 0.95 + i * 0.15, 1.2 + i * 0.15));
+            const k = expo(seg(sec, 6.3 + i * 0.55, 6.7 + i * 0.55));
             return (
               <div
                 key={x.do}
@@ -152,7 +173,9 @@ export function BriefStage({ s }: { s: number }) {
                 </span>
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate text-[11px] leading-4 text-grey">{x.why}</span>
-                  <span className="truncate text-[14px] leading-5 text-fg">→ {x.do}</span>
+                  <span className="truncate text-[14px] leading-5 text-fg" style={{ opacity: expo(seg(sec, 6.55 + i * 0.55, 6.85 + i * 0.55)) }}>
+                    → {x.do}
+                  </span>
                 </span>
               </div>
             );
@@ -161,11 +184,11 @@ export function BriefStage({ s }: { s: number }) {
       </div>
 
       {/* the page plan the design will draw: every block with its job */}
-      <div className="tool flex flex-col p-5" style={{ ...box(864, 20, 296, 560), ...fly(pan(4), 60, 0, 12) }}>
+      <div className="tool flex flex-col p-5" style={panel(4, 864, 20, 296, 560, 60, 0)}>
         <p className="tool-label leading-4">{B.plan}</p>
         <div className="mt-4 flex flex-col gap-2">
           {B.blocks.map((b, i) => {
-            const k = expo(seg(s, 1.25 + i * 0.1, 1.45 + i * 0.1));
+            const k = expo(seg(sec, 8.25 + i * 0.16, 8.55 + i * 0.16));
             return (
               <div
                 key={b.t}
@@ -192,7 +215,7 @@ export function BriefStage({ s }: { s: number }) {
         </div>
         <div
           className="mt-auto flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl text-[14px] font-semibold"
-          style={{ opacity: expo(seg(s, 1.95, 2.1)), background: "rgb(52 211 153 / 0.14)", color: GOOD }}
+          style={{ opacity: expo(seg(sec, LIT - 0.2, LIT + 0.1)), background: "rgb(52 211 153 / 0.14)", color: GOOD }}
         >
           <CheckCircle size={16} weight="fill" />
           {B.ready}
