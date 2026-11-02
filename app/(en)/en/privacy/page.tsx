@@ -1,4 +1,4 @@
-import { PrivacyBody } from "@/components/PrivacyBody";
+import { Policy } from "@/components/Policy";
 import { PageHero } from "@/components/ui/PageHero";
 import { contentFor } from "@/lib/i18n";
 import { pageMetadata } from "@/lib/seo";
@@ -13,7 +13,7 @@ export default function Privacy() {
   return (
     <>
       <PageHero crumb={PRIVACY.crumb} title={PRIVACY.title} lead={PRIVACY.lead} />
-      <PrivacyBody />
+      <Policy />
     </>
   );
 }

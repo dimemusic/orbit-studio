@@ -28,7 +28,7 @@ export function Nav() {
       setOpen(false);
       toggleRef.current?.focus();
     };
-    const onWide = () => window.innerWidth >= 1024 && setOpen(false);
+    const onWide = () => window.innerWidth >= 1280 && setOpen(false);
     window.addEventListener("keydown", onKey);
     window.addEventListener("resize", onWide);
     return () => {
@@ -48,13 +48,13 @@ export function Nav() {
 
       {/* floating card bar (slightly lighter than content cards) */}
       <div className="card card-nav">
-        <nav aria-label={UI.mainNav} className="flex h-16 items-center gap-6 pl-5 pr-3">
+        <nav aria-label={UI.mainNav} className="relative flex h-16 items-center gap-6 pl-5 pr-3">
           <Link href={CTA.home} aria-label={`${BRAND.name}, ${UI.toHome}`} className="shrink-0">
             <Logo />
           </Link>
 
-          {/* gap grows with width: 40px floor, 64px at 1280, 76px from 1440; below lg the links live in the mobile menu */}
-          <ul className="hidden flex-1 items-center justify-center gap-6 lg:flex lg:gap-10 xl:gap-16">
+          {/* centred on the bar itself, not between the logo and the buttons; below xl the links live in the mobile menu (from lg they ran into the buttons) */}
+          <ul className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-10 xl:flex wide:gap-16">
             {LINKS.map((l) => {
               const on = isActive(l.href, pathname);
               return (
@@ -74,7 +74,7 @@ export function Nav() {
             })}
           </ul>
 
-          <div className="ml-auto flex shrink-0 items-center gap-4 lg:ml-0 lg:gap-6">
+          <div className="ml-auto flex shrink-0 items-center gap-4 lg:gap-6">
             {/* language switch: in the bar from 400px up, in the mobile menu on the narrowest phones */}
             <LangSwitch className="hidden xs:flex" />
             {/* wrapper owns visibility: the Button base class is inline-flex and would override `hidden` */}
@@ -89,14 +89,14 @@ export function Nav() {
               aria-expanded={open}
               aria-controls={menuId}
               onClick={() => setOpen((v) => !v)}
-              className="btn-secondary inline-flex h-11 w-24 items-center justify-center rounded-full text-sm lg:hidden"
+              className="btn-secondary inline-flex h-11 w-24 items-center justify-center rounded-full text-sm xl:hidden"
             >
               {open ? UI.close : UI.menu}
             </button>
           </div>
         </nav>
 
-        <div id={menuId} hidden={!open} className="border-t border-white/10 px-5 pb-7 pt-3 lg:hidden">
+        <div id={menuId} hidden={!open} className="border-t border-white/10 px-5 pb-7 pt-3 xl:hidden">
           <ul className="flex flex-col items-center gap-1 text-center">
             {LINKS.map((l) => {
               const on = isActive(l.href, pathname);

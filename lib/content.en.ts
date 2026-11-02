@@ -329,92 +329,88 @@ export const en: Content = {
     title: "Privacy policy",
     lead: "We only collect what you type into the request form, so we can reply. No ads, no tracking, no selling of data.",
     updated: "Updated October 31, 2026",
-    toc: "Contents",
-    summary: [
-      { t: "Only the request form", d: "Name, contact and project notes" },
-      { t: "No cookies", d: "No analytics or trackers" },
-      { t: "We never sell data", d: "Not to advertisers, not to anyone" },
-      { t: "Deleted on request", d: "Reply within 30 days" },
-    ],
-    who: {
-      h: "Who we are",
-      rows: [
-        { k: "Studio", v: "MaxArt Digital, Lviv, Ukraine" },
-        { k: "Data controller", v: "[sole proprietor name or company name]" }, // DRAFT
-        { k: "Address", v: "[address]" }, // DRAFT
-        { k: "Contact", v: "hello@maxartdigital.com" },
-      ],
-    },
-    data: {
-      h: "What data we receive",
-      rows: [
-        { k: "From the form", items: ["Name", "Telegram or email", "Website type", "Project notes"] },
-        { k: "Automatically", items: ["IP address", "Browser type", "Request time"] },
-        { k: "Never", items: ["Passwords", "Payment details", "Sensitive data"] },
-      ],
-      note: "Automatic data are standard hosting logs. We do not use them to identify you.",
-      voluntary: "Giving us your data is voluntary. Without a name and a contact we simply cannot reply.",
-    },
-    purpose: {
-      h: "Why",
-      items: [
-        "To answer your request, clarify the task and prepare an offer",
-        "To talk about the project if we agree to work together",
-        "To protect the site from spam and attacks and keep it stable",
-      ],
-      note: "We send no newsletters, show no ads and never share data for marketing.",
-    },
-    basis: {
-      h: "Legal basis",
-      intro: "The Law of Ukraine «On Personal Data Protection» and, for visitors from the EU, the GDPR.",
-      items: [
-        { t: "Consent", d: "You give it when you send the form." },
-        { t: "Request before a contract", d: "A reply and an offer, at your request." },
-        { t: "Legitimate interest", d: "Security and stable operation of the site." },
-      ],
-    },
-    share: {
-      h: "Who we share data with",
-      cols: ["Service", "Country", "Purpose"],
-      rows: [
-        ["Vercel", "USA", "Site hosting and technical logs"],
-        ["Resend", "USA", "Delivering your request to our inbox"],
-        ["Our email", "[country]", "Keeping the request email"], // DRAFT
-      ],
-      note: "These services work under standard contractual clauses for data protection. We share data with anyone else only when the law requires it.",
-    },
-    cookies: {
-      h: "Cookies",
-      title: "The site uses no cookies, analytics or ad trackers.",
-      text: "The browser keeps only one technical value in sessionStorage, so the intro plays once. It holds no personal data and disappears when you close the tab.",
-    },
-    retention: {
-      h: "How long we keep it",
-      rows: [
-        { k: "Requests", v: "While we are talking or working together, but no longer than 3 years after the last contact" }, // DRAFT: period
-        { k: "Hosting logs", v: "A limited time, under Vercel's rules" },
-      ],
-    },
-    rights: {
-      h: "Your rights",
-      items: [
-        "Learn which data we hold and get a copy",
-        "Correct inaccurate data",
-        "Learn where the data is stored and who received it",
-        "Delete your data",
-        "Restrict or object to processing",
-        "Get your data in a portable format or have it moved to another service",
-        "Withdraw your consent at any time; this does not affect processing that already happened",
-        "Complain to the Ukrainian Parliament Commissioner for Human Rights (ombudsman.gov.ua), to a court or to your EU data protection authority",
-      ],
-      how: "Write to us and we will reply within 30 days.",
-      cta: "Write to us",
-    },
-    more: [
-      { h: "Security", text: "The site works only over HTTPS and requests travel over an encrypted connection. Only our team has access to them." },
-      { h: "Children", text: "The site is not meant for children. If a child has sent us their data, write to us and we will delete it." },
-      { h: "Automated decisions", text: "We make no automated decisions about you and build no profiles. A person reads every request." },
-      { h: "Changes", text: "A new version of this policy will appear on this page with a new update date." },
+    sections: [
+      {
+        id: "who",
+        title: "Who we are",
+        body: [
+          `The MaxArt Digital website belongs to [sole proprietor or company name, address] ("we"). We are the controller of the personal data you send through this site.`, // DRAFT
+          `This policy follows the Law of Ukraine "On Personal Data Protection" and, for visitors from the EU, the EU General Data Protection Regulation (GDPR).`,
+          "For any question about your data, write to hello@maxartdigital.com.",
+        ],
+      },
+      {
+        id: "data",
+        title: "What data we receive",
+        body: [
+          "When you send the request form, we receive your name, your Telegram or email for our reply, the type of website you are interested in and the project description, if you wrote one. When you write to us on Telegram or by email, we receive what you sent, plus your messenger profile details or email address.",
+          "When you open the site, the hosting automatically records technical request data: IP address, browser type and request time. These are standard server logs; we do not use them to identify you.",
+          "We do not ask for or collect passwords, payment or other sensitive data. Providing data is voluntary, but without a name and a contact we cannot reply to you.",
+        ],
+      },
+      {
+        id: "purpose",
+        title: "Why",
+        body: [
+          "We use the data to answer your request, clarify the task and prepare an offer, to talk about the project if we agree to work together, and to protect the site from spam and attacks.",
+          "We send no newsletters, show no ads, do not sell data and do not share it for marketing.",
+        ],
+      },
+      {
+        id: "basis",
+        title: "Legal basis",
+        body: [
+          "We process data based on your consent, which you give by sending the form or writing to us. The reply and the offer are prepared at your request before a contract. Technical logs are processed in our legitimate interest: security and stable operation of the site.",
+        ],
+      },
+      {
+        id: "share",
+        title: "Who we share data with",
+        body: [
+          "We share data only with services the site and our correspondence cannot work without, and only as much as they need: Vercel (USA) for hosting, Resend (USA) for delivering requests to our inbox and our email provider ([country]) for storing the emails. These services work under standard contractual clauses on data protection.", // DRAFT
+          "We share data with anyone else only when the law requires it.",
+        ],
+      },
+      {
+        id: "retention",
+        title: "How long we keep data",
+        body: [
+          "We keep requests and correspondence while we are talking or working together, but no longer than 3 years after the last contact. Hosting logs are kept for a limited time under Vercel's rules. At your request we delete data sooner, unless the law requires us to keep it.", // DRAFT: term
+        ],
+      },
+      {
+        id: "cookies",
+        title: "Cookies",
+        body: [
+          "The site uses no cookies, analytics or ad trackers. The browser keeps only one technical value in sessionStorage so the intro plays once. It holds no personal data and is gone when you close the tab.",
+        ],
+      },
+      {
+        id: "rights",
+        title: "Your rights",
+        body: [
+          "You can find out what data of yours we hold, where it is stored and who it was shared with, get a copy, correct inaccurate data, delete it, restrict or object to its processing, and receive your data in a portable format or move it to another service. You can withdraw consent at any time: this does not affect processing that already took place.",
+          "Write to hello@maxartdigital.com and we will reply within 30 days. You can also complain to the Ukrainian Parliament Commissioner for Human Rights (https://ombudsman.gov.ua), a court or the data protection authority of your EU country.",
+        ],
+      },
+      {
+        id: "security",
+        title: "Security",
+        body: ["The site runs over HTTPS only, and requests travel over an encrypted connection. Only our team has access to them."],
+      },
+      {
+        id: "other",
+        title: "Children and automated decisions",
+        body: [
+          "The site is not meant for children. If a child sent us their data, write to us and we will delete it.",
+          "We make no automated decisions about you and build no profiles. A person reads every request.",
+        ],
+      },
+      {
+        id: "changes",
+        title: "Changes",
+        body: ["A new version of the policy will appear on this page with a new update date."],
+      },
     ],
   },
 
