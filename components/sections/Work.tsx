@@ -69,20 +69,6 @@ export function Work() {
 
 function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void }) {
   const { WORK } = useContent();
-  // ~1.3s of scroll per screen-width of page length, never under 2.5s
-  const dur = c.full ? Math.max(2.5, (c.full.h / c.full.w) * 1.3) : 0;
-  // the frame keeps the 16:10 shape of the 1440 × 900 first-screen shot; its pixel height drives the hover scroll
-  const view = useRef<HTMLSpanElement>(null);
-  const [fh, setFh] = useState(0);
-  useEffect(() => {
-    const el = view.current;
-    if (!el) return;
-    const fit = () => setFh(el.clientHeight);
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
   return (
     <button
       type="button"
@@ -92,13 +78,10 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
       className="card work-card group/card flex h-full w-full min-w-0 flex-col overflow-hidden rounded-3xl text-left"
     >
       {/* the screenshot runs edge to edge at the top of the card: no inner frame, no browser bar (asked) */}
-      {/* at rest: the sharp 1440 × 900 first screen, whole and uncropped (16:10 frame); on hover the full page fades in
-          and scrolls inside the frame. No inner frame, no browser bar (asked). */}
+      {/* the sharp 1440 × 900 first screen, whole and uncropped (16:10 frame); it never changes on hover (asked) */}
       <span
-        ref={view}
         aria-hidden="true"
         className="work-view relative block aspect-[16/10] overflow-hidden border-b border-white/[0.07] bg-bg"
-        style={fh ? ({ "--fh": `${fh}px` } as CSSProperties) : undefined}
       >
         <Image
           src={c.media}
@@ -108,19 +91,6 @@ function CaseCard({ c, onOpen }: { c: Case; onOpen: (el: HTMLElement) => void })
           sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
           className="object-cover object-top"
         />
-        {c.full && (
-          <Image
-            src={c.full.src}
-            alt=""
-            width={c.full.w}
-            height={c.full.h}
-            quality={90}
-            loading="lazy"
-            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, calc(100vw - 48px)"
-            className="work-scroll absolute left-0 top-0 h-auto w-full"
-            style={{ "--dur": `${dur.toFixed(1)}s` } as CSSProperties}
-          />
-        )}
       </span>
 
       <span className="flex flex-1 flex-col p-6">

@@ -771,30 +771,6 @@ html {
   }
 }
 
-/* Work cards: at rest the first-screen shot; on hover the full page fades in and scrolls inside the frame.
-   --fh = the frame's pixel height (set by CaseCard), --dur = scroll time. */
-.work-scroll {
-  opacity: 0;
-  transform: translateY(0);
-  transition:
-    opacity 0.4s ease,
-    transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
-}
-@media (hover: hover) and (pointer: fine) {
-  .work-card:hover .work-scroll {
-    opacity: 1;
-    transform: translateY(calc(var(--fh, 0px) - 100%));
-    transition:
-      opacity 0.3s ease,
-      transform var(--dur, 4s) cubic-bezier(0.45, 0, 0.55, 1) 0.15s;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .work-card .work-scroll {
-    display: none;
-  }
-}
-
 /* Build (phones): the stage note fades up on every stage change */
 .build-note {
   animation: build-note 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
