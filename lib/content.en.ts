@@ -75,7 +75,7 @@ export const en: Content = {
         tags: ["Design", "Next.js", "Sanity"],
         media: "/cases/maina.webp",
         shots: ["/cases/maina.webp"],
-        full: { src: "/cases/maina-full.webp", w: 720, h: 1929 },
+        full: { src: "/cases/maina-full.webp", w: 720, h: 1937 },
         url: null,
         status: "Live project",
         result: "[RESULT]",
