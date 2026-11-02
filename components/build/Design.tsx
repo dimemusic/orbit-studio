@@ -196,7 +196,7 @@ export function DesignStage({ s }: { s: number }) {
               {[VI, CY, GR].map((c, i) => (
                 <span
                   key={c}
-                  className="grid size-5 place-items-center rounded-full border-2 border-[#0a0d15] text-[9px] font-bold normal-case tracking-normal text-[#05070d]"
+                  className="flex size-5 items-center justify-center rounded-full text-[10px] font-bold normal-case leading-none tracking-normal text-[#05070d] ring-2 ring-[#0a0d15]"
                   style={{ background: c }}
                 >
                   {D.team[i].name[0]}
