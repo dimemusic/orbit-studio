@@ -24,7 +24,7 @@ const DARK = new Set(["000000", "181717", "FFFFFF"]);
 
 /**
  * «Стек технологій» under the cases (asked, Nov 2026, from a reference with grouped logo rows): a title + lead,
- * then one row per group on hairlines: group name left, logo tiles (mark + name) right. Marks are grey at rest
+ * then one row per group on hairlines: group name left, logo tiles (mark + name) right. Marks are always
  * in their brand colour, static (asked: no hover change). Only tools the studio really uses (WORK.stack, DRAFT).
  */
 export function Stack() {
