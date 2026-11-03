@@ -261,6 +261,7 @@ p {
   .tg-aurora, .tg-violet { --tc: #a78bfa; }
   .tg-teal { --tc: #2dd4bf; }
   .tg-amber { --tc: #fb7185; } /* work: coral (was amber) */
+  .tg-ice { --tc: #5aa2ff; } /* FAQ: blue (between violet pricing and turquoise contact) */
 
   /* ---------- buttons ---------- */
   /* a shade deeper than --blue so white button text passes WCAG AA (4.6:1; #3d8bff gave 3.3:1) */

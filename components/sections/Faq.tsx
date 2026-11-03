@@ -8,11 +8,11 @@ import { RevealWords } from "../ui/RevealWords";
 /**
  * Frequently asked questions (FAQ in the content files; numbers follow the price list). Shown on the home page and on
  * every service page; the same Q&A go into FAQPage JSON-LD (JsonLd.tsx), which is what search and AI answers quote.
- * Questions on hairlines, one open at a time is not enforced; the first one starts open.
+ * Centred, questions on hairlines, all closed at first (asked), blue accent word.
  */
 export function Faq({ id = "faq" }: { id?: string }) {
   const { FAQ } = useContent();
-  const [open, setOpen] = useState<Set<number>>(() => new Set([0]));
+  const [open, setOpen] = useState<Set<number>>(() => new Set()); // all closed (asked)
   const toggle = (i: number) =>
     setOpen((prev) => {
       const next = new Set(prev);
@@ -22,9 +22,9 @@ export function Faq({ id = "faq" }: { id?: string }) {
     });
 
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="relative flex w-full flex-col px-gutter pb-12 pt-24">
-      <h2 id={`${id}-title`} className="legible relative z-[1] text-mega font-semibold">
-        <RevealWords text={FAQ.title[0]} accent={FAQ.title[1]} tone="teal" />
+    <section id={id} aria-labelledby={`${id}-title`} className="relative flex w-full flex-col items-center px-gutter pb-12 pt-24">
+      <h2 id={`${id}-title`} className="legible relative z-[1] text-center text-mega font-semibold">
+        <RevealWords text={FAQ.title[0]} accent={FAQ.title[1]} tone="ice" />
       </h2>
       <ul className="relative z-[1] mt-12 w-full max-w-[56rem] border-b border-white/[0.09]">
         {FAQ.items.map((item, i) => {
