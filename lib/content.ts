@@ -254,6 +254,7 @@ export const SERVICES = {
     step: (i: number, n: number) => `Крок ${i} з ${n}`,
     back: "Назад",
     next: "Далі",
+    reset: "Скинути відповіді",
     skip: "Пропустити й написати своїми словами",
     questions: [
       { id: "type", q: "Який сайт потрібен?", short: "Тип сайту" },

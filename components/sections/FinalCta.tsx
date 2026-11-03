@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Check, CheckCircle, EnvelopeSimple, PencilSimple, TelegramLogo } from "@phosphor-icons/react/dist/ssr";
+import { ArrowCounterClockwise, ArrowLeft, ArrowRight, Check, CheckCircle, EnvelopeSimple, PencilSimple, TelegramLogo } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
@@ -200,6 +200,15 @@ function ContactForm() {
       .finally(() => setBusy(false));
   }
 
+  /** «Скинути відповіді»: back to the first question, the typed name / contact stay */
+  function clearAnswers() {
+    setAnswers(Array(N).fill(null));
+    setMessage("");
+    setSubmitted(false);
+    setTouched({});
+    go(0);
+  }
+
   function reset() {
     setAnswers(Array(N).fill(null));
     setStep(0);
@@ -292,6 +301,12 @@ function ContactForm() {
                     <button type="button" onClick={() => go(step - 1)} className={linkBtn}>
                       <ArrowLeft size={16} aria-hidden="true" />
                       {Q.back}
+                    </button>
+                  )}
+                  {step > 0 && (
+                    <button type="button" onClick={clearAnswers} className={linkBtn}>
+                      <ArrowCounterClockwise size={16} aria-hidden="true" />
+                      {Q.reset}
                     </button>
                   )}
                   {estimate && (
@@ -414,10 +429,16 @@ function ContactForm() {
                     {busy ? CONTACT.sending : CONTACT.submit}
                   </Button>
                   <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-                    <button type="button" onClick={() => go(answers[0] === null ? 0 : N - 1)} className={linkBtn}>
-                      <ArrowLeft size={16} aria-hidden="true" />
-                      {Q.back}
-                    </button>
+                    <span className="flex flex-wrap gap-x-6">
+                      <button type="button" onClick={() => go(answers[0] === null ? 0 : N - 1)} className={linkBtn}>
+                        <ArrowLeft size={16} aria-hidden="true" />
+                        {Q.back}
+                      </button>
+                      <button type="button" onClick={clearAnswers} className={linkBtn}>
+                        <ArrowCounterClockwise size={16} aria-hidden="true" />
+                        {Q.reset}
+                      </button>
+                    </span>
                     <p className="text-xs text-grey">
                       {CONTACT.consent}{" "}
                       <a href={BRAND.privacyHref} className="text-body underline decoration-white/20 underline-offset-2 transition-colors hover:text-fg">

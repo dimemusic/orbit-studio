@@ -191,6 +191,7 @@ export const en: Content = {
       step: (i: number, n: number) => `Step ${i} of ${n}`,
       back: "Back",
       next: "Next",
+      reset: "Reset answers",
       skip: "Skip and write in your own words",
       questions: [
         { id: "type", q: "What kind of site do you need?", short: "Type of site" },
