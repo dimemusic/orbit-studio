@@ -4,7 +4,7 @@ import { siFigma, siGithub, siHtml5, siJavascript, siNextdotjs, siReact, siResen
 import type { CSSProperties } from "react";
 import { useContent } from "../Lang";
 
-/** brand marks (Simple Icons, single-path SVGs); hover shows the brand colour, dark brands stay white */
+/** brand marks (Simple Icons, single-path SVGs), always in the brand colour (asked: static, no hover change); dark brands are white */
 const ICON = {
   figma: siFigma,
   nextjs: siNextdotjs,
@@ -25,7 +25,7 @@ const DARK = new Set(["000000", "181717", "FFFFFF"]);
 /**
  * «Стек технологій» under the cases (asked, Nov 2026, from a reference with grouped logo rows): a title + lead,
  * then one row per group on hairlines: group name left, logo tiles (mark + name) right. Marks are grey at rest
- * and take their brand colour on hover. Only tools the studio really uses (WORK.stack, DRAFT).
+ * in their brand colour, static (asked: no hover change). Only tools the studio really uses (WORK.stack, DRAFT).
  */
 export function Stack() {
   const { WORK } = useContent();
@@ -57,14 +57,14 @@ export function Stack() {
                   <li
                     key={t.id}
                     style={{ "--brand": hex } as CSSProperties}
-                    className="group/tech flex h-14 items-center gap-3 rounded-xl border border-white/[0.09] bg-white/[0.03] pl-4 pr-5 transition-colors duration-300 hover:border-white/20"
+                    className="flex h-14 items-center gap-3 rounded-xl border border-white/[0.09] bg-white/[0.03] pl-4 pr-5"
                   >
                     {icon && (
-                      <svg viewBox="0 0 24 24" aria-hidden="true" className="size-6 shrink-0 fill-[#8b919c] transition-colors duration-300 group-hover/tech:fill-[var(--brand)]">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" className="size-6 shrink-0 fill-[var(--brand)]">
                         <path d={icon.path} />
                       </svg>
                     )}
-                    <span className="text-sm font-medium text-body transition-colors duration-300 group-hover/tech:text-fg">{t.name}</span>
+                    <span className="text-sm font-medium text-fg">{t.name}</span>
                   </li>
                 );
               })}
