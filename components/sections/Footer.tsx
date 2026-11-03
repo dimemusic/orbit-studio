@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useContent } from "../Lang";
+import { SLUG } from "@/lib/services";
+import { useContent, useLang } from "../Lang";
 
 export function Footer() {
-  const { BRAND, FOOTER, NAV, UI } = useContent();
+  const { BRAND, FOOTER, NAV, UI, SERVICES } = useContent();
+  const base = useLang() === "en" ? "/en/" : "/";
   return (
     <footer className="card relative w-full overflow-hidden rounded-none border-x-0 border-b-0 px-gutter pb-10 pt-16 text-center shadow-none">
       <nav aria-label={UI.footerNav}>
@@ -26,6 +28,18 @@ export function Footer() {
               Email
             </a>
           </li>
+        </ul>
+      </nav>
+      {/* the service pages: links for visitors and for search engines */}
+      <nav aria-label={SERVICES.pages.crumb} className="mt-4">
+        <ul className="flex flex-wrap justify-center gap-x-8 gap-y-1">
+          {SERVICES.plans.map((p) => (
+            <li key={p.id}>
+              <Link href={`${base}${SLUG[p.id]}`} className="inline-block py-2 text-sm text-grey transition-colors hover:text-fg">
+                {p.name}
+              </Link>
+            </li>
+          ))}
         </ul>
       </nav>
 

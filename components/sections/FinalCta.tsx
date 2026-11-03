@@ -50,7 +50,8 @@ function Err({ id, children }: { id: string; children?: string }) {
  * changed; «Пропустити» jumps straight to writing in your own words. Two columns from xl, stacked below.
  * Sends to /api/contact (Resend); without the env keys the route answers 503 and the form points to Telegram / email.
  */
-export function FinalCta() {
+/** `preset` = plan index: on a service page the form opens with that type already picked, on the second question */
+export function FinalCta({ preset }: { preset?: number } = {}) {
   const { BRAND, CONTACT } = useContent();
   return (
     <section
@@ -96,7 +97,7 @@ export function FinalCta() {
         </div>
 
         {/* right: the form */}
-        <ContactForm />
+        <ContactForm preset={preset} />
       </div>
     </section>
   );
@@ -104,15 +105,15 @@ export function FinalCta() {
 
 const CHANNEL_ICON = { telegram: TelegramLogo, viber: ChatCircleDots, whatsapp: WhatsappLogo, phone: Phone, email: EnvelopeSimple } as const;
 
-function ContactForm() {
+function ContactForm({ preset }: { preset?: number }) {
   const { BRAND, CONTACT, SERVICES, UI } = useContent();
   const Q = SERVICES.quiz;
   const plans = SERVICES.plans;
   const uid = useId();
   const N = Q.questions.length; // answer steps; the last screen is N
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(preset === undefined ? 0 : 1);
   // answers[i] = option index (step 0: plan index, plans.length = «Інше»)
-  const [answers, setAnswers] = useState<(number | null)[]>(() => Array(N).fill(null));
+  const [answers, setAnswers] = useState<(number | null)[]>(() => Array.from({ length: N }, (_, i) => (i === 0 && preset !== undefined ? preset : null)));
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [channelId, setChannelId] = useState("telegram");

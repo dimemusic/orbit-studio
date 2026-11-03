@@ -197,6 +197,42 @@ export const en: Content = {
       { name: "Admin panel for an existing site", price: "from $200" },
       { name: "Support after launch", price: "from $50 / mo" },
     ],
+    pages: {
+      crumb: "Services",
+      home: "Home",
+      included: "What's included",
+      process: "How we work",
+      others: "Other services",
+      about: "All about this service",
+      priceLabel: "Price",
+      termLabel: "Timeline",
+      items: {
+        card: {
+          h1: ["Business card", "website design."],
+          title: "Business card website, turnkey, from $400",
+          description: "Turnkey business card website: design, mobile-friendly layout, request form and basic SEO. From $400, from 5 days. MaxArt Digital studio, Lviv, Ukraine.",
+          intro: "A few pages about you and your services, so clients find you on Google, see your prices and leave a request right away. Design, development and launch, turnkey.",
+        },
+        landing: {
+          h1: ["Landing page", "design."],
+          title: "Landing page, turnkey, from $600",
+          description: "Turnkey landing page: custom design, scroll animations, request form and analytics, fast loading. From $600, from 7 days. MaxArt Digital, Lviv, Ukraine.",
+          intro: "One page for a product, service or ad campaign: a clear offer, benefits and a request form. Custom design, scroll animations and fast loading.",
+        },
+        shop: {
+          h1: ["Online store", "development."],
+          title: "Online store, turnkey, from $1000",
+          description: "Turnkey online store: catalogue with filters, cart, payment and delivery, admin panel for products and prices. From $1000. MaxArt Digital, Lviv, Ukraine.",
+          intro: "A catalogue with filters, cart, checkout, payment and delivery. You update products, prices and photos yourself in the admin panel, no developer needed.",
+        },
+        corp: {
+          h1: ["Corporate website", "development."],
+          title: "Corporate website, turnkey",
+          description: "Corporate website development: sections for several lines of business, services or product catalogue, several languages and an admin panel. From $1200.",
+          intro: "A site for a company with several lines of business: separate sections, a services or product catalogue, several languages and an admin panel for your team.",
+        },
+      },
+    },
     quiz: {
       step: (i: number, n: number) => `Step ${i} of ${n}`,
       back: "Back",
@@ -221,6 +257,20 @@ export const en: Content = {
       freePh: "For example: we have a logo and photos, need online booking",
       from: "from",
     },
+  },
+
+  // keep the numbers in step with SERVICES.plans / extras above
+  FAQ: {
+    title: ["Frequently asked", "questions."],
+    items: [
+      { q: "How much does a website cost?", a: "Business card site from $400, landing page from $600, online store from $1,000, corporate website from $1,200. The exact amount is fixed after the brief." },
+      { q: "How long does it take?", a: "Business card site from 5 days, landing page from 7 days, online store and corporate website from 14 days. We agree on the timing of every stage in advance." },
+      { q: "Can I edit the site myself?", a: "Yes. We connect an admin panel: you change texts, prices, photos and products yourself, no developer needed. It is included in online stores and corporate websites and costs from $200 for other sites." },
+      { q: "What happens after launch?", a: "We hand over every access and show you how to run the site. If you need support, it costs from $50 a month." }, // DRAFT
+      { q: "Can I order design only?", a: "Yes. Design without development costs from $250, an admin panel for an existing site from $200." },
+      { q: "What do you build with?", a: "Design in Figma, websites on Next.js, React and TypeScript, admin panels on Sanity, hosting on Vercel. The sites open fast on phones and are easy for Google to index." },
+      { q: "Do you only work in Lviv?", a: "The studio is in Lviv, but we work online with clients from all over Ukraine: the brief, approvals and handover happen in a messenger or on a call." }, // DRAFT
+    ],
   },
 
   CONTACT: {

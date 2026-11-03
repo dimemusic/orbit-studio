@@ -1,10 +1,12 @@
 "use client";
 
-import { Buildings, CheckCircle, IdentificationCard, Rocket, ShoppingBag, X } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRight, Buildings, CheckCircle, IdentificationCard, Rocket, ShoppingBag, X } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Plan } from "@/lib/content";
 import { PACKAGE_PICK } from "../home";
-import { useContent } from "../Lang";
+import { SLUG } from "@/lib/services";
+import Link from "next/link";
+import { useContent, useLang } from "../Lang";
 import { ACCENT, type Accent } from "../ui/accent";
 import { Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
@@ -116,6 +118,7 @@ export function Pricing() {
 /** «Детальніше»: what the plan includes, price + term, and «Обговорити проєкт» with that website type picked in the form */
 function PlanDialog({ open, onClose, returnFocus }: { open: number | null; onClose: () => void; returnFocus: React.RefObject<HTMLElement | null> }) {
   const { SERVICES, CONTACT, CTA, UI } = useContent();
+  const lang = useLang();
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const d = dialog.current;
@@ -174,9 +177,17 @@ function PlanDialog({ open, onClose, returnFocus }: { open: number | null; onClo
               </li>
             ))}
           </ul>
+          {/* the plan's own page (SEO): more detail, process, FAQ */}
+          <Link
+            href={`${lang === "en" ? "/en/" : "/"}${SLUG[p.id]}`}
+            className="mt-6 inline-flex items-center gap-2 rounded-full py-1 text-sm font-medium text-blue transition-colors hover:text-fg"
+          >
+            {SERVICES.pages.about}
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
           <Button
             href="#contact"
-            className="mt-10 w-full"
+            className="mt-8 w-full"
             onClick={() => {
               window.dispatchEvent(new CustomEvent(PACKAGE_PICK, { detail: [CONTACT.chips[open!]] }));
               onClose();
