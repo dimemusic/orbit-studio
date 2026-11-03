@@ -9,7 +9,6 @@ import { ACCENT, type Accent } from "../ui/accent";
 import { Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { RevealWords } from "../ui/RevealWords";
-import { Quiz } from "./Quiz";
 
 const delay = (i: number) => ({ "--d": `${i * 80}ms` }) as CSSProperties;
 const ICON = { card: IdentificationCard, landing: Rocket, shop: ShoppingBag, corp: Buildings } as const;
@@ -108,8 +107,6 @@ export function Pricing() {
           </span>
         ))}
       </p>
-
-      <Quiz />
 
       <PlanDialog open={open} onClose={() => setOpen(null)} returnFocus={opener} />
     </section>

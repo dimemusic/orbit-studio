@@ -1,24 +1,23 @@
 "use client";
 
-import { Check, CheckCircle, EnvelopeSimple, TelegramLogo } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeft, ArrowRight, Check, CheckCircle, EnvelopeSimple, PencilSimple, TelegramLogo } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
-import { PACKAGE_PICK, QUIZ_SEND } from "../home";
+import { PACKAGE_PICK } from "../home";
 import { Button } from "../ui/Button";
 import { RevealWords } from "../ui/RevealWords";
 
-type Field = "name" | "contact" | "needs";
+type Field = "name" | "contact";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const TG = /^@?[a-zA-Z0-9_]{4,32}$/;
 
-function validate(CONTACT: Content["CONTACT"], v: { name: string; contact: string; needs: Set<string> }) {
+function validate(CONTACT: Content["CONTACT"], v: { name: string; contact: string }) {
   const e: Partial<Record<Field, string>> = {};
   if (v.name.trim().length < 2) e.name = CONTACT.errName;
   const c = v.contact.trim();
   if (!EMAIL.test(c) && !TG.test(c)) e.contact = CONTACT.errContact;
-  if (v.needs.size === 0) e.needs = CONTACT.errNeeds;
   return e;
 }
 
@@ -40,8 +39,10 @@ function Err({ id, children }: { id: string; children?: string }) {
 
 
 /**
- * Last screen: request form. Left: stacked title, one line, direct contacts. Right: the form in one .card
- * («Що потрібно» chips = website types, prefilled from a pricing card). Two columns from xl, stacked below.
+ * Last screen: request form. Left: stacked title, one line, direct contacts. Right: the form in one .card, built as
+ * a short step-by-step request (asked, Nov 2026: the price quiz became the form): type of site → admin panel →
+ * support → launch → «Ваш запит» (summary with a rough price, free text, name + contact, send). Any step can be
+ * changed; «Пропустити» jumps straight to writing in your own words. Two columns from xl, stacked below.
  * Sends to /api/contact (Resend); without the env keys the route answers 503 and the form points to Telegram / email.
  */
 export function FinalCta() {
@@ -97,73 +98,99 @@ export function FinalCta() {
 }
 
 function ContactForm() {
-  const { BRAND, CONTACT } = useContent();
+  const { BRAND, CONTACT, SERVICES, UI } = useContent();
+  const Q = SERVICES.quiz;
+  const plans = SERVICES.plans;
   const uid = useId();
+  const N = Q.questions.length; // answer steps; the last screen is N
+  const [step, setStep] = useState(0);
+  // answers[i] = option index (step 0: plan index, plans.length = «Інше»)
+  const [answers, setAnswers] = useState<(number | null)[]>(() => Array(N).fill(null));
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
-  const [needs, setNeeds] = useState<Set<string>>(() => new Set());
   // an error is visible only after the field was left (blur) or after a submit attempt
   const [touched, setTouched] = useState<Partial<Record<Field, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
-  const refs = { name: useRef<HTMLInputElement>(null), contact: useRef<HTMLInputElement>(null), needs: useRef<HTMLInputElement>(null) };
+  const refs = { name: useRef<HTMLInputElement>(null), contact: useRef<HTMLInputElement>(null) };
   const doneRef = useRef<HTMLHeadingElement>(null);
+  const stepRef = useRef<HTMLLegendElement>(null);
   const trap = useRef<HTMLInputElement>(null);
+  const moved = useRef(false);
 
   useEffect(() => {
     if (done) doneRef.current?.focus({ preventScroll: true });
   }, [done]);
+  // keyboard / screen reader users land on the new question (not on first render)
+  useEffect(() => {
+    if (moved.current) stepRef.current?.focus({ preventScroll: true });
+  }, [step]);
+  const go = (i: number) => {
+    moved.current = true;
+    setStep(i);
+  };
 
-  // «Обрати» on a pricing card brings that website type along
+  // «Обговорити проєкт» in a plan's dialog brings that website type along and skips the first question
   useEffect(() => {
     const onPick = (e: Event) => {
-      const picked = (e as CustomEvent<string[]>).detail;
-      if (picked?.length) setNeeds(new Set(picked));
-    };
-    // the price quiz brings the type AND its answers (into the message field)
-    const onQuiz = (e: Event) => {
-      const d = (e as CustomEvent<{ needs: string[]; message: string }>).detail;
-      if (d?.needs?.length) setNeeds(new Set(d.needs));
-      if (d?.message) setMessage(d.message);
+      const picked = (e as CustomEvent<string[]>).detail?.[0];
+      const i = picked ? CONTACT.chips.indexOf(picked) : -1;
+      if (i < 0) return;
+      setAnswers((a) => [i, ...a.slice(1)]);
+      setStep((s) => (s === 0 ? 1 : s));
     };
     window.addEventListener(PACKAGE_PICK, onPick);
-    window.addEventListener(QUIZ_SEND, onQuiz);
-    return () => {
-      window.removeEventListener(PACKAGE_PICK, onPick);
-      window.removeEventListener(QUIZ_SEND, onQuiz);
-    };
-  }, []);
+    return () => window.removeEventListener(PACKAGE_PICK, onPick);
+  }, [CONTACT.chips]);
 
-  const errors = validate(CONTACT, { name, contact, needs });
+  // the rough price: only numbers already on the page (plan price / days + the extras)
+  const typeIdx = answers[0];
+  const plan = typeIdx !== null && typeIdx < plans.length ? plans[typeIdx] : null;
+  const hasAdmin = plan ? plan.id === "shop" || plan.id === "corp" : false;
+  const adminAdd = answers[1] === 0 && !hasAdmin ? Q.adminPrice : 0;
+  const support = answers[2] === 0;
+  const money = (v: number) => `${SERVICES.currency}${v.toLocaleString(UI.locale)}`;
+  const estimate = plan
+    ? `${Q.from} ${money(plan.price + adminAdd)}${support ? ` + ${money(Q.supportPrice)} ${Q.perMonth}` : ""} · ${SERVICES.term} ${UI.days(plan.days)}`
+    : "";
+
+  const options = (i: number): string[] =>
+    i === 0 ? [...plans.map((p) => p.name), CONTACT.chips[CONTACT.chips.length - 1]] : ((Q.questions[i] as { options?: string[] }).options ?? []);
+  const answer = (i: number) => (answers[i] === null ? "" : options(i)[answers[i]!]);
+  const pick = (i: number, v: number) => setAnswers((a) => a.map((x, k) => (k === i ? v : x)));
+
+  const errors = validate(CONTACT, { name, contact });
   const shown = (f: Field) => (submitted || touched[f] ? errors[f] : undefined);
   const touch = (f: Field) => () => setTouched((t) => ({ ...t, [f]: true }));
-
-  const toggle = (chip: string) =>
-    setNeeds((prev) => {
-      const next = new Set(prev);
-      if (next.has(chip)) next.delete(chip);
-      else next.add(chip);
-      return next;
-    });
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
+    if (step < N) {
+      if (answers[step] !== null) go(step + 1);
+      return;
+    }
     setSubmitted(true);
-    const first = (["name", "contact", "needs"] as const).find((f) => errors[f]);
+    const first = (["name", "contact"] as const).find((f) => errors[f]);
     if (first) {
       refs[first].current?.focus();
       return;
     }
+    const chip = plan ? CONTACT.chips[typeIdx!] : CONTACT.chips[CONTACT.chips.length - 1];
+    const lines = [
+      ...(estimate ? [`${Q.estimate}: ${estimate}`] : []),
+      ...Q.questions.flatMap((q, i) => (answers[i] === null ? [] : [`${q.short}: ${answer(i)}`])),
+      ...(message.trim() ? ["", message.trim()] : []),
+    ];
     setBusy(true);
     setFailed(false);
     fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), contact: contact.trim(), message: message.trim(), needs: [...needs], website: trap.current?.value ?? "" }),
+      body: JSON.stringify({ name: name.trim(), contact: contact.trim(), message: lines.join("\n"), needs: [chip], website: trap.current?.value ?? "" }),
     })
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));
@@ -174,15 +201,19 @@ function ContactForm() {
   }
 
   function reset() {
+    setAnswers(Array(N).fill(null));
+    setStep(0);
     setName("");
     setContact("");
     setMessage("");
     setFailed(false);
-    setNeeds(new Set());
     setTouched({});
     setSubmitted(false);
     setDone(false);
   }
+
+  const total = N + 1;
+  const linkBtn = "inline-flex items-center gap-2 rounded-full py-2 text-sm font-medium text-body transition-colors hover:text-fg";
 
   return (
     <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0 max-w-[40rem] xl:max-w-none">
@@ -194,126 +225,213 @@ function ContactForm() {
             onSubmit={onSubmit}
             inert={done}
             aria-hidden={done}
-            className={`flex flex-col gap-5 transition-[opacity,transform] duration-500 ease-[var(--ease)] [grid-area:1/1] ${
+            className={`flex min-w-0 flex-col transition-[opacity,transform] duration-500 ease-[var(--ease)] [grid-area:1/1] ${
               done ? "pointer-events-none translate-y-2 opacity-0" : ""
             }`}
           >
             {/* honeypot for bots: off-screen, out of the tab order and hidden from assistive tech */}
             <input ref={trap} name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
-            <fieldset className="flex flex-col gap-3" aria-describedby={`${uid}-needs-err`}>
-              <legend className="mb-3 text-base font-medium text-fg">{CONTACT.needs}</legend>
-              <div className="flex flex-wrap gap-2">
-                {CONTACT.chips.map((chip, i) => {
-                  const on = needs.has(chip);
-                  return (
-                    <label key={chip} className="min-w-0 cursor-pointer">
-                      <input
-                        ref={i === 0 ? refs.needs : undefined}
-                        type="checkbox"
-                        name="needs"
-                        value={chip}
-                        checked={on}
-                        onChange={() => {
-                          toggle(chip);
-                          setTouched((t) => ({ ...t, needs: true }));
-                        }}
-                        className="peer sr-only"
-                      />
-                      <span
-                        className={`flex h-11 items-center gap-2 whitespace-nowrap rounded-full border px-4 text-sm font-medium transition-colors duration-300 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
-                          on ? "border-blue bg-blue/12 text-fg" : "border-white/15 text-body hover:border-white/30 hover:text-fg"
+
+            {/* progress */}
+            <div className="flex items-center gap-4">
+              <span className="shrink-0 text-sm text-grey">{Q.step(step + 1, total)}</span>
+              <span className="flex flex-1 gap-2" aria-hidden="true">
+                {Array.from({ length: total }, (_, i) => (
+                  <span
+                    key={i}
+                    className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i < step || (i < N && answers[i] !== null) ? "bg-blue" : i === step ? "bg-white/30" : "bg-white/[0.08]"}`}
+                  />
+                ))}
+              </span>
+            </div>
+
+            {step < N ? (
+              <fieldset key={step} className="quiz-step mt-6 min-w-0">
+                <legend ref={stepRef} tabIndex={-1} className="text-title font-medium text-fg outline-none">
+                  {Q.questions[step].q}
+                </legend>
+                <div className={`mt-6 grid gap-3 ${options(step).length > 3 ? "sm:grid-cols-2" : ""}`}>
+                  {options(step).map((o, v) => {
+                    const on = answers[step] === v;
+                    return (
+                      <label
+                        key={o}
+                        className={`flex min-h-14 cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-base transition-colors duration-200 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-blue ${
+                          on ? "border-blue bg-blue/12 text-fg" : "border-white/[0.12] text-body hover:border-white/25 hover:text-fg"
                         }`}
                       >
+                        <input type="radio" name={`q-${Q.questions[step].id}`} className="sr-only" checked={on} onChange={() => pick(step, v)} />
                         <span
                           aria-hidden="true"
-                          className={`grid size-4 shrink-0 place-items-center rounded-full transition-colors duration-300 ${on ? "bg-blue text-white" : "border border-white/25"}`}
+                          className={`grid size-5 shrink-0 place-items-center rounded-full ${on ? "bg-blue text-white" : "border border-white/30"}`}
                         >
-                          {on && <Check size={10} weight="bold" />}
+                          {on && <Check size={12} weight="bold" />}
                         </span>
-                        {chip}
-                      </span>
+                        {o}
+                      </label>
+                    );
+                  })}
+                </div>
+                {step === 1 && hasAdmin && <p className="mt-4 text-sm text-grey">{Q.adminIncluded}</p>}
+                {step === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAnswers((a) => [a[0] ?? plans.length, ...a.slice(1)]);
+                      go(N);
+                    }}
+                    className={`${linkBtn} mt-4`}
+                  >
+                    <PencilSimple size={16} aria-hidden="true" />
+                    {Q.skip}
+                  </button>
+                )}
+
+                <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-white/[0.08] pt-6">
+                  {step > 0 && (
+                    <button type="button" onClick={() => go(step - 1)} className={linkBtn}>
+                      <ArrowLeft size={16} aria-hidden="true" />
+                      {Q.back}
+                    </button>
+                  )}
+                  {estimate && (
+                    <p className="min-w-0 text-sm text-body" aria-live="polite">
+                      <span className="text-grey">{Q.estimate}: </span>
+                      <span className="font-semibold text-fg tabular-nums">{estimate}</span>
+                    </p>
+                  )}
+                  <Button
+                    type="submit"
+                    size="nav"
+                    variant={answers[step] !== null ? "primary" : "secondary"}
+                    disabled={answers[step] === null}
+                    className={`ml-auto w-36 gap-2 ${answers[step] === null ? "cursor-not-allowed opacity-50" : ""}`}
+                  >
+                    {Q.next}
+                    <ArrowRight size={16} aria-hidden="true" />
+                  </Button>
+                </div>
+              </fieldset>
+            ) : (
+              <div key="final" className="quiz-step mt-6 flex min-w-0 flex-col gap-5">
+                <h3 className="text-title font-medium text-fg">
+                  <span ref={stepRef as React.RefObject<HTMLSpanElement | null>} tabIndex={-1} className="outline-none">
+                    {Q.final}
+                  </span>
+                </h3>
+
+                {/* the answers, each changeable, and the rough price */}
+                {answers.some((a) => a !== null) && (
+                  <dl className="flex flex-col divide-y divide-white/[0.08] rounded-xl border border-white/[0.09]">
+                    {Q.questions.map((q, i) =>
+                      answers[i] === null ? null : (
+                        <div key={q.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 text-sm sm:grid-cols-[7rem_minmax(0,1fr)_auto]">
+                          <dt className="text-grey">{q.short}</dt>
+                          <dd className="col-start-1 text-fg sm:col-start-2 sm:row-start-1">{answer(i)}</dd>
+                          <button
+                            type="button"
+                            onClick={() => go(i)}
+                            className="col-start-2 row-start-1 justify-self-end rounded-full text-sm font-medium text-blue transition-colors hover:text-fg sm:col-start-3"
+                          >
+                            {Q.change}
+                          </button>
+                        </div>
+                      ),
+                    )}
+                    {estimate && (
+                      <div className="flex flex-col gap-1 px-4 py-4">
+                        <div className="flex items-baseline justify-between gap-4">
+                          <dt className="text-sm text-grey">{Q.estimate}</dt>
+                          <dd className="text-base font-semibold text-fg tabular-nums">{estimate}</dd>
+                        </div>
+                        <p className="text-xs text-grey">{Q.note}</p>
+                      </div>
+                    )}
+                  </dl>
+                )}
+
+                <div className="flex flex-col gap-2">
+                  <label htmlFor={`${uid}-message`} className={labelCls}>
+                    {Q.free}
+                  </label>
+                  <textarea
+                    id={`${uid}-message`}
+                    name="message"
+                    rows={3}
+                    maxLength={1200}
+                    placeholder={Q.freePh}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className={`${inputCls} h-auto resize-none py-3`}
+                  />
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={`${uid}-name`} className={labelCls}>
+                      {CONTACT.name}
                     </label>
-                  );
-                })}
+                    <input
+                      ref={refs.name}
+                      id={`${uid}-name`}
+                      name="name"
+                      autoComplete="name"
+                      placeholder={CONTACT.namePh}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      onBlur={touch("name")}
+                      aria-invalid={!!shown("name")}
+                      aria-describedby={`${uid}-name-err`}
+                      className={inputCls}
+                    />
+                    <Err id={`${uid}-name-err`}>{shown("name")}</Err>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor={`${uid}-contact`} className={labelCls}>
+                      {CONTACT.contact}
+                    </label>
+                    <input
+                      ref={refs.contact}
+                      id={`${uid}-contact`}
+                      name="contact"
+                      autoComplete="email"
+                      placeholder={CONTACT.contactPh}
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                      onBlur={touch("contact")}
+                      aria-invalid={!!shown("contact")}
+                      aria-describedby={`${uid}-contact-err`}
+                      className={inputCls}
+                    />
+                    <Err id={`${uid}-contact-err`}>{shown("contact")}</Err>
+                  </div>
+                </div>
+
+                <div className="h-px bg-white/[0.08]" aria-hidden="true" />
+
+                <div className="flex flex-col gap-3">
+                  <Button type="submit" disabled={busy} className="w-full disabled:cursor-progress disabled:opacity-80">
+                    {busy ? CONTACT.sending : CONTACT.submit}
+                  </Button>
+                  <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+                    <button type="button" onClick={() => go(answers[0] === null ? 0 : N - 1)} className={linkBtn}>
+                      <ArrowLeft size={16} aria-hidden="true" />
+                      {Q.back}
+                    </button>
+                    <p className="text-xs text-grey">
+                      {CONTACT.consent}{" "}
+                      <a href={BRAND.privacyHref} className="text-body underline decoration-white/20 underline-offset-2 transition-colors hover:text-fg">
+                        {CONTACT.consentLink}
+                      </a>
+                    </p>
+                  </div>
+                  {failed && (
+                    <p role="alert" className="text-sm text-[#fb7185]">
+                      {CONTACT.errSend}
+                    </p>
+                  )}
+                </div>
               </div>
-              <Err id={`${uid}-needs-err`}>{shown("needs")}</Err>
-            </fieldset>
-
-            <div className="h-px bg-white/[0.08]" aria-hidden="true" />
-
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="flex flex-col gap-2">
-                <label htmlFor={`${uid}-name`} className={labelCls}>
-                  {CONTACT.name}
-                </label>
-                <input
-                  ref={refs.name}
-                  id={`${uid}-name`}
-                  name="name"
-                  autoComplete="name"
-                  placeholder={CONTACT.namePh}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={touch("name")}
-                  aria-invalid={!!shown("name")}
-                  aria-describedby={`${uid}-name-err`}
-                  className={inputCls}
-                />
-                <Err id={`${uid}-name-err`}>{shown("name")}</Err>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor={`${uid}-contact`} className={labelCls}>
-                  {CONTACT.contact}
-                </label>
-                <input
-                  ref={refs.contact}
-                  id={`${uid}-contact`}
-                  name="contact"
-                  autoComplete="email"
-                  placeholder={CONTACT.contactPh}
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  onBlur={touch("contact")}
-                  aria-invalid={!!shown("contact")}
-                  aria-describedby={`${uid}-contact-err`}
-                  className={inputCls}
-                />
-                <Err id={`${uid}-contact-err`}>{shown("contact")}</Err>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label htmlFor={`${uid}-message`} className={labelCls}>
-                {CONTACT.message}
-              </label>
-              <textarea
-                id={`${uid}-message`}
-                name="message"
-                rows={4}
-                maxLength={1500}
-                placeholder={CONTACT.messagePh}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className={`${inputCls} h-auto resize-none py-3 `}
-              />
-            </div>
-
-
-            <div className="h-px bg-white/[0.08]" aria-hidden="true" />
-
-            <Button type="submit" disabled={busy} className="w-full disabled:cursor-progress disabled:opacity-80">
-              {busy ? CONTACT.sending : CONTACT.submit}
-            </Button>
-            <p className="-mt-1 text-center text-xs text-grey">
-              {CONTACT.consent}{" "}
-              <a href={BRAND.privacyHref} className="text-body underline decoration-white/20 underline-offset-2 transition-colors hover:text-fg">
-                {CONTACT.consentLink}
-              </a>
-            </p>
-            {failed && (
-              <p role="alert" className="text-sm text-[#fb7185]">
-                {CONTACT.errSend}
-              </p>
             )}
           </form>
 
@@ -331,11 +449,7 @@ function ContactForm() {
                   {CONTACT.thanksTitle}
                 </h3>
                 <p className="mt-3 max-w-[26rem] text-base text-body">{CONTACT.thanksText}</p>
-                <button
-                  type="button"
-                  onClick={reset}
-                  className="mt-6 rounded-full py-1 text-sm font-medium text-blue transition-colors hover:text-fg"
-                >
+                <button type="button" onClick={reset} className="mt-6 rounded-full py-1 text-sm font-medium text-blue transition-colors hover:text-fg">
                   {CONTACT.again}
                 </button>
               </>

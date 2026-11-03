@@ -11,6 +11,3 @@ export const homeNum = (id: HomeId) => String(HOME_SECTIONS.findIndex((s) => s.i
 
 /** pricing card «Обрати» → contact form chips (detail = chip labels; CONTACT.chips[i] = SERVICES.plans[i]) */
 export const PACKAGE_PICK = "package-pick";
-
-/** price quiz «Обговорити на дзвінку» → contact form: detail = { needs: chip labels, message: the quiz summary } */
-export const QUIZ_SEND = "quiz-send";
