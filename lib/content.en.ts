@@ -192,6 +192,7 @@ export const en: Content = {
       lead: "Four questions. We show a rough price and timeline, and talk through the details on a call.",
       step: (i: number, n: number) => `Step ${i} of ${n}`,
       back: "Back",
+      next: "Next",
       restart: "Start over",
       unsure: "Not sure yet",
       questions: [

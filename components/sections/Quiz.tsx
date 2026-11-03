@@ -57,8 +57,7 @@ export function Quiz() {
     const next = [...answers];
     next[i] = v;
     setAnswers(next);
-    // move on by itself; the last answer stays on screen
-    if (i < n - 1) window.setTimeout(() => setStep(i + 1), 180);
+    // no auto-advance (asked): a misclick can be changed, «Далі» moves on
   };
 
   const send = () => {
@@ -78,8 +77,8 @@ export function Quiz() {
   const opts = options(step);
 
   return (
-    <div data-reveal className="relative z-[1] mt-16 w-full min-w-0">
-      <div className="card grid w-full min-w-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+    <div data-reveal className="relative z-[1] mx-auto mt-16 w-full min-w-0 max-w-[68rem]">
+      <div className="card grid w-full min-w-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
         {/* left: one question at a time */}
         <div className="flex min-w-0 flex-col p-6 sm:p-8 lg:p-10">
           <h3 className="text-headline font-semibold text-fg">
@@ -152,15 +151,17 @@ export function Quiz() {
                 {Q.back}
               </button>
             )}
-            {step < n - 1 && answers[step] !== null && (
-              <button
-                type="button"
+            {step < n - 1 && (
+              <Button
+                size="nav"
+                variant={answers[step] !== null ? "primary" : "secondary"}
+                disabled={answers[step] === null}
                 onClick={() => setStep(step + 1)}
-                className="inline-flex items-center gap-2 rounded-full py-2 text-sm font-medium text-body transition-colors hover:text-fg"
+                className={`order-last ml-auto w-36 gap-2 ${answers[step] === null ? "cursor-not-allowed opacity-50" : ""}`}
               >
-                {Q.step(step + 2, n)}
+                {Q.next}
                 <ArrowRight size={16} aria-hidden="true" />
-              </button>
+              </Button>
             )}
             {done && (
               <button

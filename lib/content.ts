@@ -256,6 +256,7 @@ export const SERVICES = {
     lead: "Чотири питання. Покажемо орієнтовну ціну й термін, а деталі обговоримо на дзвінку.",
     step: (i: number, n: number) => `Крок ${i} з ${n}`,
     back: "Назад",
+    next: "Далі",
     restart: "Пройти ще раз",
     unsure: "Ще не знаю",
     questions: [
