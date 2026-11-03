@@ -1,31 +1,14 @@
 "use client";
 
-import { siFigma, siGithub, siHtml5, siJavascript, siNextdotjs, siReact, siResend, siSanity, siTailwindcss, siTypescript, siVercel } from "simple-icons";
+import Image from "next/image";
 import type { CSSProperties } from "react";
 import { useContent } from "../Lang";
 
-/** brand marks (Simple Icons, single-path SVGs), always in the brand colour (asked: static, no hover change); dark brands are white */
-const ICON = {
-  figma: siFigma,
-  nextjs: siNextdotjs,
-  react: siReact,
-  typescript: siTypescript,
-  javascript: siJavascript,
-  tailwind: siTailwindcss,
-  html: siHtml5,
-  sanity: siSanity,
-  vercel: siVercel,
-  github: siGithub,
-  resend: siResend,
-} as const;
-
-/** too dark to read on the page background: keep these white on hover */
-const DARK = new Set(["000000", "181717", "FFFFFF"]);
-
 /**
  * «Стек технологій» under the cases (asked, Nov 2026, from a reference with grouped logo rows): a title + lead,
- * then one row per group on hairlines: group name left, logo tiles (mark + name) right. Marks are always
- * in their brand colour, static (asked: no hover change). Only tools the studio really uses (WORK.stack, DRAFT).
+ * then one row per group on hairlines: group name left, logo tiles (mark + name) right. Marks are the full-colour
+ * original logos (public/stack/<id>.svg, from devicon; asked: like the real logos, static, no hover). Black marks
+ * (Vercel, GitHub, Resend) are recoloured white so they read on the dark page. Only tools the studio really uses (WORK.stack, DRAFT).
  */
 export function Stack() {
   const { WORK } = useContent();
@@ -51,19 +34,9 @@ export function Stack() {
             <p className="legible text-title font-medium text-fg">{g.title}</p>
             <ul className="flex flex-wrap gap-3">
               {g.items.map((t) => {
-                const icon = ICON[t.id as keyof typeof ICON];
-                const hex = icon && !DARK.has(icon.hex.toUpperCase()) ? `#${icon.hex}` : "#f5f7fa";
                 return (
-                  <li
-                    key={t.id}
-                    style={{ "--brand": hex } as CSSProperties}
-                    className="flex h-14 items-center gap-3 rounded-xl border border-white/[0.09] bg-white/[0.03] pl-4 pr-5"
-                  >
-                    {icon && (
-                      <svg viewBox="0 0 24 24" aria-hidden="true" className="size-6 shrink-0 fill-[var(--brand)]">
-                        <path d={icon.path} />
-                      </svg>
-                    )}
+                  <li key={t.id} className="flex h-14 items-center gap-3 rounded-xl border border-white/[0.09] bg-white/[0.03] pl-4 pr-5">
+                    <Image src={`/stack/${t.id}.svg`} alt="" width={24} height={24} unoptimized className="size-6 shrink-0" />
                     <span className="text-sm font-medium text-fg">{t.name}</span>
                   </li>
                 );
