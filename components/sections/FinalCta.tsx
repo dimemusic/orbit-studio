@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowCounterClockwise, ArrowLeft, ArrowRight, Check, CheckCircle, EnvelopeSimple, PencilSimple, TelegramLogo } from "@phosphor-icons/react/dist/ssr";
+import { ArrowCounterClockwise, ArrowLeft, ArrowRight, ChatCircleDots, Check, CheckCircle, EnvelopeSimple, PencilSimple, Phone, TelegramLogo, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
@@ -12,12 +12,17 @@ type Field = "name" | "contact";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const TG = /^@?[a-zA-Z0-9_]{4,32}$/;
+/** 9 to 15 digits, with optional +, spaces, dashes, brackets */
+const isPhone = (c: string) => /^\+?[\d\s()-]+$/.test(c) && (c.match(/\d/g)?.length ?? 0) >= 9 && (c.match(/\d/g)?.length ?? 0) <= 15;
 
-function validate(CONTACT: Content["CONTACT"], v: { name: string; contact: string }) {
+type Channel = Content["CONTACT"]["channels"][number];
+
+function validate(CONTACT: Content["CONTACT"], v: { name: string; contact: string; channel: Channel }) {
   const e: Partial<Record<Field, string>> = {};
   if (v.name.trim().length < 2) e.name = CONTACT.errName;
   const c = v.contact.trim();
-  if (!EMAIL.test(c) && !TG.test(c)) e.contact = CONTACT.errContact;
+  const ok = v.channel.id === "email" ? EMAIL.test(c) : v.channel.id === "telegram" ? TG.test(c) || isPhone(c) : isPhone(c);
+  if (!ok) e.contact = v.channel.err;
   return e;
 }
 
@@ -97,6 +102,8 @@ export function FinalCta() {
   );
 }
 
+const CHANNEL_ICON = { telegram: TelegramLogo, viber: ChatCircleDots, whatsapp: WhatsappLogo, phone: Phone, email: EnvelopeSimple } as const;
+
 function ContactForm() {
   const { BRAND, CONTACT, SERVICES, UI } = useContent();
   const Q = SERVICES.quiz;
@@ -108,6 +115,8 @@ function ContactForm() {
   const [answers, setAnswers] = useState<(number | null)[]>(() => Array(N).fill(null));
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [channelId, setChannelId] = useState("telegram");
+  const channel = CONTACT.channels.find((c) => c.id === channelId) ?? CONTACT.channels[0];
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
   // an error is visible only after the field was left (blur) or after a submit attempt
@@ -162,7 +171,7 @@ function ContactForm() {
   const answer = (i: number) => (answers[i] === null ? "" : options(i)[answers[i]!]);
   const pick = (i: number, v: number) => setAnswers((a) => a.map((x, k) => (k === i ? v : x)));
 
-  const errors = validate(CONTACT, { name, contact });
+  const errors = validate(CONTACT, { name, contact, channel });
   const shown = (f: Field) => (submitted || touched[f] ? errors[f] : undefined);
   const touch = (f: Field) => () => setTouched((t) => ({ ...t, [f]: true }));
 
@@ -190,7 +199,7 @@ function ContactForm() {
     fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), contact: contact.trim(), message: lines.join("\n"), needs: [chip], website: trap.current?.value ?? "" }),
+      body: JSON.stringify({ name: name.trim(), contact: contact.trim(), channel: channel.label, message: lines.join("\n"), needs: [chip], website: trap.current?.value ?? "" }),
     })
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));
@@ -381,6 +390,40 @@ function ContactForm() {
                   />
                 </div>
 
+                {/* where to reach them: the contact field below follows this choice */}
+                <fieldset className="flex min-w-0 flex-col gap-3">
+                  <legend className={`${labelCls} mb-3`}>{CONTACT.channelLabel}</legend>
+                  <div className="flex flex-wrap gap-2">
+                    {CONTACT.channels.map((c) => {
+                      const on = c.id === channelId;
+                      const Icon = CHANNEL_ICON[c.id as keyof typeof CHANNEL_ICON] ?? ChatCircleDots;
+                      return (
+                        <label key={c.id} className="cursor-pointer">
+                          <input
+                            type="radio"
+                            name="channel"
+                            value={c.id}
+                            checked={on}
+                            onChange={() => {
+                              setChannelId(c.id);
+                              setTouched((t) => ({ ...t, contact: false }));
+                            }}
+                            className="peer sr-only"
+                          />
+                          <span
+                            className={`flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors duration-200 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-blue ${
+                              on ? "border-blue bg-blue/12 text-fg" : "border-white/15 text-body hover:border-white/30 hover:text-fg"
+                            }`}
+                          >
+                            <Icon size={16} weight={on ? "fill" : "light"} aria-hidden="true" />
+                            {c.label}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div className="flex flex-col gap-2">
                     <label htmlFor={`${uid}-name`} className={labelCls}>
@@ -403,14 +446,16 @@ function ContactForm() {
                   </div>
                   <div className="flex flex-col gap-2">
                     <label htmlFor={`${uid}-contact`} className={labelCls}>
-                      {CONTACT.contact}
+                      {channel.field}
                     </label>
                     <input
                       ref={refs.contact}
                       id={`${uid}-contact`}
                       name="contact"
-                      autoComplete="email"
-                      placeholder={CONTACT.contactPh}
+                      type={channel.id === "email" ? "email" : channel.id === "telegram" ? "text" : "tel"}
+                      inputMode={channel.id === "email" ? "email" : channel.id === "telegram" ? "text" : "tel"}
+                      autoComplete={channel.id === "email" ? "email" : channel.id === "telegram" ? "off" : "tel"}
+                      placeholder={channel.ph}
                       value={contact}
                       onChange={(e) => setContact(e.target.value)}
                       onBlur={touch("contact")}

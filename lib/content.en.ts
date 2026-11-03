@@ -232,6 +232,14 @@ export const en: Content = {
     sending: "Sending…",
     errName: "Tell us how to call you.",
     errContact: "Enter your Telegram (@username) or email.",
+    channelLabel: "How do you prefer to talk?",
+    channels: [
+      { id: "telegram", label: "Telegram", field: "Your Telegram", ph: "@username or phone number", err: "Enter your @username or phone number." },
+      { id: "viber", label: "Viber", field: "Viber number", ph: "+380 67 123 45 67", err: "Enter a phone number, e.g. +380 67 123 45 67." },
+      { id: "whatsapp", label: "WhatsApp", field: "WhatsApp number", ph: "+380 67 123 45 67", err: "Enter a phone number, e.g. +380 67 123 45 67." },
+      { id: "phone", label: "Call", field: "Phone number", ph: "+380 67 123 45 67", err: "Enter a phone number, e.g. +380 67 123 45 67." },
+      { id: "email", label: "Email", field: "Your email", ph: "name@mail.com", err: "Enter an email, e.g. name@mail.com." },
+    ],
     errNeeds: "Pick at least one option.",
     errSend: "Couldn't send it. Message us on Telegram or by email.",
     thanksTitle: "Thank you!",
@@ -359,7 +367,7 @@ export const en: Content = {
         id: "data",
         title: "What data we receive",
         body: [
-          "When you send the request form, we receive your name, your Telegram or email for our reply, the type of website you are interested in and the project description, if you wrote one. When you write to us on Telegram or by email, we receive what you sent, plus your messenger profile details or email address.",
+          "When you send the request form, we receive your name, the way you prefer to be contacted (Telegram, Viber, WhatsApp, a call or email) and your username, phone number or email for our reply, the type of website, your answers to the form questions and the project description, if you wrote one. When you write to us on Telegram or by email, we receive what you sent, plus your messenger profile details or email address.",
           "When you open the site, the hosting automatically records technical request data: IP address, browser type and request time. These are standard server logs; we do not use them to identify you.",
           "We do not ask for or collect passwords, payment or other sensitive data. Providing data is voluntary, but without a name and a contact we cannot reply to you.",
         ],

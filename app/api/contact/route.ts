@@ -20,6 +20,7 @@ export async function POST(req: Request) {
   if (str(body.website, 200)) return NextResponse.json({ ok: true });
   const name = str(body.name, 120);
   const contact = str(body.contact, 160);
+  const channel = str(body.channel, 30);
   const message = str(body.message, 1500);
   const needs = Array.isArray(body.needs) ? body.needs.filter((n): n is string => typeof n === "string").slice(0, 6) : [];
   if (name.length < 2 || contact.length < 4 || needs.length === 0) {
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
   const html = `
     <h2>Нова заявка з сайту</h2>
     <p><b>Ім'я:</b> ${esc(name)}</p>
-    <p><b>Контакт:</b> ${esc(contact)}</p>
+    <p><b>Контакт:</b> ${esc(contact)}${channel ? ` (${esc(channel)})` : ""}</p>
     <p><b>Потрібно:</b> ${needs.map(esc).join(", ")}</p>
     ${message ? `<p><b>Про проєкт:</b><br>${esc(message).replace(/\n/g, "<br>")}</p>` : ""}`;
 
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
     body: JSON.stringify({
       from: process.env.CONTACT_FROM || "MaxArt Digital <onboarding@resend.dev>",
       to: [to],
-      subject: `Заявка: ${name} · ${needs.join(", ")}`,
+      subject: `Заявка: ${name} · ${needs.join(", ")}${channel ? ` · ${channel}` : ""}`,
       html,
       ...(contact.includes("@") && contact.includes(".") ? { reply_to: contact } : {}),
     }),
