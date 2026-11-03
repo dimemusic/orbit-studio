@@ -89,6 +89,17 @@ export const WORK = {
   /** plain start · accent end (in the active case's colour) */
   title: ["З чим ми", "працюємо."],
   listLabel: "Проєкти",
+  /** «Стек технологій» under the cases: only tools we really use (DRAFT: add / remove as the stack changes) */
+  stack: {
+    title: "Стек технологій.",
+    lead: "На чому робимо дизайн, сайти й адмін-панелі.",
+    groups: [
+      { title: "Дизайн", items: [{ id: "figma", name: "Figma" }] },
+      { title: "Розробка", items: [{ id: "nextjs", name: "Next.js" }, { id: "react", name: "React" }, { id: "typescript", name: "TypeScript" }, { id: "javascript", name: "JavaScript" }, { id: "tailwind", name: "Tailwind CSS" }, { id: "html", name: "HTML5" }] },
+      { title: "Адмін-панель", items: [{ id: "sanity", name: "Sanity" }] },
+      { title: "Запуск і сервіси", items: [{ id: "vercel", name: "Vercel" }, { id: "github", name: "GitHub" }, { id: "resend", name: "Resend" }] },
+    ],
+  },
   /** link in the section header */
   more: "Обговорити проєкт",
   /** closing row of the list */

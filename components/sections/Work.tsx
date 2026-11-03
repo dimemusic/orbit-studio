@@ -9,6 +9,7 @@ import { Tag } from "../ui/Bits";
 import { Button } from "../ui/Button";
 import { DeviceShot } from "../ui/DeviceShot";
 import { RevealWords } from "../ui/RevealWords";
+import { Stack } from "./Stack";
 
 /**
  * Work: one full screen (lg+), header + 4 case cards in a row (2 on tablets, 1 on phones).
@@ -62,8 +63,8 @@ export function Work() {
         ))}
       </ul>
 
-      {/* reserved empty space under the cases (asked, Nov 2026) */}
-      <div aria-hidden="true" className="h-80 w-full" />
+      {/* tech stack under the cases (asked, Nov 2026) */}
+      <Stack />
 
       <CaseDialog open={open} onClose={() => setOpen(null)} returnFocus={opener} />
     </section>

@@ -49,6 +49,16 @@ export const en: Content = {
     label: "Our work",
     title: ["What we", "build."],
     listLabel: "Projects",
+    stack: {
+      title: "Our tech stack.",
+      lead: "What we use for design, websites and admin panels.",
+      groups: [
+        { title: "Design", items: [{ id: "figma", name: "Figma" }] },
+        { title: "Development", items: [{ id: "nextjs", name: "Next.js" }, { id: "react", name: "React" }, { id: "typescript", name: "TypeScript" }, { id: "javascript", name: "JavaScript" }, { id: "tailwind", name: "Tailwind CSS" }, { id: "html", name: "HTML5" }] },
+        { title: "Admin panel", items: [{ id: "sanity", name: "Sanity" }] },
+        { title: "Launch and services", items: [{ id: "vercel", name: "Vercel" }, { id: "github", name: "GitHub" }, { id: "resend", name: "Resend" }] },
+      ],
+    },
     more: "Discuss a project",
     next: {
       name: "Your website could be here",
