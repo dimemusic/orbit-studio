@@ -62,19 +62,8 @@ export function Work() {
         ))}
       </ul>
 
-      {/* text under the cases: how we approach a project (asked: plain text, not pills / cards) */}
-      <div className="relative z-[1] mt-24 grid w-full min-w-0 gap-x-16 gap-y-8 border-t border-white/[0.09] pt-12 lg:grid-cols-2">
-        <p data-reveal className="legible max-w-[36rem] text-headline font-semibold text-fg">
-          {WORK.about.lead}
-        </p>
-        <div className="flex max-w-[40rem] flex-col gap-6">
-          {WORK.about.paras.map((t, i) => (
-            <p key={i} data-reveal style={{ "--d": `${80 + i * 80}ms` } as CSSProperties} className="legible text-lead text-body">
-              {t}
-            </p>
-          ))}
-        </div>
-      </div>
+      {/* reserved empty space under the cases (asked, Nov 2026) */}
+      <div aria-hidden="true" className="h-80 w-full" />
 
       <CaseDialog open={open} onClose={() => setOpen(null)} returnFocus={opener} />
     </section>

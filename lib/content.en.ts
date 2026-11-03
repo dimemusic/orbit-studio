@@ -49,14 +49,6 @@ export const en: Content = {
     label: "Our work",
     title: ["What we", "build."],
     listLabel: "Projects",
-    about: {
-      lead: "Every site is built for a specific business goal, not from a template.", // DRAFT
-      paras: [
-        "First we work out who your customers are and what they should do on the site: order, book or leave a request. Structure, copy and design follow from that.", // DRAFT
-        "We build on Next.js, so the site opens fast on a phone and is easy for Google to index. You change texts, prices and photos yourself in the admin panel, no developer needed.", // DRAFT
-        "After launch we hand over every access and show you how to run it all. If anything goes wrong, we're a message away.", // DRAFT
-      ],
-    },
     more: "Discuss a project",
     next: {
       name: "Your website could be here",
