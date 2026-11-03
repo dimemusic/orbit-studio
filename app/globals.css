@@ -819,3 +819,8 @@ html {
     animation: none;
   }
 }
+
+/* price quiz (Pricing): each new question slides in */
+.quiz-step { animation: quiz-in 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes quiz-in { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .quiz-step { animation: none; } }

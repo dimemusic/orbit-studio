@@ -4,7 +4,7 @@ import { Check, CheckCircle, EnvelopeSimple, TelegramLogo } from "@phosphor-icon
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
-import { PACKAGE_PICK } from "../home";
+import { PACKAGE_PICK, QUIZ_SEND } from "../home";
 import { Button } from "../ui/Button";
 import { RevealWords } from "../ui/RevealWords";
 
@@ -123,8 +123,18 @@ function ContactForm() {
       const picked = (e as CustomEvent<string[]>).detail;
       if (picked?.length) setNeeds(new Set(picked));
     };
+    // the price quiz brings the type AND its answers (into the message field)
+    const onQuiz = (e: Event) => {
+      const d = (e as CustomEvent<{ needs: string[]; message: string }>).detail;
+      if (d?.needs?.length) setNeeds(new Set(d.needs));
+      if (d?.message) setMessage(d.message);
+    };
     window.addEventListener(PACKAGE_PICK, onPick);
-    return () => window.removeEventListener(PACKAGE_PICK, onPick);
+    window.addEventListener(QUIZ_SEND, onQuiz);
+    return () => {
+      window.removeEventListener(PACKAGE_PICK, onPick);
+      window.removeEventListener(QUIZ_SEND, onQuiz);
+    };
   }, []);
 
   const errors = validate(CONTACT, { name, contact, needs });
