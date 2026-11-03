@@ -309,6 +309,21 @@ p {
   text-shadow: 0 1px 24px rgb(5 7 13 / 0.85);
 }
 
+/* dark reading veil behind long text (privacy, asked): page colour, feathered on all four sides into the stars.
+   Its own static layer, mask only (no filter); never put it on a .card. */
+.reading-veil {
+  background: rgb(5 7 13 / 0.9);
+  -webkit-mask:
+    linear-gradient(90deg, transparent, #000 16rem, #000 calc(100% - 16rem), transparent),
+    linear-gradient(180deg, transparent, #000 12rem, #000 calc(100% - 12rem), transparent);
+  -webkit-mask-composite: source-in;
+  mask:
+    linear-gradient(90deg, transparent, #000 16rem, #000 calc(100% - 16rem), transparent),
+    linear-gradient(180deg, transparent, #000 12rem, #000 calc(100% - 12rem), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
 /* scroll reveal: html.js is set before paint, RevealRoot sets data-in (an attribute React never overwrites) */
 .js [data-reveal] {
   opacity: 0;

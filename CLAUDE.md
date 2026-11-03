@@ -40,7 +40,7 @@ We sell design, website development and admin panels, ideally as one package. **
 - **Never use the Unbounded font.** Font: Geologica (next/font, Latin + Cyrillic), display 600 with negative tracking.
 - **No arbitrary breakpoints** (`min-[1100px]:` sorts before `md:`). Use rem breakpoints from `@theme`: `xs` 25rem, `nav` 68.75rem, `wide` 90rem (plus Tailwind's).
 - No max-width container: sections are full-bleed with `px-gutter` (24 / 32 md / 48 lg / 64 xl / 80 2xl); only text measures are limited (in rem, never `ch`).
-- Dark only. The star canvas covers the whole viewport; no vignette, overlay, frame or opaque section background on top of it.
+- Dark only. The star canvas covers the whole viewport; no vignette, overlay, frame or opaque section background on top of it. One exception (asked, Nov 2026): `.reading-veil` behind the privacy text, page colour at .9 feathered on all four sides into the stars (mask, no filter).
 - **No gradients** (Oct 2026): key words in headings are one solid colour per section via `<G tone>` (`--tc`): hero / intro / pricing violet `#a78bfa`, Build intro + contact turquoise `#2dd4bf`, work coral `#fb7185` (class `tg-amber`). `.card-pro` border and the intro underline are solid blue.
 
 ### Banned
