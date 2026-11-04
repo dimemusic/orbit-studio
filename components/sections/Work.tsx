@@ -167,7 +167,12 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
       {c && (
         <div className="case-panel card overflow-hidden text-left">
           <div className="relative aspect-[16/8] max-h-[42vh] w-full border-b border-white/[0.07] bg-bg">
-            <DeviceShot src={c.media} color={c.color} variant="monitor" sizes="620px" />
+            {c.photo ? (
+              // the finished site photographed on a laptop in its setting (asked, Nov 2026)
+              <Image src={c.photo} alt={`${c.name}: ${c.type}`} fill quality={88} sizes="(min-width: 1024px) 960px, 100vw" className="object-cover" />
+            ) : (
+              <DeviceShot src={c.media} color={c.color} variant="monitor" sizes="620px" />
+            )}
             <button
               type="button"
               onClick={hide}

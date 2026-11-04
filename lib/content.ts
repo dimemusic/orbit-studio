@@ -71,6 +71,8 @@ export type Case = {
   shots: string[];
   /** full-page screenshot (720px wide) that scrolls inside the Work card on hover; null = static cover */
   full: { src: string; w: number; h: number } | null;
+  /** photo of the finished site in a real setting (laptop mockup) for the case window; null = the old monitor mockup */
+  photo: string | null;
   /** live project link, null when there is none (yet) */
   url: string | null;
   status: string;
@@ -96,8 +98,8 @@ export const WORK = {
     groups: [
       { title: "Дизайн", items: [{ id: "figma", name: "Figma" }] },
       { title: "Розробка", items: [{ id: "nextjs", name: "Next.js" }, { id: "react", name: "React" }, { id: "typescript", name: "TypeScript" }, { id: "javascript", name: "JavaScript" }, { id: "tailwind", name: "Tailwind CSS" }, { id: "html", name: "HTML5" }] },
-      { title: "Адмін-панель", items: [{ id: "sanity", name: "Sanity" }] },
-      { title: "Запуск і сервіси", items: [{ id: "vercel", name: "Vercel" }, { id: "github", name: "GitHub" }, { id: "resend", name: "Resend" }] },
+      { title: "Адмін-панель", items: [{ id: "sanity", name: "Sanity" }, { id: "wordpress", name: "WordPress" }, { id: "shopify", name: "Shopify" }] },
+      { title: "Запуск і сервіси", items: [{ id: "vercel", name: "Vercel" }] },
     ],
   },
   /** link in the section header */
@@ -129,6 +131,7 @@ export const WORK = {
       media: "/cases/maina.webp",
       shots: ["/cases/maina.webp"],
       full: { src: "/cases/maina-page.webp", w: 1440, h: 3874 },
+      photo: "/cases/maina-mockup.webp",
       url: null,
       status: "Живий проєкт",
       result: "[РЕЗУЛЬТАТ]",
@@ -154,6 +157,7 @@ export const WORK = {
       media: "/cases/avtoban-hero.webp",
       shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
       full: { src: "/cases/avtoban-page.webp", w: 1440, h: 4646 },
+      photo: "/cases/avtoban-mockup.webp",
       url: "https://avtoban-trailers.vercel.app/",
       status: "UI/UX",
       result: "[РЕЗУЛЬТАТ]",
@@ -179,6 +183,7 @@ export const WORK = {
       media: "/cases/biganskiy.webp",
       shots: ["/cases/biganskiy.webp"],
       full: { src: "/cases/biganskiy-page.webp", w: 1440, h: 7742 },
+      photo: "/cases/biganskiy-mockup.webp",
       url: "https://biganskiy-site.vercel.app",
       status: "Концепт",
       result: "[РЕЗУЛЬТАТ]",
@@ -204,6 +209,7 @@ export const WORK = {
       media: "/cases/krendel.webp",
       shots: ["/cases/krendel.webp"],
       full: null, // TODO: full-page shot once the site is online
+      photo: null, // TODO: Krendel mockup photo
       url: null,
       status: "Концепт",
       result: "[РЕЗУЛЬТАТ]",
