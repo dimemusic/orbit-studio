@@ -825,3 +825,53 @@ html {
 .quiz-step { animation: quiz-in 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
 @keyframes quiz-in { from { opacity: 0; transform: translateY(8px); } }
 @media (prefers-reduced-motion: reduce) { .quiz-step { animation: none; } }
+
+/* form sent: the ring draws itself round, fills violet, then the check is drawn left to right (FinalCta) */
+@property --ring {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 360deg;
+}
+.done-mark {
+  position: relative;
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+}
+.done-ring,
+.done-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+}
+.done-ring {
+  border: 2px solid #a78bfa;
+  -webkit-mask: conic-gradient(#000 var(--ring), transparent 0);
+  mask: conic-gradient(#000 var(--ring), transparent 0);
+  animation: done-ring 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+.done-fill {
+  background: #8b5cf6;
+  animation: done-fill 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+}
+.done-check {
+  position: relative;
+  color: #fff;
+  animation: done-check 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.8s both;
+}
+@keyframes done-ring {
+  from { --ring: 0deg; }
+  to { --ring: 360deg; }
+}
+@keyframes done-fill {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+@keyframes done-check {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .done-ring, .done-fill, .done-check { animation: none; }
+}

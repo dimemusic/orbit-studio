@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowCounterClockwise, ArrowLeft, ArrowRight, ChatCircleDots, Check, CheckCircle, EnvelopeSimple, PencilSimple, TelegramLogo, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import { ArrowCounterClockwise, ArrowLeft, ArrowRight, ChatCircleDots, Check, EnvelopeSimple, PencilSimple, TelegramLogo, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
@@ -529,11 +529,17 @@ function ContactForm({ preset }: { preset?: number }) {
           <div
             aria-live="polite"
             inert={!done}
-            className={`flex-col items-start ${done ? "flex animate-[quote-in_0.5s_var(--ease)_both]" : "hidden"}`}
+            className={`flex-col items-center py-4 text-center ${done ? "flex animate-[quote-in_0.5s_var(--ease)_both]" : "hidden"}`}
           >
             {done && (
               <>
-                <CheckCircle size={44} weight="fill" aria-hidden="true" className="animate-[quote-in_0.5s_var(--ease)_both] text-green" />
+                <span className="done-mark" aria-hidden="true">
+                  <span className="done-ring" />
+                  <span className="done-fill" />
+                  <svg className="done-check" width="30" height="30" viewBox="0 0 30 30" fill="none">
+                    <path d="M7 15.5l5.5 5.5L23.5 9.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
                 <h3 ref={doneRef} tabIndex={-1} className="mt-5 text-headline font-semibold outline-none">
                   {CONTACT.thanksTitle}
                 </h3>
