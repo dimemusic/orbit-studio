@@ -209,12 +209,49 @@ export const en: Content = {
     pages: {
       crumb: "Services",
       home: "Home",
-      included: "What's included",
       process: "How we work",
       others: "Other services",
       about: "All about this service",
       priceLabel: "Price",
       termLabel: "Timeline",
+      guides: {
+        card: [
+          {
+            title: "What a business card website is",
+            paras: [
+              "A small website, usually up to 5 pages, that briefly says who you are: what you do, what you offer, what it costs and how to reach you.",
+              "It works like a paper business card, only online. Someone hears about you from a friend or sees you on Instagram, opens the site and knows within a minute whether you are right for them. There is no cart, no user accounts and no other complex features, so it is quick to build and the least expensive type of website.",
+            ],
+          },
+          {
+            title: "Who it suits",
+            items: [
+              { title: "Experts and specialists", text: "Lawyers, accountants, psychologists, coaches, tutors: anyone chosen for their experience and trust." },
+              { title: "Craftspeople and local services", text: "Repairs, beauty, photography, custom furniture: when clients want to see your services, prices and examples of your work." },
+              { title: "Small businesses", text: "When you offer a few services and people need to find your contacts, address and hours quickly." },
+              { title: "Anyone working only on social media", text: "When you have an Instagram page but no place online that belongs only to you." },
+            ],
+          },
+          {
+            title: "What it is for",
+            items: [
+              { title: "To be found", text: "Many people look for services on Google, not on social media. Without a website you are almost invisible there." },
+              { title: "To be trusted", text: "A website of your own with clear services and contacts shows there is a real business behind the name." },
+              { title: "To keep everything in one place", text: "Services, prices and contacts live at one address. It is easy to send to a client, and you get fewer repeated questions in messengers." },
+              { title: "To get requests", text: "People leave their contacts in the form on the site and the request lands in your inbox." },
+            ],
+          },
+          {
+            title: "When a business card site is not enough",
+            paras: ["It is a good start, but it does not fit every job. If yours looks like one of these, a different type is the better choice from day one."],
+            items: [
+              { title: "Landing page", text: "You sell one product or service, or you are running ads.", to: "landing" },
+              { title: "Online store", text: "You need a catalogue, a cart and online orders.", to: "shop" },
+              { title: "Corporate website", text: "Your company has several lines of business, many pages or several languages.", to: "corp" },
+            ],
+          },
+        ],
+      },
       items: {
         card: {
           h1: ["Business card", "website design."],

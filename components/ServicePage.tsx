@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, CheckCircle } from "@phosphor-icons/react/dist/ssr";
+import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import type { Plan } from "@/lib/content";
@@ -13,8 +13,10 @@ import { Button } from "./ui/Button";
 
 /**
  * One SEO page per plan (/landing-page etc., same slug under /en): a keyword h1 with the city in the meta, the price
- * and timeline, what is included (the plan's features), how we work (the four film stages), the FAQ, the other
- * services, and the request form already set to this type. Copy: SERVICES.pages + the plan itself.
+ * and timeline, how we work (the four film stages), the FAQ, the other
+ * services, and the request form already set to this type. Copy: SERVICES.pages + the plan itself. A plan with
+ * SERVICES.pages.guides[id] also gets plain explainer rows under the hero (heading left, text right, on hairlines).
+ * The whole page sits in one centred 80rem container (asked; the only page with one).
  */
 export function ServicePage({ id }: { id: Plan["id"] }) {
   const { SERVICES, BUILD, CTA, UI, NAV } = useContent();
@@ -23,13 +25,14 @@ export function ServicePage({ id }: { id: Plan["id"] }) {
   const idx = SERVICES.plans.findIndex((p) => p.id === id);
   const plan = SERVICES.plans[idx];
   const pg = P.items[id];
+  const guide = P.guides[id];
   const home = lang === "en" ? "/en" : "/";
   const base = lang === "en" ? "/en/" : "/";
   const money = (v: number) => `${SERVICES.currency}${v.toLocaleString(UI.locale)}`;
   const delay = (i: number) => ({ "--d": `${i * 80}ms` }) as CSSProperties;
 
   return (
-    <>
+    <div className="mx-auto w-full max-w-[80rem]">
       {/* hero: what, for whom, price, timeline */}
       <section aria-labelledby="service-title" className="relative flex w-full flex-col px-gutter pb-12 pt-32 lg:pt-40">
         <nav aria-label={UI.crumbs} data-reveal data-in className="relative z-[1]">
@@ -79,30 +82,51 @@ export function ServicePage({ id }: { id: Plan["id"] }) {
         </div>
       </section>
 
-      {/* what is included */}
-      <section aria-labelledby="included-title" className="relative flex w-full flex-col px-gutter pb-12 pt-24">
-        <h2 id="included-title" className="legible relative z-[1] text-headline font-semibold text-fg">
-          {P.included}
-        </h2>
-        <ul className="relative z-[1] mt-8 grid w-full max-w-[56rem] gap-3 sm:grid-cols-2">
-          {plan.features.map((f, i) => (
-            <li key={f} data-reveal style={delay(i)} className="card flex items-center gap-3 p-5 text-base text-fg">
-              <CheckCircle size={22} weight="fill" aria-hidden="true" className="shrink-0 text-green" />
-              {f}
-            </li>
-          ))}
-        </ul>
-        <p data-reveal className="legible relative z-[1] mt-6 max-w-[44rem] text-base text-body">
-          {plan.for}
-        </p>
-      </section>
+      {/* what this type of site is, who it suits, what it gives */}
+      {guide && (
+        <div className="relative z-[1] flex w-full flex-col px-gutter pb-12 pt-24">
+          <div className="border-b border-white/[0.09]">
+            {guide.map((b, i) => (
+              <section key={b.title} aria-labelledby={`guide-${i}`} className="grid gap-x-8 gap-y-6 border-t border-white/[0.09] py-12 lg:grid-cols-2">
+                <h2 id={`guide-${i}`} data-reveal className="legible text-headline font-semibold text-fg">
+                  {b.title}
+                </h2>
+                <div data-reveal className="flex max-w-[44rem] flex-col gap-6">
+                  {b.paras?.map((t) => (
+                    <p key={t} className="legible text-lead text-body">
+                      {t}
+                    </p>
+                  ))}
+                  {b.items && (
+                    <ul className="flex flex-col gap-6">
+                      {b.items.map((t) => (
+                        <li key={t.title}>
+                          {t.to ? (
+                            <Link href={`${base}${SLUG[t.to]}`} className="legible inline-flex items-center gap-2 text-title font-medium text-fg transition-colors hover:text-blue">
+                              {t.title}
+                              <ArrowUpRight size={18} aria-hidden="true" />
+                            </Link>
+                          ) : (
+                            <p className="legible text-title font-medium text-fg">{t.title}</p>
+                          )}
+                          <p className="legible mt-1 text-base text-body">{t.text}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* how we work: the same four stages as the film on the home page */}
       <section aria-labelledby="process-title" className="relative flex w-full flex-col px-gutter pb-12 pt-24">
         <h2 id="process-title" className="legible relative z-[1] text-headline font-semibold text-fg">
           {P.process}
         </h2>
-        <ol className="relative z-[1] mt-8 w-full max-w-[56rem] border-b border-white/[0.09]">
+        <ol className="relative z-[1] mt-8 w-full border-b border-white/[0.09]">
           {BUILD.stages.map((s, i) => (
             <li key={s.id} data-reveal style={delay(i)} className="grid gap-x-8 gap-y-2 border-t border-white/[0.09] py-6 sm:grid-cols-[12rem_minmax(0,1fr)]">
               <p className="legible text-title font-medium" style={{ color: s.color }}>
@@ -144,6 +168,6 @@ export function ServicePage({ id }: { id: Plan["id"] }) {
       </section>
 
       <FinalCta preset={idx} />
-    </>
+    </div>
   );
 }
