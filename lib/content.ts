@@ -208,7 +208,7 @@ export const WORK = {
       tags: ["Дизайн", "Лендинг"],
       media: "/cases/zdorovo.webp",
       shots: ["/cases/zdorovo.webp"],
-      full: { src: "/cases/zdorovo-page.webp", w: 1440, h: 1636 }, // first screen only (Maksym's screenshot), the card scrolls to its end on hover
+      full: { src: "/cases/zdorovo-page.webp", w: 1440, h: 6897 },
       photo: "/cases/zdorovo-mockup.webp",
       url: "https://zdorovo.app/",
       status: "Запущено",
