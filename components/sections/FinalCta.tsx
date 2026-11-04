@@ -237,16 +237,14 @@ function ContactForm({ preset }: { preset?: number }) {
   return (
     <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0 max-w-[40rem] xl:max-w-none">
       <div className="card overflow-hidden text-left">
-        {/* form and thanks state share one grid cell, so the card never jumps */}
+        {/* the card hugs whichever state is shown: the form, or the short thanks after sending (asked) */}
         <div className="grid p-6 sm:p-10 wide:p-12">
           <form
             noValidate
             onSubmit={onSubmit}
             inert={done}
             aria-hidden={done}
-            className={`flex min-w-0 flex-col transition-[opacity,transform] duration-500 ease-[var(--ease)] [grid-area:1/1] ${
-              done ? "pointer-events-none translate-y-2 opacity-0" : ""
-            }`}
+            className={`min-w-0 flex-col ${done ? "hidden" : "flex"}`}
           >
             {/* honeypot for bots: off-screen, out of the tab order and hidden from assistive tech */}
             <input ref={trap} name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="sr-only" />
@@ -490,9 +488,7 @@ function ContactForm({ preset }: { preset?: number }) {
           <div
             aria-live="polite"
             inert={!done}
-            className={`flex flex-col items-start justify-center transition-[opacity,transform] duration-500 ease-[var(--ease)] [grid-area:1/1] ${
-              done ? "" : "pointer-events-none translate-y-2 opacity-0"
-            }`}
+            className={`flex-col items-start ${done ? "flex animate-[quote-in_0.5s_var(--ease)_both]" : "hidden"}`}
           >
             {done && (
               <>
