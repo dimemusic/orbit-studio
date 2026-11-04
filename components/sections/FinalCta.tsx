@@ -5,13 +5,13 @@ import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
 import { PACKAGE_PICK } from "../home";
+import { tgUsername } from "@/lib/telegram";
 import { Button } from "../ui/Button";
 import { RevealWords } from "../ui/RevealWords";
 
 type Field = "name" | "contact";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-const TG = /^@?[a-zA-Z0-9_]{4,32}$/;
 /** 9 to 15 digits, with optional +, spaces, dashes, brackets */
 const isPhone = (c: string) => /^\+?[\d\s()-]+$/.test(c) && (c.match(/\d/g)?.length ?? 0) >= 9 && (c.match(/\d/g)?.length ?? 0) <= 15;
 
@@ -21,7 +21,7 @@ function validate(CONTACT: Content["CONTACT"], v: { name: string; contact: strin
   const e: Partial<Record<Field, string>> = {};
   if (v.name.trim().length < 2) e.name = CONTACT.errName;
   const c = v.contact.trim();
-  const ok = v.channel.id === "email" ? EMAIL.test(c) : v.channel.id === "telegram" ? TG.test(c) || isPhone(c) : isPhone(c);
+  const ok = v.channel.id === "email" ? EMAIL.test(c) : v.channel.id === "telegram" ? !!tgUsername(c) || isPhone(c) : isPhone(c);
   if (!ok) e.contact = v.channel.err;
   return e;
 }
@@ -172,11 +172,36 @@ function ContactForm({ preset }: { preset?: number }) {
   const answer = (i: number) => (answers[i] === null ? "" : options(i)[answers[i]!]);
   const pick = (i: number, v: number) => setAnswers((a) => a.map((x, k) => (k === i ? v : x)));
 
+  // a Telegram @nick is also checked against Telegram itself (/api/tg-check), debounced while typing
+  const tgName = channel.id === "telegram" ? tgUsername(contact) : null;
+  type TgState = "checking" | "yes" | "no" | "unknown"; // unknown = Telegram did not answer: let it through
+  const [tg, setTg] = useState<{ u: string; state: TgState } | null>(null);
+  const checkTg = (u: string): Promise<TgState> => {
+    setTg({ u, state: "checking" });
+    return fetch(`/api/tg-check?u=${encodeURIComponent(u)}`)
+      .then((r) => r.json() as Promise<{ exists: boolean | null }>)
+      .then((d): TgState => (d.exists === true ? "yes" : d.exists === false ? "no" : "unknown"))
+      .catch((): TgState => "unknown")
+      .then((state) => {
+        setTg((t) => (t?.u === u ? { u, state } : t));
+        return state;
+      });
+  };
+  useEffect(() => {
+    if (!tgName) return;
+    const t = window.setTimeout(() => checkTg(tgName), 600);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tgName]);
+  const tgState = tgName && tg?.u === tgName ? tg.state : null; // null = not checked yet
+
   const errors = validate(CONTACT, { name, contact, channel });
-  const shown = (f: Field) => (submitted || touched[f] ? errors[f] : undefined);
+  if (!errors.contact && tgState === "no") errors.contact = CONTACT.tgMissing;
+  // «no such nick» shows at once, without waiting for the field to be left
+  const shown = (f: Field) => (submitted || touched[f] || (f === "contact" && tgState === "no") ? errors[f] : undefined);
   const touch = (f: Field) => () => setTouched((t) => ({ ...t, [f]: true }));
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
     if (step < N) {
@@ -189,6 +214,16 @@ function ContactForm({ preset }: { preset?: number }) {
       refs[first].current?.focus();
       return;
     }
+    // the nick was not checked yet (typed and sent at once): check now; «can't tell» lets it through
+    if (tgName && (tgState === null || tgState === "checking")) {
+      setBusy(true);
+      const state = await checkTg(tgName);
+      setBusy(false);
+      if (state === "no") {
+        refs.contact.current?.focus();
+        return;
+      }
+    }
     const chip = plan ? CONTACT.chips[typeIdx!] : CONTACT.chips[CONTACT.chips.length - 1];
     const lines = [
       ...(estimate ? [`${Q.estimate}: ${estimate}`] : []),
@@ -200,7 +235,7 @@ function ContactForm({ preset }: { preset?: number }) {
     fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), contact: contact.trim(), channel: channel.label, message: lines.join("\n"), needs: [chip], website: trap.current?.value ?? "" }),
+      body: JSON.stringify({ name: name.trim(), contact: tgName ? `@${tgName}` : contact.trim(), channel: channel.label, message: lines.join("\n"), needs: [chip], website: trap.current?.value ?? "" }),
     })
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));
@@ -448,6 +483,12 @@ function ContactForm({ preset }: { preset?: number }) {
                       className={inputCls}
                     />
                     <Err id={`${uid}-contact-err`}>{shown("contact")}</Err>
+                    {!shown("contact") && (tgState === "checking" || tgState === "yes") && (
+                      <p aria-live="polite" className={`flex items-center gap-1 text-sm ${tgState === "yes" ? "text-green" : "text-grey"}`}>
+                        {tgState === "yes" && <Check size={14} aria-hidden="true" />}
+                        {tgState === "yes" ? CONTACT.tgFound : CONTACT.tgChecking}
+                      </p>
+                    )}
                   </div>
                 </div>
 

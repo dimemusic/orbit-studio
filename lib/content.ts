@@ -383,12 +383,15 @@ export const CONTACT = {
   /** «Де зручніше зв'язатися?»: the one contact field below follows the chosen channel */
   channelLabel: "Де вам зручніше спілкуватися?",
   channels: [
-    { id: "telegram", label: "Telegram", field: "Ваш Telegram", ph: "@нік або номер телефону", err: "Вкажіть @нік або номер телефону." },
+    { id: "telegram", label: "Telegram", field: "Ваш Telegram", ph: "@нік або номер телефону", err: "Вкажіть @нік (5–32 символи: латиниця, цифри, _) або номер телефону." },
     { id: "viber", label: "Viber", field: "Номер у Viber", ph: "+380 67 123 45 67", err: "Вкажіть номер телефону, наприклад +380 67 123 45 67." },
     { id: "whatsapp", label: "WhatsApp", field: "Номер у WhatsApp", ph: "+380 67 123 45 67", err: "Вкажіть номер телефону, наприклад +380 67 123 45 67." },
     { id: "email", label: "Email", field: "Ваш email", ph: "name@mail.com", err: "Вкажіть email, наприклад name@mail.com." },
   ],
   errNeeds: "Оберіть хоча б один варіант.",
+  tgChecking: "Перевіряємо нік у Telegram…",
+  tgFound: "Акаунт у Telegram знайдено",
+  tgMissing: "Такого ніка в Telegram немає. Перевірте написання.",
   errSend: "Не вдалося надіслати. Напишіть нам у Telegram або на email.",
   thanksTitle: "Дякуємо!",
   thanksText: "Ми отримали заявку і напишемо вам протягом 24 годин.",
