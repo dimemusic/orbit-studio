@@ -150,28 +150,28 @@ export const en: Content = {
         ],
       },
       {
-        id: "krendel",
-        name: "Krendel",
-        kind: "Home bakery landing page", // DRAFT
+        id: "zdorovo",
+        name: "Zdorovo!",
+        kind: "Mobile app website", // DRAFT
         type: "Landing page",
-        did: ["Illustrated style", "UI design", "Responsive", "Development"], // DRAFT
-        text: "Landing page for a café with its own bakery, in a warm cartoon style. Menu and range, delivery and contacts: everything leads to an order or a visit.", // DRAFT
-        short: "Menu, delivery and contacts in a warm cartoon style: everything leads to an order.",
+        did: ["UI design", "Responsive", "Development"], // DRAFT
+        text: "Website for an app that scans a barcode and rates the product's ingredients at once. It explains how the score works, shows additives and allergens, and leads to the download.", // DRAFT
+        short: "Barcode scanner with an ingredient score: how it works, additives, allergens and the download.",
         tags: ["Design", "Landing page"],
-        media: "/cases/krendel.webp",
-        shots: ["/cases/krendel.webp"],
-        full: null,
-        photo: null, // TODO: Krendel mockup photo
-        url: null,
-        status: "Concept",
+        media: "/cases/zdorovo.webp",
+        shots: ["/cases/zdorovo.webp"],
+        full: null, // TODO: full-page shot (1440 wide) so the card scrolls on hover
+        photo: "/cases/zdorovo-mockup.webp",
+        url: "https://zdorovo.app/",
+        status: "Live",
         result: "[RESULT]",
-        color: "#22d3ee",
-        accent: "cyan",
-        task: "Convey the feel of home baking and bring people to order or visit the café.",
-        done: ["Illustrated style", "Menu and range", "Delivery section", "Contacts and map"],
+        color: "#6a9a2f",
+        accent: "green",
+        task: "Explain in a few lines what the app does and bring people to download it.",
+        done: ["Hero with a live score example", "«How it works» block", "Scoring method, additives and allergens", "App Store and Google Play buttons"],
         facts: [
-          { label: "Time", value: "5 days" },
-          { label: "Type", value: "Landing page concept" },
+          { label: "Type", value: "App website" },
+          { label: "Language", value: "Ukrainian" },
         ],
       },
     ] satisfies Case[],
