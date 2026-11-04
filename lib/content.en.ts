@@ -167,8 +167,14 @@ export const en: Content = {
         result: "[RESULT]",
         color: "#6a9a2f",
         accent: "green",
-        task: "Explain in a few lines what the app does and bring people to download it.",
-        done: ["Hero with a live score example", "«How it works» block", "Scoring method, additives and allergens", "App Store and Google Play buttons"],
+        task: "The app scans a barcode and shows in seconds how healthy a product is. The 0 to 100 score is based on Nutri-Score: it counts sugar, salt, saturated fat, calories, protein and fibre, and risky additives lower it separately. The app recognises the 14 regulated allergens, shows additives by risk level and suggests better alternatives from a base of over 100,000 products. The site had to explain all of this on one screen and bring people to the download.", // DRAFT: from the product's own page
+        done: [
+          "First screen with a live example: score, additives and better alternatives",
+          "A strip of real products with scores from 4 to 83",
+          "A three-step «How it works» flow built around the barcode",
+          "The scoring formula explained, plus allergens and additives by risk",
+          "A «Not in the database?» section and App Store and Google Play buttons",
+        ],
         facts: [
           { label: "Type", value: "App website" },
           { label: "Language", value: "Ukrainian" },
