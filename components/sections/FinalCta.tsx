@@ -3,7 +3,7 @@
 import { ArrowCounterClockwise, ArrowLeft, ArrowRight, ChatCircleDots, Check, EnvelopeSimple, PencilSimple, TelegramLogo, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Content } from "@/lib/content";
-import { useContent } from "../Lang";
+import { useContent, useLang } from "../Lang";
 import { PACKAGE_PICK } from "../home";
 import { tgUsername } from "@/lib/telegram";
 import { Button } from "../ui/Button";
@@ -107,6 +107,7 @@ const CHANNEL_ICON = { telegram: TelegramLogo, viber: ChatCircleDots, whatsapp: 
 
 function ContactForm({ preset }: { preset?: number }) {
   const { BRAND, CONTACT, SERVICES, UI } = useContent();
+  const lang = useLang();
   const Q = SERVICES.quiz;
   const plans = SERVICES.plans;
   const uid = useId();
@@ -235,7 +236,7 @@ function ContactForm({ preset }: { preset?: number }) {
     fetch("/api/contact", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), contact: tgName ? `@${tgName}` : contact.trim(), channel: channel.label, message: lines.join("\n"), needs: [chip], website: trap.current?.value ?? "" }),
+      body: JSON.stringify({ lang, name: name.trim(), contact: tgName ? `@${tgName}` : contact.trim(), channel: channel.label, message: lines.join("\n"), needs: [chip], website: trap.current?.value ?? "" }),
     })
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));

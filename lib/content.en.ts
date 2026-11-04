@@ -314,6 +314,7 @@ export const en: Content = {
     tgMissing: "There is no such Telegram username. Check the spelling.",
     errSend: "Couldn't send it. Message us on Telegram or by email.",
     thanksTitle: "Thank you!",
+    reply: "Hello, {name}! I'm a manager at MaxArt Digital. Thanks for your request on our site. Let's talk through the details: when is a good time for you?",
     thanksText: "We've got your request and will reply within 24 hours.",
     again: "Send another one",
     or: "Or message us directly",

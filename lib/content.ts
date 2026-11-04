@@ -400,6 +400,8 @@ export const CONTACT = {
   tgMissing: "Такого ніка в Telegram немає. Перевірте написання.",
   errSend: "Не вдалося надіслати. Напишіть нам у Telegram або на email.",
   thanksTitle: "Дякуємо!",
+  // the first message the manager sends (prefilled when «Відповісти» opens the chat); {name} = client's first name; no site type in it, plan names would need declension
+  reply: "Вітаю, {name}! Я менеджер MaxArt Digital. Дякую за вашу заявку на сайті. Давайте обговоримо деталі: коли вам зручно поспілкуватися?",
   thanksText: "Ми отримали заявку і напишемо вам протягом 24 годин.",
   again: "Надіслати ще одну",
   or: "Або напишіть напряму",

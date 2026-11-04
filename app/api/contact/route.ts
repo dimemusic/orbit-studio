@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import type { Lang } from "@/lib/content";
+import { contentFor } from "@/lib/i18n";
+import { tgUsername } from "@/lib/telegram";
 
 // Contact form → Telegram bot and / or email. Set in .env.local / Vercel env (either channel is enough):
 //   TELEGRAM_BOT_TOKEN – token from @BotFather
@@ -14,19 +17,31 @@ const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice
 
 type Lead = { name: string; contact: string; channel: string; message: string; needs: string[] };
 
-/** a one-tap way to answer: the Telegram profile, a WhatsApp / Viber chat or a mail draft */
-function replyLink({ contact, channel }: Lead): string | null {
-  const digits = contact.replace(/\D/g, "");
-  const ch = channel.toLowerCase();
-  if (contact.includes("@") && contact.includes(".")) return `mailto:${contact}`;
-  if (ch === "telegram") return contact.startsWith("@") || /[a-z]/i.test(contact) ? `https://t.me/${contact.replace(/^@/, "")}` : `https://t.me/+${digits}`;
-  if (ch === "whatsapp" && digits) return `https://wa.me/${digits}`;
-  if (ch === "viber" && digits) return `viber://chat?number=%2B${digits}`;
+/** the first message to the client, from CONTACT.reply (their language): «Вітаю, Дмитро! Я менеджер MaxArt Digital…» */
+function greeting(lead: Lead, lang: Lang) {
+  const first = lead.name.split(/\s+/)[0];
+  return contentFor(lang).CONTACT.reply.replace("{name}", first);
+}
+
+/**
+ * One-tap answer with the greeting already typed in. Telegram's inline buttons accept only https / tg:// links, so
+ * only Telegram (t.me) and WhatsApp (wa.me) get a button; Viber and email stay as plain text in the message.
+ */
+function replyLink(lead: Lead, text: string): string | null {
+  const digits = lead.contact.replace(/\D/g, "");
+  const q = encodeURIComponent(text);
+  const ch = lead.channel.toLowerCase();
+  if (ch === "telegram") {
+    const nick = tgUsername(lead.contact);
+    if (nick) return `https://t.me/${nick}?text=${q}`;
+    return digits ? `https://t.me/+${digits}?text=${q}` : null;
+  }
+  if (ch === "whatsapp" && digits) return `https://wa.me/${digits}?text=${q}`;
   return null;
 }
 
-async function toTelegram(lead: Lead, token: string, chats: string[]) {
-  const link = replyLink(lead);
+async function toTelegram(lead: Lead, lang: Lang, token: string, chats: string[]) {
+  const link = replyLink(lead, greeting(lead, lang));
   const text = [
     "🆕 <b>Нова заявка з сайту</b>",
     "",
@@ -36,22 +51,25 @@ async function toTelegram(lead: Lead, token: string, chats: string[]) {
     ...(lead.message ? ["", esc(lead.message)] : []),
   ].join("\n");
   const reply_markup = link ? { inline_keyboard: [[{ text: "Відповісти", url: link }]] } : undefined;
+  const send = (chat_id: string, markup: typeof reply_markup) =>
+    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id, text, parse_mode: "HTML", disable_web_page_preview: true, ...(markup ? { reply_markup: markup } : {}) }),
+    });
   const results = await Promise.all(
-    chats.map((chat_id) =>
-      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id, text, parse_mode: "HTML", disable_web_page_preview: true, ...(reply_markup ? { reply_markup } : {}) }),
-      })
-        .then(async (r) => {
-          if (!r.ok) console.error("[contact] Telegram error", chat_id, r.status, await r.text().catch(() => ""));
-          return r.ok;
-        })
-        .catch((e) => {
-          console.error("[contact] Telegram failed", e);
-          return false;
-        }),
-    ),
+    chats.map(async (chat_id) => {
+      try {
+        let r = await send(chat_id, reply_markup);
+        // a rejected button (bad link) must never lose the lead: send it again without the button
+        if (!r.ok && reply_markup && r.status === 400) r = await send(chat_id, undefined);
+        if (!r.ok) console.error("[contact] Telegram error", chat_id, r.status, await r.text().catch(() => ""));
+        return r.ok;
+      } catch (e) {
+        console.error("[contact] Telegram failed", e);
+        return false;
+      }
+    }),
   );
   return results.some(Boolean);
 }
@@ -90,6 +108,7 @@ export async function POST(req: Request) {
   }
   // honeypot: a hidden field real visitors never fill; bots get a fake «ok» and nothing is sent
   if (str(body.website, 200)) return NextResponse.json({ ok: true });
+  const lang: Lang = body.lang === "en" ? "en" : "uk";
   const lead: Lead = {
     name: str(body.name, 120),
     contact: str(body.contact, 160),
@@ -107,7 +126,7 @@ export async function POST(req: Request) {
   const to = process.env.CONTACT_TO;
 
   const jobs: Promise<boolean>[] = [];
-  if (tgToken && tgChats.length) jobs.push(toTelegram(lead, tgToken, tgChats));
+  if (tgToken && tgChats.length) jobs.push(toTelegram(lead, lang, tgToken, tgChats));
   if (key && to) jobs.push(toEmail(lead, key, to));
   if (!jobs.length) {
     console.warn("[contact] no channel configured (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID or RESEND_API_KEY + CONTACT_TO), lead not sent");
