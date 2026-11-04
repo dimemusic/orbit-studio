@@ -6,6 +6,7 @@ import type { CSSProperties } from "react";
 import type { Plan } from "@/lib/content";
 import { SLUG } from "@/lib/services";
 import { useContent, useLang } from "./Lang";
+import { CardFilmSection } from "./explain/CardFilm";
 import { Faq } from "./sections/Faq";
 import { FinalCta } from "./sections/FinalCta";
 import { G } from "./ui/Bits";
@@ -81,6 +82,9 @@ export function ServicePage({ id }: { id: Plan["id"] }) {
           </Button>
         </div>
       </section>
+
+      {/* explainer film: what this type of site is, shown on a mock site (only the business card so far) */}
+      {id === "card" && <CardFilmSection />}
 
       {/* what this type of site is, who it suits, what it gives */}
       {guide && (

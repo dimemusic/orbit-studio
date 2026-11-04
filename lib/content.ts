@@ -246,6 +246,38 @@ export type Plan = {
 };
 
 /** one explainer block on a service page: plain paragraphs and / or titled rows (`to` links the row to that plan's page) */
+/** an explainer film on a service page (components/explain/): what this type of site is, shown on a mock site */
+export type FilmScene = { id: string; step: string; title: string[]; note: string; color: string };
+export type CardFilm = {
+  intro: string[];
+  label: string;
+  scenes: FilmScene[];
+  /** a fictional demo business, shown only inside the film */
+  mock: {
+    brand: string;
+    domain: string;
+    nav: string[];
+    query: string;
+    results: { title: string; url: string; text: string }[];
+    h1: string;
+    p: string;
+    btn: string;
+    facts: [string, string][];
+    servicesTitle: string;
+    services: [string, string][];
+    formTitle: string;
+    nameLabel: string;
+    phoneLabel: string;
+    name: string;
+    phone: string;
+    send: string;
+    sent: string;
+    callouts: { who: string; trust: string; price: string };
+    chat: { ask: string; answer: string };
+    toast: { title: string; text: string; time: string };
+  };
+};
+
 export type GuideBlock = {
   title: string;
   paras?: string[];
@@ -327,6 +359,47 @@ export const SERVICES = {
         },
       ],
     } as Partial<Record<Plan["id"], GuideBlock[]>>,
+    /** explainer films under the hero (slow on purpose: the visitor must have time to read); only `card` so far */
+    films: {
+      card: {
+        intro: ["Що", "таке", "сайт-візитівка?"],
+        label: "Як працює сайт-візитівка",
+        scenes: [
+          { id: "find", step: "Пошук", title: ["Вас", "знаходять"], note: "Людина шукає послугу в Google і бачить ваш сайт серед перших результатів.", color: "#5aa2ff" },
+          { id: "who", step: "Знайомство", title: ["Видно,", "хто ви"], note: "За кілька секунд зрозуміло, чим ви займаєтесь і чому вам можна довіряти.", color: "#a78bfa" },
+          { id: "price", step: "Ціни", title: ["Ціни", "без питань"], note: "Послуги й ціни на одній сторінці: людині не треба писати вам і чекати відповіді.", color: "#2dd4bf" },
+          { id: "lead", step: "Заявка", title: ["Заявка", "за хвилину"], note: "Клієнт залишає контакти у формі, а ви одразу отримуєте заявку в Telegram чи на пошту.", color: "#34d399" },
+        ],
+        // a made-up workshop: demo content inside the film only, not a client and not our claims
+        mock: {
+          brand: "Майстерня «Дерево»",
+          domain: "derevo.lviv.ua",
+          nav: ["Послуги", "Роботи", "Ціни", "Контакти"],
+          query: "меблі на замовлення львів",
+          results: [
+            { title: "Меблі на замовлення у Львові · Майстерня «Дерево»", url: "derevo.lviv.ua", text: "Кухні, шафи й столи з натурального дерева. Ціни, приклади робіт і безкоштовний замір." },
+            { title: "Каталог меблевих виробників Львова", url: "catalog.example.ua › lviv", text: "Список компаній, відгуки й контакти виробників меблів у вашому місті." },
+            { title: "Де замовити кухню? Обговорення", url: "forum.example.ua › kitchen", text: "Поради користувачів щодо вибору майстра, матеріалів і термінів виготовлення." },
+          ],
+          h1: "Меблі на замовлення у Львові",
+          p: "Кухні, шафи й столи з натурального дерева. Від заміру до встановлення.",
+          btn: "Залишити заявку",
+          facts: [["12 років", "досвіду"], ["300+", "проєктів"], ["2 роки", "гарантії"]],
+          servicesTitle: "Послуги й ціни",
+          services: [["Кухня", "від 45 000 грн"], ["Шафа-купе", "від 18 000 грн"], ["Обідній стіл", "від 9 000 грн"], ["Замір і проєкт", "безкоштовно"]],
+          formTitle: "Залишити заявку",
+          nameLabel: "Ім'я",
+          phoneLabel: "Телефон",
+          name: "Ірина",
+          phone: "+380 67 123 45 67",
+          send: "Надіслати",
+          sent: "Дякуємо! Ми зателефонуємо",
+          callouts: { who: "Хто ви і що робите", trust: "Факти, яким довіряють", price: "Ціни видно одразу" },
+          chat: { ask: "Добрий день! А скільки коштує кухня?", answer: "Ціна вже є на сайті" },
+          toast: { title: "Нова заявка з сайту", text: "Ірина · Кухня · +380 67 123 45 67", time: "щойно" },
+        },
+      } as CardFilm,
+    } as { card?: CardFilm },
     items: {
       card: {
         h1: ["Розробка", "сайту-візитівки."],
