@@ -6,6 +6,7 @@ import type { Content } from "@/lib/content";
 import { useContent, useLang } from "../Lang";
 import { PACKAGE_PICK } from "../home";
 import { tgUsername } from "@/lib/telegram";
+import { track } from "@/lib/track";
 import { Button } from "../ui/Button";
 import { RevealWords } from "../ui/RevealWords";
 
@@ -140,6 +141,7 @@ function ContactForm({ preset }: { preset?: number }) {
     if (moved.current) stepRef.current?.focus({ preventScroll: true });
   }, [step]);
   const go = (i: number) => {
+    track("form_step", { step: i + 1, of: N + 1 });
     moved.current = true;
     setStep(i);
   };
@@ -240,9 +242,10 @@ function ContactForm({ preset }: { preset?: number }) {
     })
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));
+        track("form_submit", { type: chip, channel: channel.id });
         setDone(true);
       })
-      .catch(() => setFailed(true))
+      .catch(() => (track("form_error"), setFailed(true)))
       .finally(() => setBusy(false));
   }
 
@@ -272,7 +275,7 @@ function ContactForm({ preset }: { preset?: number }) {
 
   return (
     <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0 max-w-[40rem] xl:max-w-none">
-      <div className="card overflow-hidden text-left">
+      <div data-clarity-mask="True" className="card overflow-hidden text-left">
         {/* the card hugs whichever state is shown: the form, or the short thanks after sending (asked) */}
         <div className="grid p-6 sm:p-10 wide:p-12">
           <form

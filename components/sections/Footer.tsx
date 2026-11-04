@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { SLUG } from "@/lib/services";
 import { useContent, useLang } from "../Lang";
+import { CLARITY_ID, CONSENT_OPEN } from "../analytics/Consent";
 
 export function Footer() {
   const { BRAND, FOOTER, NAV, UI, SERVICES } = useContent();
@@ -50,6 +51,18 @@ export function Footer() {
         <Link href={BRAND.privacyHref} className="text-grey underline decoration-white/20 underline-offset-4 transition-colors hover:text-fg">
           {FOOTER.privacy}
         </Link>
+        {CLARITY_ID && (
+          <>
+            <span aria-hidden="true" className="px-2 text-faint">·</span>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event(CONSENT_OPEN))}
+              className="text-grey underline decoration-white/20 underline-offset-4 transition-colors hover:text-fg"
+            >
+              {FOOTER.cookies}
+            </button>
+          </>
+        )}
       </p>
     </footer>
   );

@@ -417,13 +417,22 @@ export const en: Content = {
   FOOTER: {
     copy: "© 2026",
     privacy: "Privacy policy",
+    cookies: "Cookie settings",
+  },
+
+  CONSENT: {
+    label: "Cookies and analytics",
+    text: "We use Microsoft Clarity: it records how you use the site (clicks, scrolling) so we can make it easier to use. This needs cookies. It is not advertising, and what you type into forms is not recorded.",
+    accept: "Allow",
+    decline: "Decline",
+    more: "Learn more",
   },
 
   PRIVACY: {
     crumb: "Privacy policy",
     title: "Privacy policy",
-    lead: "We only collect what you type into the request form, so we can reply. No ads, no tracking, no selling of data.",
-    updated: "Updated October 31, 2026",
+    lead: "We collect what you type into the request form, so we can reply, and anonymous statistics about how the site is used. Session recordings only with your consent. No ads, no selling of data.",
+    updated: "Updated November 4, 2026",
     sections: [
       {
         id: "who",
@@ -440,6 +449,7 @@ export const en: Content = {
         body: [
           "When you send the request form, we receive your name, the way you prefer to be contacted (Telegram, Viber, WhatsApp or email) and your username, phone number or email for our reply, the type of website, your answers to the form questions and the project description, if you wrote one. When you write to us on Telegram or by email, we receive what you sent, plus your messenger profile details or email address.",
           "When you open the site, the hosting automatically records technical request data: IP address, browser type and request time. These are standard server logs; we do not use them to identify you.",
+          "We count visits with Vercel Analytics: no cookies and no identification of a person, only pages, clicks, country and device type. If you allow cookies, Microsoft Clarity also records your session on the site: cursor movement, clicks, scrolling and technical device data. Text you type into the form is masked and not recorded.",
           "We do not ask for or collect passwords, payment or other sensitive data. Providing data is voluntary, but without a name and a contact we cannot reply to you.",
         ],
       },
@@ -455,14 +465,14 @@ export const en: Content = {
         id: "basis",
         title: "Legal basis",
         body: [
-          "We process data based on your consent, which you give by sending the form or writing to us. The reply and the offer are prepared at your request before a contract. Technical logs are processed in our legitimate interest: security and stable operation of the site.",
+          "We process data based on your consent, which you give by sending the form or writing to us. The reply and the offer are prepared at your request before a contract. Technical logs and cookie-free Vercel Analytics statistics are processed in our legitimate interest: the security of the site and understanding how it works. Microsoft Clarity cookies and session recordings run only with your consent.",
         ],
       },
       {
         id: "share",
         title: "Who we share data with",
         body: [
-          "We share data only with services the site and our correspondence cannot work without, and only as much as they need: Vercel (USA) for hosting, Resend (USA) for delivering requests to our inbox and our email provider ([country]) for storing the emails. These services work under standard contractual clauses on data protection.", // DRAFT
+          "We share data only with services the site and our correspondence cannot work without, and only as much as they need: Vercel (USA) for hosting, Resend (USA) for delivering requests to our inbox, Telegram for delivering requests to our bot, Microsoft (USA) as the operator of Clarity if you allowed cookies, and our email provider ([country]) for storing the emails. These services work under standard contractual clauses on data protection.", // DRAFT
           "We share data with anyone else only when the law requires it.",
         ],
       },
@@ -477,7 +487,7 @@ export const en: Content = {
         id: "cookies",
         title: "Cookies",
         body: [
-          "The site uses no cookies, analytics or ad trackers. The browser keeps only one technical value in sessionStorage so the intro plays once. It holds no personal data and is gone when you close the tab.",
+          "Without your consent the site sets no cookies and uses no ad trackers. sessionStorage holds a value so the intro plays once, and localStorage holds your cookie choice. If you press «Allow», Microsoft Clarity sets cookies (for example _clck and _clsk) to record sessions. You can change your choice at any time with the «Cookie settings» link at the bottom of the page.",
         ],
       },
       {

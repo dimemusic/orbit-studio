@@ -5,7 +5,11 @@ import { Intro } from "@/components/Intro";
 import { LangProvider } from "@/components/Lang";
 import { Nav } from "@/components/Nav";
 import { Scene } from "@/components/Scene";
+import { Consent } from "@/components/analytics/Consent";
+import { Tracker } from "@/components/analytics/Tracker";
 import { Footer } from "@/components/sections/Footer";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CardFx } from "@/components/ui/CardFx";
 import { ButtonFx } from "@/components/ui/ButtonFx";
 import { ParallaxRoot } from "@/components/ui/ParallaxRoot";
@@ -74,6 +78,10 @@ export function Shell({ lang, children }: { lang: Lang; children: React.ReactNod
           <ParallaxRoot />
           <CardFx />
           <ButtonFx />
+          <Tracker />
+          <Consent />
+          <Analytics />
+          <SpeedInsights />
         </LangProvider>
       </body>
     </html>

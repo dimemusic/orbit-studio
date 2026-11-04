@@ -875,3 +875,10 @@ html {
 @media (prefers-reduced-motion: reduce) {
   .done-ring, .done-fill, .done-check { animation: none; }
 }
+
+/* cookie banner: rises in with transform only (opacity < 1 on a .card would kill its glass) */
+@keyframes consent-in {
+  from { transform: translate3d(0, 24px, 0); }
+}
+.consent-in { animation: consent-in 0.5s var(--ease) both; }
+@media (prefers-reduced-motion: reduce) { .consent-in { animation: none; } }
