@@ -247,7 +247,7 @@ export const en: Content = {
       back: "Back",
       next: "Next",
       reset: "Reset answers",
-      skip: "Skip and write in your own words",
+      skip: "Already know what you need? Write to us",
       questions: [
         { id: "type", q: "What kind of site do you need?", short: "Type of site" },
         { id: "admin", q: "Who will update texts, prices and photos?", short: "Updates", options: ["We will, in an admin panel", "Rarely, we'll ask you"] },
