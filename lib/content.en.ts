@@ -120,7 +120,7 @@ export const en: Content = {
         task: "A clear website for a maker of sandwich panels and vans: products, services and a quick quote request.",
         done: ["Page structure and user flows", "Catalogue: vans, panels, trailers", "Service and upgrades section", "Responsive request form"],
         facts: [
-          { label: "Time", value: "[TIME]" },
+          { label: "Time", value: "2 weeks" },
           { label: "Type", value: "Corporate website" },
         ],
       },
