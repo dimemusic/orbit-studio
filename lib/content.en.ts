@@ -51,7 +51,6 @@ export const en: Content = {
     listLabel: "Projects",
     stack: {
       title: "Our tech stack.",
-      lead: "What we use for design, websites and admin panels.",
       groups: [
         { title: "Design", items: [{ id: "figma", name: "Figma" }] },
         { title: "Development", items: [{ id: "nextjs", name: "Next.js" }, { id: "react", name: "React" }, { id: "typescript", name: "TypeScript" }, { id: "javascript", name: "JavaScript" }, { id: "tailwind", name: "Tailwind CSS" }, { id: "html", name: "HTML5" }] },

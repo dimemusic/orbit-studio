@@ -94,7 +94,6 @@ export const WORK = {
   /** «Стек технологій» under the cases: only tools we really use (DRAFT: add / remove as the stack changes) */
   stack: {
     title: "Стек технологій.",
-    lead: "На чому робимо дизайн, сайти й адмін-панелі.",
     groups: [
       { title: "Дизайн", items: [{ id: "figma", name: "Figma" }] },
       { title: "Розробка", items: [{ id: "nextjs", name: "Next.js" }, { id: "react", name: "React" }, { id: "typescript", name: "TypeScript" }, { id: "javascript", name: "JavaScript" }, { id: "tailwind", name: "Tailwind CSS" }, { id: "html", name: "HTML5" }] },
