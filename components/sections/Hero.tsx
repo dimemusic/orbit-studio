@@ -15,7 +15,6 @@ export function Hero() {
   const [first, second, last] = HERO.title;
   return (
     <section id="top" aria-labelledby="hero-title" className="relative flex min-h-[100dvh] w-full flex-col px-gutter text-center">
-      {/* parallax: the copy lags behind the scroll and fades as the film comes up (desktop only, ParallaxRoot) */}
       <div className="flex flex-1 flex-col items-center justify-center pb-10 pt-32">
         <div className="plate flex flex-col items-center px-4 py-8">
           <h1 id="hero-title" data-reveal data-in className="legible text-mega font-semibold">
