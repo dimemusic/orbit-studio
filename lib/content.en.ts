@@ -253,7 +253,7 @@ export const en: Content = {
       estimate: "Rough price",
       perMonth: "/ mo",
       note: "Starting price from our price list. The exact amount is fixed after the brief.",
-      free: "Anything else? Tell us in your own words",
+      free: "Your notes",
       freePh: "For example: we have a logo and photos, need online booking",
       from: "from",
     },
@@ -269,7 +269,6 @@ export const en: Content = {
       { q: "What happens after launch?", a: "We hand over every access and show you how to run the site. If you need support, it costs from $50 a month." }, // DRAFT
       { q: "Can I order design only?", a: "Yes. Design without development costs from $250, an admin panel for an existing site from $200." },
       { q: "What do you build with?", a: "Design in Figma, websites on Next.js, React and TypeScript, admin panels on Sanity, hosting on Vercel. The sites open fast on phones and are easy for Google to index." },
-      { q: "Do you only work in Lviv?", a: "The studio is in Lviv, but we work online with clients from all over Ukraine: the brief, approvals and handover happen in a messenger or on a call." }, // DRAFT
     ],
   },
 
@@ -297,7 +296,6 @@ export const en: Content = {
       { id: "telegram", label: "Telegram", field: "Your Telegram", ph: "@username or phone number", err: "Enter your @username or phone number." },
       { id: "viber", label: "Viber", field: "Viber number", ph: "+380 67 123 45 67", err: "Enter a phone number, e.g. +380 67 123 45 67." },
       { id: "whatsapp", label: "WhatsApp", field: "WhatsApp number", ph: "+380 67 123 45 67", err: "Enter a phone number, e.g. +380 67 123 45 67." },
-      { id: "phone", label: "Call", field: "Phone number", ph: "+380 67 123 45 67", err: "Enter a phone number, e.g. +380 67 123 45 67." },
       { id: "email", label: "Email", field: "Your email", ph: "name@mail.com", err: "Enter an email, e.g. name@mail.com." },
     ],
     errNeeds: "Pick at least one option.",
@@ -427,7 +425,7 @@ export const en: Content = {
         id: "data",
         title: "What data we receive",
         body: [
-          "When you send the request form, we receive your name, the way you prefer to be contacted (Telegram, Viber, WhatsApp, a call or email) and your username, phone number or email for our reply, the type of website, your answers to the form questions and the project description, if you wrote one. When you write to us on Telegram or by email, we receive what you sent, plus your messenger profile details or email address.",
+          "When you send the request form, we receive your name, the way you prefer to be contacted (Telegram, Viber, WhatsApp or email) and your username, phone number or email for our reply, the type of website, your answers to the form questions and the project description, if you wrote one. When you write to us on Telegram or by email, we receive what you sent, plus your messenger profile details or email address.",
           "When you open the site, the hosting automatically records technical request data: IP address, browser type and request time. These are standard server logs; we do not use them to identify you.",
           "We do not ask for or collect passwords, payment or other sensitive data. Providing data is voluntary, but without a name and a contact we cannot reply to you.",
         ],

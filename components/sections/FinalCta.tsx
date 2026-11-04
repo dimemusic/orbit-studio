@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowCounterClockwise, ArrowLeft, ArrowRight, ChatCircleDots, Check, CheckCircle, EnvelopeSimple, PencilSimple, Phone, TelegramLogo, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import { ArrowCounterClockwise, ArrowLeft, ArrowRight, ChatCircleDots, Check, CheckCircle, EnvelopeSimple, PencilSimple, TelegramLogo, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import type { Content } from "@/lib/content";
 import { useContent } from "../Lang";
@@ -57,7 +57,7 @@ export function FinalCta({ preset }: { preset?: number } = {}) {
     <section
       id="contact"
       aria-labelledby="contact-title"
-      className="relative flex w-full flex-col px-gutter pb-12 pt-24"
+      className="relative flex w-full flex-col px-gutter pb-24 pt-24"
     >
       <div className="relative z-[1] grid w-full min-w-0 items-center xl:gap-x-24 2xl:gap-x-32 gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)] wide:grid-cols-[minmax(0,38rem)_minmax(0,46rem)] wide:justify-center">
         {/* left: the invitation + direct contacts */}
@@ -103,7 +103,7 @@ export function FinalCta({ preset }: { preset?: number } = {}) {
   );
 }
 
-const CHANNEL_ICON = { telegram: TelegramLogo, viber: ChatCircleDots, whatsapp: WhatsappLogo, phone: Phone, email: EnvelopeSimple } as const;
+const CHANNEL_ICON = { telegram: TelegramLogo, viber: ChatCircleDots, whatsapp: WhatsappLogo, email: EnvelopeSimple } as const;
 
 function ContactForm({ preset }: { preset?: number }) {
   const { BRAND, CONTACT, SERVICES, UI } = useContent();
@@ -319,12 +319,6 @@ function ContactForm({ preset }: { preset?: number }) {
                       {Q.reset}
                     </button>
                   )}
-                  {estimate && (
-                    <p className="min-w-0 text-sm text-body" aria-live="polite">
-                      <span className="text-grey">{Q.estimate}: </span>
-                      <span className="font-semibold text-fg tabular-nums">{estimate}</span>
-                    </p>
-                  )}
                   <Button
                     type="submit"
                     size="nav"
@@ -345,7 +339,7 @@ function ContactForm({ preset }: { preset?: number }) {
                   </span>
                 </h3>
 
-                {/* the answers, each changeable, and the rough price */}
+                {/* the answers, each changeable (the rough price is not shown, asked; it still goes into the email) */}
                 {answers.some((a) => a !== null) && (
                   <dl className="flex flex-col divide-y divide-white/[0.08] rounded-xl border border-white/[0.09]">
                     {Q.questions.map((q, i) =>
@@ -362,15 +356,6 @@ function ContactForm({ preset }: { preset?: number }) {
                           </button>
                         </div>
                       ),
-                    )}
-                    {estimate && (
-                      <div className="flex flex-col gap-1 px-4 py-4">
-                        <div className="flex items-baseline justify-between gap-4">
-                          <dt className="text-sm text-grey">{Q.estimate}</dt>
-                          <dd className="text-base font-semibold text-fg tabular-nums">{estimate}</dd>
-                        </div>
-                        <p className="text-xs text-grey">{Q.note}</p>
-                      </div>
                     )}
                   </dl>
                 )}
