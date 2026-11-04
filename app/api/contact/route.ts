@@ -1,13 +1,85 @@
 import { NextResponse } from "next/server";
 
-// Contact form → email via Resend (https://resend.com). Set in .env.local / Vercel env:
-//   RESEND_API_KEY  – API key from resend.com
-//   CONTACT_TO      – where leads go (your email)
-//   CONTACT_FROM    – optional sender, defaults to Resend's test sender (works only for your own account email)
-// Without a key the route answers 503 and the form shows «напишіть нам у Telegram».
+// Contact form → Telegram bot and / or email. Set in .env.local / Vercel env (either channel is enough):
+//   TELEGRAM_BOT_TOKEN – token from @BotFather
+//   TELEGRAM_CHAT_ID   – where leads go: your chat id, or a group / channel id (starts with -100…); several, comma-separated
+//   RESEND_API_KEY     – API key from resend.com
+//   CONTACT_TO         – where email leads go
+//   CONTACT_FROM       – optional sender, defaults to Resend's test sender (works only for your own account email)
+// The lead counts as sent if at least one channel accepted it. With nothing configured the route answers 503
+// and the form shows «напишіть нам у Telegram».
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+
+type Lead = { name: string; contact: string; channel: string; message: string; needs: string[] };
+
+/** a one-tap way to answer: the Telegram profile, a WhatsApp / Viber chat or a mail draft */
+function replyLink({ contact, channel }: Lead): string | null {
+  const digits = contact.replace(/\D/g, "");
+  const ch = channel.toLowerCase();
+  if (contact.includes("@") && contact.includes(".")) return `mailto:${contact}`;
+  if (ch === "telegram") return contact.startsWith("@") || /[a-z]/i.test(contact) ? `https://t.me/${contact.replace(/^@/, "")}` : `https://t.me/+${digits}`;
+  if (ch === "whatsapp" && digits) return `https://wa.me/${digits}`;
+  if (ch === "viber" && digits) return `viber://chat?number=%2B${digits}`;
+  return null;
+}
+
+async function toTelegram(lead: Lead, token: string, chats: string[]) {
+  const link = replyLink(lead);
+  const text = [
+    "🆕 <b>Нова заявка з сайту</b>",
+    "",
+    `👤 <b>${esc(lead.name)}</b>`,
+    `💬 ${esc(lead.channel || "Контакт")}: <code>${esc(lead.contact)}</code>`,
+    `🧩 ${esc(lead.needs.join(", "))}`,
+    ...(lead.message ? ["", esc(lead.message)] : []),
+  ].join("\n");
+  const reply_markup = link ? { inline_keyboard: [[{ text: "Відповісти", url: link }]] } : undefined;
+  const results = await Promise.all(
+    chats.map((chat_id) =>
+      fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id, text, parse_mode: "HTML", disable_web_page_preview: true, ...(reply_markup ? { reply_markup } : {}) }),
+      })
+        .then(async (r) => {
+          if (!r.ok) console.error("[contact] Telegram error", chat_id, r.status, await r.text().catch(() => ""));
+          return r.ok;
+        })
+        .catch((e) => {
+          console.error("[contact] Telegram failed", e);
+          return false;
+        }),
+    ),
+  );
+  return results.some(Boolean);
+}
+
+async function toEmail(lead: Lead, key: string, to: string) {
+  const html = `
+    <h2>Нова заявка з сайту</h2>
+    <p><b>Ім'я:</b> ${esc(lead.name)}</p>
+    <p><b>Контакт:</b> ${esc(lead.contact)}${lead.channel ? ` (${esc(lead.channel)})` : ""}</p>
+    <p><b>Потрібно:</b> ${lead.needs.map(esc).join(", ")}</p>
+    ${lead.message ? `<p><b>Про проєкт:</b><br>${esc(lead.message).replace(/\n/g, "<br>")}</p>` : ""}`;
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from: process.env.CONTACT_FROM || "MaxArt Digital <onboarding@resend.dev>",
+      to: [to],
+      subject: `Заявка: ${lead.name} · ${lead.needs.join(", ")}${lead.channel ? ` · ${lead.channel}` : ""}`,
+      html,
+      ...(lead.contact.includes("@") && lead.contact.includes(".") ? { reply_to: lead.contact } : {}),
+    }),
+  }).catch((e) => {
+    console.error("[contact] Resend failed", e);
+    return null;
+  });
+  if (!res?.ok) console.error("[contact] Resend error", res?.status, await res?.text().catch(() => ""));
+  return !!res?.ok;
+}
 
 export async function POST(req: Request) {
   let body: Record<string, unknown>;
@@ -18,43 +90,30 @@ export async function POST(req: Request) {
   }
   // honeypot: a hidden field real visitors never fill; bots get a fake «ok» and nothing is sent
   if (str(body.website, 200)) return NextResponse.json({ ok: true });
-  const name = str(body.name, 120);
-  const contact = str(body.contact, 160);
-  const channel = str(body.channel, 30);
-  const message = str(body.message, 1500);
-  const needs = Array.isArray(body.needs) ? body.needs.filter((n): n is string => typeof n === "string").slice(0, 6) : [];
-  if (name.length < 2 || contact.length < 4 || needs.length === 0) {
+  const lead: Lead = {
+    name: str(body.name, 120),
+    contact: str(body.contact, 160),
+    channel: str(body.channel, 30),
+    message: str(body.message, 1500),
+    needs: Array.isArray(body.needs) ? body.needs.filter((n): n is string => typeof n === "string").slice(0, 6) : [],
+  };
+  if (lead.name.length < 2 || lead.contact.length < 4 || lead.needs.length === 0) {
     return NextResponse.json({ error: "invalid" }, { status: 422 });
   }
 
+  const tgToken = process.env.TELEGRAM_BOT_TOKEN;
+  const tgChats = (process.env.TELEGRAM_CHAT_ID ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const key = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO;
-  if (!key || !to) {
-    console.warn("[contact] RESEND_API_KEY / CONTACT_TO not set, lead not sent");
+
+  const jobs: Promise<boolean>[] = [];
+  if (tgToken && tgChats.length) jobs.push(toTelegram(lead, tgToken, tgChats));
+  if (key && to) jobs.push(toEmail(lead, key, to));
+  if (!jobs.length) {
+    console.warn("[contact] no channel configured (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID or RESEND_API_KEY + CONTACT_TO), lead not sent");
     return NextResponse.json({ error: "not-configured" }, { status: 503 });
   }
-
-  const html = `
-    <h2>Нова заявка з сайту</h2>
-    <p><b>Ім'я:</b> ${esc(name)}</p>
-    <p><b>Контакт:</b> ${esc(contact)}${channel ? ` (${esc(channel)})` : ""}</p>
-    <p><b>Потрібно:</b> ${needs.map(esc).join(", ")}</p>
-    ${message ? `<p><b>Про проєкт:</b><br>${esc(message).replace(/\n/g, "<br>")}</p>` : ""}`;
-
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      from: process.env.CONTACT_FROM || "MaxArt Digital <onboarding@resend.dev>",
-      to: [to],
-      subject: `Заявка: ${name} · ${needs.join(", ")}${channel ? ` · ${channel}` : ""}`,
-      html,
-      ...(contact.includes("@") && contact.includes(".") ? { reply_to: contact } : {}),
-    }),
-  });
-  if (!res.ok) {
-    console.error("[contact] Resend error", res.status, await res.text().catch(() => ""));
-    return NextResponse.json({ error: "send-failed" }, { status: 502 });
-  }
+  const sent = await Promise.all(jobs);
+  if (!sent.some(Boolean)) return NextResponse.json({ error: "send-failed" }, { status: 502 });
   return NextResponse.json({ ok: true });
 }
