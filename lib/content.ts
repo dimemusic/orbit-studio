@@ -99,7 +99,6 @@ export const WORK = {
       { title: "Дизайн", items: [{ id: "figma", name: "Figma" }] },
       { title: "Розробка", items: [{ id: "nextjs", name: "Next.js" }, { id: "react", name: "React" }, { id: "typescript", name: "TypeScript" }, { id: "javascript", name: "JavaScript" }, { id: "tailwind", name: "Tailwind CSS" }, { id: "html", name: "HTML5" }] },
       { title: "Адмін-панель", items: [{ id: "sanity", name: "Sanity" }, { id: "wordpress", name: "WordPress" }, { id: "shopify", name: "Shopify" }] },
-      { title: "Запуск і сервіси", items: [{ id: "vercel", name: "Vercel" }] },
     ],
   },
   /** link in the section header */

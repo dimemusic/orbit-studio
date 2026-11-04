@@ -56,7 +56,6 @@ export const en: Content = {
         { title: "Design", items: [{ id: "figma", name: "Figma" }] },
         { title: "Development", items: [{ id: "nextjs", name: "Next.js" }, { id: "react", name: "React" }, { id: "typescript", name: "TypeScript" }, { id: "javascript", name: "JavaScript" }, { id: "tailwind", name: "Tailwind CSS" }, { id: "html", name: "HTML5" }] },
         { title: "Admin panel", items: [{ id: "sanity", name: "Sanity" }, { id: "wordpress", name: "WordPress" }, { id: "shopify", name: "Shopify" }] },
-        { title: "Launch and services", items: [{ id: "vercel", name: "Vercel" }] },
       ],
     },
     more: "Discuss a project",
