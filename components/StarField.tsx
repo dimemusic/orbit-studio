@@ -79,7 +79,8 @@ const FRAG_HEAD = "precision mediump float;\n";
 const UNIFORMS = ["uTime", "uMotion", "uPulse", "uMouseOn", "uDPR", "uScroll", "uFieldH", "uCamZ", "uDim", "uPulseOrigin", "uMouse", "modelMatrix", "viewMatrix", "projectionMatrix"] as const;
 type U = Record<(typeof UNIFORMS)[number], WebGLUniformLocation | null>;
 
-function program(gl: WebGLRenderingContext) {
+/** start compiling + linking; never asks for the result here (that query is what blocks the main thread) */
+function compile(gl: WebGLRenderingContext) {
   const sh = (type: number, src: string) => {
     const s = gl.createShader(type)!;
     gl.shaderSource(s, src);
@@ -90,10 +91,15 @@ function program(gl: WebGLRenderingContext) {
   gl.attachShader(p, sh(gl.VERTEX_SHADER, VERT_HEAD + starVertex));
   gl.attachShader(p, sh(gl.FRAGMENT_SHADER, FRAG_HEAD + starFragment));
   gl.linkProgram(p);
+  return p;
+}
+/** the linked program and its uniforms (call once the link is done, or it waits for it) */
+function linked(gl: WebGLRenderingContext, p: WebGLProgram) {
   if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p) ?? "star shader");
   const u = Object.fromEntries(UNIFORMS.map((n) => [n, gl.getUniformLocation(p, n)])) as U;
   return { p, u };
 }
+const COMPLETION_STATUS_KHR = 0x91b1;
 
 export default function StarField() {
   const { UI } = useContent();
@@ -105,17 +111,61 @@ export default function StarField() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    // no multisampling: the vertex shader keeps sprites ≥ 3 px instead (smooth sub-pixel motion, see starShaders)
-    const gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance" });
-    if (!gl) return setFailed(true);
+    // The WebGL start-up is kept off the page's critical path (Lighthouse TBT, and every phone without a fast GPU):
+    // it runs in its own task after hydration, the shader compiles in the background (KHR_parallel_shader_compile,
+    // polled once a frame) and nothing waits for it: the boot's own deadline shows the copy, the stars fade in when ready.
+    let stopped = false;
+    let dispose: (() => void) | undefined;
+    let wait = 0;
+    let raf0 = 0;
+    const start = () => {
+      // no multisampling: the vertex shader keeps sprites ≥ 3 px instead (smooth sub-pixel motion, see starShaders)
+      const gl = canvas.getContext("webgl", { alpha: false, antialias: false, depth: false, powerPreference: "high-performance" });
+      if (!gl) return setFailed(true);
+      const p = compile(gl);
+      const parallel = !!gl.getExtension("KHR_parallel_shader_compile");
+      const ready = () => {
+        if (stopped) return;
+        if (parallel && !gl.getProgramParameter(p, COMPLETION_STATUS_KHR)) {
+          raf0 = requestAnimationFrame(ready);
+          return;
+        }
+        try {
+          dispose = init(gl, canvas, linked(gl, p));
+        } catch {
+          setFailed(true);
+        }
+      };
+      // without the extension the first query blocks: give it a task of its own
+      if (parallel) raf0 = requestAnimationFrame(ready);
+      else wait = window.setTimeout(ready, 0);
+    };
+    // Under the intro card nobody sees the stars, and on a GPU-less device (PageSpeed, cheap phones) their draws
+    // share the software rasteriser with the page: the site appearing at the boot's end then waited ~0.5s behind
+    // them (one long «Commit»). So with the intro the stars start once the boot is over; without it, right away.
+    const root = document.documentElement;
+    let mo: MutationObserver | undefined;
+    if (root.classList.contains("intro") && root.classList.contains("booting")) {
+      mo = new MutationObserver(() => {
+        if (root.classList.contains("booting")) return;
+        mo?.disconnect();
+        // two frames: let the site's own first frame go out before the stars' first draw
+        raf0 = requestAnimationFrame(() => (raf0 = requestAnimationFrame(start)));
+      });
+      mo.observe(root, { attributes: true, attributeFilter: ["class"] });
+    } else wait = window.setTimeout(start, 0);
+    return () => {
+      stopped = true;
+      mo?.disconnect();
+      clearTimeout(wait);
+      cancelAnimationFrame(raf0);
+      dispose?.();
+    };
+  }, []);
 
+  /** everything after the program is linked: buffers, input, the render loop; returns its cleanup */
+  function init(gl: WebGLRenderingContext, canvas: HTMLCanvasElement, prog: ReturnType<typeof linked>) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let prog: ReturnType<typeof program>;
-    try {
-      prog = program(gl);
-    } catch {
-      return setFailed(true);
-    }
     const { u } = prog;
     gl.useProgram(prog.p);
     // #05070d converted to linear light, exactly what the previous renderer cleared to (keeps the same deep black)
@@ -304,7 +354,7 @@ export default function StarField() {
       attrs.forEach((a) => gl.deleteBuffer(a.buf));
       gl.deleteProgram(prog.p);
     };
-  }, []);
+  }
 
   return (
     <div ref={wrap} aria-hidden="true" className="pointer-events-none fixed left-0 top-0 z-[1] h-lvh w-screen">
