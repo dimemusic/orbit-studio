@@ -2,6 +2,15 @@
 // `// DRAFT` values mirror the Ukrainian placeholders: replace both before launch.
 import type { Case, Content, Plan } from "./content";
 
+const CITIES = ["Kyiv", "Kharkiv", "Odesa", "Dnipro", "Lviv", "Zaporizhzhia", "Kryvyi Rih", "Mykolaiv", "Vinnytsia", "Poltava", "Chernihiv", "Cherkasy", "Zhytomyr", "Sumy", "Khmelnytskyi", "Rivne", "Ivano-Frankivsk", "Ternopil", "Lutsk", "Uzhhorod", "Chernivtsi", "Kropyvnytskyi", "Kherson"];
+
+const PLANS = [
+  { id: "card", name: "Business card site", for: "For experts, craftspeople and small businesses.", price: 400, days: 5, features: ["Up to 5 pages", "Mobile-friendly", "Request form and contacts", "Basic SEO"] }, // DRAFT
+  { id: "landing", name: "Landing page", for: "One page for a product, service or ad campaign.", price: 600, days: 7, hot: true, features: ["Custom design", "Scroll animations", "Request form and analytics", "Fast loading"] }, // DRAFT
+  { id: "shop", name: "Online store", for: "Catalogue, cart and online orders.", price: 1000, days: 14, features: ["Catalogue with filters", "Cart and checkout", "Admin for products and prices", "Payment and delivery"] }, // DRAFT
+  { id: "corp", name: "Corporate website", for: "For companies with several lines of business.", price: 1200, days: 14, features: ["Many pages and sections", "Services or product catalogue", "Content admin panel", "Several languages"] }, // DRAFT
+] satisfies Plan[];
+
 export const en: Content = {
   BRAND: {
     name: "MaxArt Digital",
@@ -14,8 +23,8 @@ export const en: Content = {
   },
 
   META: {
-    title: "Website Design & Development Studio · MaxArt Digital",
-    description: "We design and build landing pages, business card sites, online stores and corporate websites with an admin panel. Turnkey, from Lviv, Ukraine.",
+    title: "Website Development in Ukraine, Turnkey · MaxArt Digital",
+    description: "We design and build landing pages, business card sites, online stores and corporate sites with an admin panel. A Lviv studio working across Ukraine and abroad.",
     ogAlt: "MaxArt Digital: turnkey website design and development",
     service: "Turnkey website design and development: landing pages, business card sites, online stores and corporate websites with an admin panel.",
   },
@@ -193,12 +202,7 @@ export const en: Content = {
     includes: "What's included",
     hot: "Recommended",
     listLabel: "Plans",
-    plans: [
-      { id: "card", name: "Business card site", for: "For experts, craftspeople and small businesses.", price: 400, days: 5, features: ["Up to 5 pages", "Mobile-friendly", "Request form and contacts", "Basic SEO"] }, // DRAFT
-      { id: "landing", name: "Landing page", for: "One page for a product, service or ad campaign.", price: 600, days: 7, hot: true, features: ["Custom design", "Scroll animations", "Request form and analytics", "Fast loading"] }, // DRAFT
-      { id: "shop", name: "Online store", for: "Catalogue, cart and online orders.", price: 1000, days: 14, features: ["Catalogue with filters", "Cart and checkout", "Admin for products and prices", "Payment and delivery"] }, // DRAFT
-      { id: "corp", name: "Corporate website", for: "For companies with several lines of business.", price: 1200, days: 14, features: ["Many pages and sections", "Services or product catalogue", "Content admin panel", "Several languages"] }, // DRAFT
-    ] satisfies Plan[],
+    plans: PLANS,
     extrasLabel: "Separately",
     extras: [
       { name: "Design without development", price: "from $250" },
@@ -293,26 +297,26 @@ export const en: Content = {
       items: {
         card: {
           h1: ["Business card", "website design."],
-          title: "Business card website, turnkey, from $400",
-          description: "Turnkey business card website: design, mobile-friendly layout, request form and basic SEO. From $400, from 5 days. MaxArt Digital studio, Lviv, Ukraine.",
+          title: "Business card website, Ukraine, from $400",
+          description: "Turnkey business card website: design, mobile layout, request form, basic SEO. From $400, 5+ days. Lviv studio serving Kyiv, Kharkiv, Odesa, Dnipro and beyond.",
           intro: "A few pages about you and your services, so clients find you on Google, see your prices and leave a request right away. Design, development and launch, turnkey.",
         },
         landing: {
           h1: ["Landing page", "design."],
-          title: "Landing page, turnkey, from $600",
-          description: "Turnkey landing page: custom design, scroll animations, request form and analytics, fast loading. From $600, from 7 days. MaxArt Digital, Lviv, Ukraine.",
+          title: "Landing page, Ukraine, from $600",
+          description: "Turnkey landing page: custom design, animations, request form, analytics, fast loading. From $600, 7+ days. A Lviv studio with clients from all over Ukraine.",
           intro: "One page for a product, service or ad campaign: a clear offer, benefits and a request form. Custom design, scroll animations and fast loading.",
         },
         shop: {
           h1: ["Online store", "development."],
-          title: "Online store, turnkey, from $1000",
-          description: "Turnkey online store: catalogue with filters, cart, payment and delivery, admin panel for products and prices. From $1000. MaxArt Digital, Lviv, Ukraine.",
+          title: "Online store, Ukraine, from $1000",
+          description: "Turnkey online store: catalogue with filters, cart, payment, delivery, admin panel for products and prices. From $1000. A Lviv studio working across Ukraine.",
           intro: "A catalogue with filters, cart, checkout, payment and delivery. You update products, prices and photos yourself in the admin panel, no developer needed.",
         },
         corp: {
           h1: ["Corporate website", "development."],
-          title: "Corporate website, turnkey",
-          description: "Corporate website development: sections for several lines of business, services or product catalogue, several languages and an admin panel. From $1200.",
+          title: "Corporate website, Ukraine, from $1200",
+          description: "Turnkey corporate website: sections per business line, a catalogue, several languages and an admin panel. From $1200. A Lviv studio working across Ukraine.",
           intro: "A site for a company with several lines of business: separate sections, a services or product catalogue, several languages and an admin panel for your team.",
         },
       },
@@ -344,6 +348,46 @@ export const en: Content = {
   },
 
   // keep the numbers in step with SERVICES.plans / extras above
+  GEO: {
+    cities: CITIES,
+    link: "Website development across Ukraine",
+    page: {
+      crumb: "Services",
+      h1: ["Website development", "across Ukraine."],
+      title: "Website development across Ukraine",
+      description: "A Lviv studio building turnkey websites for businesses in Kyiv, Kharkiv, Odesa, Dnipro and across Ukraine. Everything is online, from brief to launch.",
+      intro: "We are based in Lviv and build websites for businesses in any city of Ukraine. The brief, design, development and launch all happen online, so there is no need to travel.",
+      blocks: [
+        {
+          title: "How we work remotely",
+          paras: [
+            "We discuss the task in Telegram, Viber, WhatsApp or by email, and fix the price and timing after the brief. We show the design in Figma and open the finished site on a test link before launch, so you see the result at every stage.", // DRAFT: wording of the stages
+            "After launch we hand over all access and show you how to manage the site yourself.",
+          ],
+        },
+        {
+          title: "Cities we work with",
+          paras: [
+            `We work online with businesses from any city in Ukraine: ${CITIES.join(", ")} and others. Prices and timing are the same for every city.`, // DRAFT: same prices everywhere
+          ],
+        },
+        {
+          title: "The websites we build",
+          items: PLANS.map((p) => ({ title: p.name, text: `${p.for} From $${p.price.toLocaleString("en-US")}, from ${p.days} days.`, to: p.id })),
+        },
+      ],
+    },
+    faq: {
+      title: ["Questions about", "working online."] as [string, string],
+      items: [
+        { q: "Do you work with clients outside Lviv?", a: "Yes. The whole process is online: brief, design, development and launch, so we work with clients from all over Ukraine and there is no need to come to us." },
+        { q: "Does the price depend on the city?", a: "No. The price depends on the type of site, not the city: the starting prices are in the price list, and we fix the exact amount after the brief." }, // DRAFT
+        { q: "Do you build websites for clients abroad?", a: "Yes. The site can be in Ukrainian, English or several languages, and we work online in the same way." }, // DRAFT
+        { q: "Where are you based and how can I reach you?", a: "We are in Lviv, Ukraine. Write to us on Telegram @maxartdigital or at hello@maxartdigital.com and we will reply to your request." },
+      ],
+    },
+  },
+
   FAQ: {
     title: ["Frequently asked", "questions."],
     items: [

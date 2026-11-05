@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { SLUG } from "@/lib/services";
+import { GEO_SLUG, SLUG } from "@/lib/services";
 import { useContent, useLang } from "../Lang";
 import { CLARITY_ID, CONSENT_OPEN } from "../analytics/Consent";
 
 export function Footer() {
-  const { BRAND, FOOTER, NAV, UI, SERVICES } = useContent();
+  const { BRAND, FOOTER, NAV, UI, SERVICES, GEO } = useContent();
   const base = useLang() === "en" ? "/en/" : "/";
   return (
     <footer className="card relative w-full overflow-hidden rounded-none border-x-0 border-b-0 px-gutter pb-10 pt-16 text-center shadow-none">
@@ -41,6 +41,11 @@ export function Footer() {
               </Link>
             </li>
           ))}
+          <li>
+            <Link href={`${base}${GEO_SLUG}`} className="inline-block py-2 text-sm text-grey transition-colors hover:text-fg">
+              {GEO.link}
+            </Link>
+          </li>
         </ul>
       </nav>
 

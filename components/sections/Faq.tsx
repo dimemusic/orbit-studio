@@ -7,11 +7,12 @@ import { RevealWords } from "../ui/RevealWords";
 
 /**
  * Frequently asked questions (FAQ in the content files; numbers follow the price list). Shown on the home page and on
- * every service page; the same Q&A go into FAQPage JSON-LD (JsonLd.tsx), which is what search and AI answers quote.
+ * every service page (`faq` = another set, e.g. the «all Ukraine» page's own); the same Q&A go into FAQPage JSON-LD (JsonLd.tsx), which is what search and AI answers quote.
  * Centred, questions on hairlines, all closed at first (asked), blue accent word.
  */
-export function Faq({ id = "faq" }: { id?: string }) {
-  const { FAQ } = useContent();
+export function Faq({ id = "faq", faq }: { id?: string; faq?: { title: readonly string[]; items: readonly { q: string; a: string }[] } }) {
+  const ctx = useContent();
+  const FAQ = faq ?? ctx.FAQ;
   const [open, setOpen] = useState<Set<number>>(() => new Set()); // all closed (asked)
   const toggle = (i: number) =>
     setOpen((prev) => {

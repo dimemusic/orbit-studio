@@ -1,5 +1,5 @@
 import type { Lang, Plan } from "@/lib/content";
-import { SLUG } from "@/lib/services";
+import { GEO_SLUG, SLUG } from "@/lib/services";
 import { contentFor, SITE_URL } from "@/lib/i18n";
 
 /**
@@ -7,8 +7,11 @@ import { contentFor, SITE_URL } from "@/lib/i18n";
  * contacts, area and an offer catalogue built from the pricing plans, plus the WebSite in both languages.
  * Everything comes from lib/content*, so it always matches what the page shows.
  */
-export function JsonLd({ lang, plan }: { lang: Lang; plan?: Plan["id"] }) {
-  const { BRAND, META, SERVICES, FAQ } = contentFor(lang);
+export function JsonLd({ lang, plan, geo }: { lang: Lang; plan?: Plan["id"]; geo?: boolean }) {
+  const { BRAND, META, SERVICES, GEO, FAQ: SITE_FAQ } = contentFor(lang);
+  // the «all Ukraine» page quotes its own questions, every other page the site-wide ones
+  const FAQ = geo ? GEO.faq : SITE_FAQ;
+  const country = { "@type": "Country", name: lang === "en" ? "Ukraine" : "Україна" };
   const home = lang === "en" ? `${SITE_URL}/en` : `${SITE_URL}/`;
   const org = `${SITE_URL}/#studio`;
   const data = {
@@ -25,7 +28,15 @@ export function JsonLd({ lang, plan }: { lang: Lang; plan?: Plan["id"] }) {
         email: BRAND.email,
         sameAs: [BRAND.telegramUrl],
         address: { "@type": "PostalAddress", addressLocality: lang === "en" ? "Lviv" : "Львів", addressCountry: "UA" },
-        areaServed: [{ "@type": "Country", name: lang === "en" ? "Ukraine" : "Україна" }, "Worldwide"],
+        // the whole country plus each city we name on /website-development-ukraine (we work online with all of them)
+        areaServed: [country, ...GEO.cities.map((name) => ({ "@type": "City", name })), "Worldwide"],
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: lang === "en" ? "sales" : "відділ продажів",
+          email: BRAND.email,
+          availableLanguage: ["uk", "en"],
+          areaServed: "UA",
+        },
         knowsLanguage: ["uk", "en"],
         priceRange: `$${Math.min(...SERVICES.plans.map((p) => p.price))}+`,
         hasOfferCatalog: {
@@ -52,10 +63,28 @@ export function JsonLd({ lang, plan }: { lang: Lang; plan?: Plan["id"] }) {
         mainEntity: FAQ.items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
       },
       ...(plan ? servicePage(lang, plan, home, org) : []),
+      ...(geo ? geoPage(lang, home, org) : []),
     ],
   };
   // `<` escaped so the JSON can never close the script tag
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }} />;
+}
+
+/** the «all Ukraine» page: a WebPage about the studio's coverage + breadcrumbs Home › Services › this */
+function geoPage(lang: Lang, home: string, org: string) {
+  const { SERVICES, GEO } = contentFor(lang);
+  const url = `${lang === "en" ? `${SITE_URL}/en` : SITE_URL}/${GEO_SLUG}`;
+  return [
+    { "@type": "WebPage", "@id": `${url}#page`, url, name: GEO.page.title, description: GEO.page.description, inLanguage: lang, isPartOf: { "@id": `${home}#website` }, about: { "@id": org } },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: SERVICES.pages.home, item: home },
+        { "@type": "ListItem", position: 2, name: GEO.page.crumb, item: `${home}#services` },
+        { "@type": "ListItem", position: 3, name: GEO.link, item: url },
+      ],
+    },
+  ];
 }
 
 /** a service page: the Service itself (provider = the studio, price, area) + breadcrumbs Home › Services › this */

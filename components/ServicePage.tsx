@@ -10,6 +10,7 @@ import { CardFilmSection } from "./explain/CardFilm";
 import { Faq } from "./sections/Faq";
 import { FinalCta } from "./sections/FinalCta";
 import { G } from "./ui/Bits";
+import { GuideBlocks } from "./ui/GuideBlocks";
 import { Button } from "./ui/Button";
 
 /**
@@ -87,43 +88,7 @@ export function ServicePage({ id }: { id: Plan["id"] }) {
       {id === "card" && <CardFilmSection />}
 
       {/* what this type of site is, who it suits, what it gives */}
-      {guide && (
-        <div className="relative z-[1] flex w-full flex-col px-gutter pb-12 pt-24">
-          <div className="border-b border-white/[0.09]">
-            {guide.map((b, i) => (
-              <section key={b.title} aria-labelledby={`guide-${i}`} className="grid gap-x-8 gap-y-6 border-t border-white/[0.09] py-12 lg:grid-cols-2">
-                <h2 id={`guide-${i}`} data-reveal className="legible text-headline font-semibold text-fg">
-                  {b.title}
-                </h2>
-                <div data-reveal className="flex max-w-[44rem] flex-col gap-6">
-                  {b.paras?.map((t) => (
-                    <p key={t} className="legible text-lead text-body">
-                      {t}
-                    </p>
-                  ))}
-                  {b.items && (
-                    <ul className="flex flex-col gap-6">
-                      {b.items.map((t) => (
-                        <li key={t.title}>
-                          {t.to ? (
-                            <Link href={`${base}${SLUG[t.to]}`} className="legible inline-flex items-center gap-2 text-title font-medium text-fg transition-colors hover:text-blue">
-                              {t.title}
-                              <ArrowUpRight size={18} aria-hidden="true" />
-                            </Link>
-                          ) : (
-                            <p className="legible text-title font-medium text-fg">{t.title}</p>
-                          )}
-                          <p className="legible mt-1 text-base text-body">{t.text}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </section>
-            ))}
-          </div>
-        </div>
-      )}
+      {guide && <GuideBlocks blocks={guide} />}
 
       {/* how we work: the same four stages as the film on the home page */}
       <section aria-labelledby="process-title" className="relative flex w-full flex-col px-gutter pb-12 pt-24">

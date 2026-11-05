@@ -23,6 +23,7 @@ Copy `.env.example` to `.env.local` and fill what you need: Telegram bot (leads)
 | `components/HomePage.tsx` | the home page: Hero → Build → Work → Pricing → Faq → FinalCta |
 | `components/sections/*` | page sections: Hero, Build (process film), Work + Stack, Pricing, Faq, FinalCta (form), Footer |
 | `components/build/*` | parts of the home «Як ми працюємо» film |
+| `components/GeoPage.tsx` | the «website development across Ukraine» page (all cities, one real page) |
 | `components/ServicePage.tsx`, `components/explain/*` | service pages (/business-card-site …) and their explainer films |
 | `components/analytics/*`, `lib/track.ts` | Vercel Analytics events, Clarity behind the cookie banner |
 | `components/StarField.tsx`, `lib/stars.ts`, `lib/starShaders.ts` | WebGL star background |
@@ -30,6 +31,7 @@ Copy `.env.example` to `.env.local` and fill what you need: Telegram bot (leads)
 | `app/(uk)`, `app/(en)` | routes per language |
 | `app/api/contact/route.ts`, `app/api/tg-check/route.ts` | contact form → Telegram bot / email, Telegram nick check |
 | `lib/guard.ts`, `next.config.ts` | rate limits, origin checks, security headers |
+| `app/sitemap.ts`, `scripts/indexnow.mjs`, `public/*.txt` | sitemap (bump `LAST_UPDATED` with copy changes), IndexNow submit script + key |
 | `app/globals.css` | design tokens and global styles |
 
 Project conventions and design rules: `CLAUDE.md`.

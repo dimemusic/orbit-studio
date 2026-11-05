@@ -9,3 +9,6 @@ export const SLUG: Record<Plan["id"], string> = {
 };
 
 export const planBySlug = (slug: string) => (Object.keys(SLUG) as Plan["id"][]).find((id) => SLUG[id] === slug);
+
+/** the «website development across Ukraine» page (same slug in both languages: /website-development-ukraine and /en/…) */
+export const GEO_SLUG = "website-development-ukraine";
