@@ -215,8 +215,6 @@ export const en: Content = {
       process: "How we work",
       others: "Other services",
       about: "All about this service",
-      priceLabel: "Price",
-      termLabel: "Timeline",
       guides: {
         card: [
           {
@@ -251,6 +249,114 @@ export const en: Content = {
               { title: "Landing page", text: "You sell one product or service, or you are running ads.", to: "landing" },
               { title: "Online store", text: "You need a catalogue, a cart and online orders.", to: "shop" },
               { title: "Corporate website", text: "Your company has several lines of business, many pages or several languages.", to: "corp" },
+            ],
+          },
+        ],
+        landing: [
+          {
+            title: "What a landing page is",
+            paras: [
+              "A single page built for one goal: to get someone to leave a request, sign up or buy. Everything needed to decide comes in order: the offer, the benefits, examples, answers to doubts and the form.",
+              "Unlike a regular website, there are no dozen sections to get lost in. People simply scroll down and every block leads them to one action. That is why a landing page works well when you have a specific offer for specific people.",
+            ],
+          },
+          {
+            title: "Who it suits",
+            items: [
+              { title: "Anyone running ads", text: "People click an ad and land right on a page about that offer, not on the home page of a website." },
+              { title: "Anyone selling one product or service", text: "A course, an event, a new product, a single service: when it can all be explained on one page." },
+              { title: "New projects", text: "When you need to show an idea quickly and check whether there is demand, without building a big website." },
+              { title: "Businesses with a promotion or launch", text: "A seasonal offer, an opening, event sign-ups: a separate page that stays out of the way of your main website." },
+            ],
+          },
+          {
+            title: "What it is for",
+            items: [
+              { title: "To keep attention on one thing", text: "One page, one offer, one action. Nobody has to work out where to click next." },
+              { title: "To make ads pay off", text: "The page says the same thing as the ad, so people see exactly what they clicked on." },
+              { title: "To be remembered", text: "Custom design and scroll animations set you apart from similar offers." },
+              { title: "To see the results", text: "Analytics show how many people visited the page and how many left a request, so it is clear what works." },
+            ],
+          },
+          {
+            title: "When a landing page is not enough",
+            paras: ["A landing page is strong when there is one offer. If the job is wider, a different type is the better choice from day one."],
+            items: [
+              { title: "Business card site", text: "You simply need to tell people about yourself and a few services.", to: "card" },
+              { title: "Online store", text: "You have many products and need a catalogue, a cart and online orders.", to: "shop" },
+              { title: "Corporate website", text: "Your company has several lines of business, many pages or several languages.", to: "corp" },
+            ],
+          },
+        ],
+        shop: [
+          {
+            title: "What an online store is",
+            paras: [
+              "A website where people pick a product, put it in the cart and place an order on their own: no calls, no messages, no waiting for a reply.",
+              "It has two parts. Shoppers see the first: a catalogue with filters, product cards, a cart, payment and delivery. The second is for you: an admin panel where you add products and change prices yourself.",
+            ],
+          },
+          {
+            title: "Who it suits",
+            items: [
+              { title: "Anyone already selling on social media", text: "When orders are growing and taking them in messages is no longer convenient." },
+              { title: "Makers and brands", text: "When you want to sell your products directly, without middlemen." },
+              { title: "Physical shops", text: "When you already have a point of sale and want to sell online too." },
+              { title: "Anyone with a wide range", text: "When you have many products and people need filters to find theirs quickly." },
+            ],
+          },
+          {
+            title: "What it is for",
+            items: [
+              { title: "To sell at any hour", text: "People can order at night or on a day off, even when you are not around." },
+              { title: "To do less by hand", text: "People pick the product and place the order themselves, and all that is left for you is to fulfil it." },
+              { title: "To make products easy to find", text: "A catalogue with filters gets shoppers to the right product in a few clicks." },
+              { title: "To run it all yourself", text: "You add new products and prices in the admin panel, no developer needed." },
+            ],
+          },
+          {
+            title: "When you do not need a store",
+            paras: ["A store makes sense when people buy right on the website. If the job is different, another type is the better choice from day one."],
+            items: [
+              { title: "Landing page", text: "You have one product and it all fits on one page.", to: "landing" },
+              { title: "Business card site", text: "You sell services and take orders in person.", to: "card" },
+              { title: "Corporate website", text: "You need to present the company and its products, and sales go through managers.", to: "corp" },
+            ],
+          },
+        ],
+        corp: [
+          {
+            title: "What a corporate website is",
+            paras: [
+              "A full company website with many pages and sections: about the company, services or products, contacts. It shows the whole business, not a single offer.",
+              "The difference from a business card site is scale: each line of business has its own pages, the site can work in several languages, and your team manages the content through an admin panel.",
+            ],
+          },
+          {
+            title: "Who it suits",
+            items: [
+              { title: "Companies with several lines of business", text: "When each service or product deserves its own page." },
+              { title: "Manufacturers and B2B companies", text: "When partners need a product catalogue with detailed descriptions." },
+              { title: "Anyone working with other countries", text: "When the site has to work in several languages." },
+              { title: "Businesses that have outgrown their site", text: "When the old website no longer fits everything you do." },
+            ],
+          },
+          {
+            title: "What it is for",
+            items: [
+              { title: "To earn trust", text: "Clients and partners often check the website before they start working with you. It answers their questions before the first conversation." },
+              { title: "To help everyone find their part", text: "A client, partner or future employee gets to the right section quickly." },
+              { title: "To be found for different searches", text: "A separate page for each service or product gives you more chances to show up on Google." },
+              { title: "To keep the site from going stale", text: "Your team updates the content through the admin panel, no developer needed." },
+            ],
+          },
+          {
+            title: "When you do not need a corporate website",
+            paras: ["It makes sense when there is enough to organise into sections. If the job is narrower, another type is the better choice from day one."],
+            items: [
+              { title: "Business card site", text: "You offer a few services and a handful of pages is enough.", to: "card" },
+              { title: "Landing page", text: "You need a page for one product, service or ad campaign.", to: "landing" },
+              { title: "Online store", text: "The main goal is selling products online, with a cart and payment.", to: "shop" },
             ],
           },
         ],
@@ -351,6 +457,7 @@ export const en: Content = {
   GEO: {
     cities: CITIES,
     link: "Website development across Ukraine",
+    card: "We work online with businesses from any city.",
     page: {
       crumb: "Services",
       h1: ["Website development", "across Ukraine."],

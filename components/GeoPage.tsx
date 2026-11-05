@@ -4,15 +4,15 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { useContent, useLang } from "./Lang";
 import { Faq } from "./sections/Faq";
-import { FinalCta } from "./sections/FinalCta";
 import { G } from "./ui/Bits";
 import { Button } from "./ui/Button";
 import { GuideBlocks } from "./ui/GuideBlocks";
+import { OtherServices } from "./ui/OtherServices";
 
 /**
  * «Website development across Ukraine» (/website-development-ukraine, /en/…): the ONE page that answers searches from
  * every city (Nov 2026, asked). Real content, not a doorway: how we work remotely, the cities as one sentence, the four
- * services with prices, its own FAQ, the form. Copy: GEO in the content files. Same 80rem container as the service pages.
+ * services with prices, its own FAQ, links to the services (no form, asked: the button goes to the one on the home page). Copy: GEO in the content files. Same 80rem container as the service pages.
  */
 export function GeoPage() {
   const { GEO, CTA, UI, NAV, SERVICES } = useContent();
@@ -49,7 +49,7 @@ export function GeoPage() {
           {g.intro}
         </p>
         <div data-reveal data-in style={delay(2)} className="relative z-[1] mt-10 flex flex-wrap gap-3">
-          <Button href="#contact">{CTA.primary}</Button>
+          <Button href={CTA.primaryHref}>{CTA.primary}</Button>
           <Button href={NAV[1].href} variant="secondary">
             {CTA.work}
           </Button>
@@ -58,7 +58,7 @@ export function GeoPage() {
 
       <GuideBlocks blocks={g.blocks} />
       <Faq id="geo-faq" faq={GEO.faq} />
-      <FinalCta />
+      <OtherServices />
     </div>
   );
 }

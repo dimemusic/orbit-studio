@@ -57,12 +57,15 @@ export function JsonLd({ lang, plan, geo }: { lang: Lang; plan?: Plan["id"]; geo
         inLanguage: lang,
         publisher: { "@id": org },
       },
-      // the questions shown on the page (home and service pages): what search and AI answers quote
-      {
-        "@type": "FAQPage",
-        mainEntity: FAQ.items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
-      },
-      ...(plan ? servicePage(lang, plan, home, org) : []),
+      // the questions shown on the page (home, «all Ukraine»): service pages have no FAQ, and the schema must match what is visible
+      ...(plan
+        ? servicePage(lang, plan, home, org)
+        : [
+            {
+              "@type": "FAQPage",
+              mainEntity: FAQ.items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+            },
+          ]),
       ...(geo ? geoPage(lang, home, org) : []),
     ],
   };
