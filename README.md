@@ -12,18 +12,24 @@ npm run typecheck  # TypeScript
 npm run build      # production build (stop the dev server first)
 ```
 
-Copy `.env.example` to `.env.local` to make the contact form send email (Resend) and to set the public site URL.
+Copy `.env.example` to `.env.local` and fill what you need: Telegram bot (leads), Resend (email), site URL, Clarity id, Upstash (rate limits). Every push to `master` deploys to Vercel.
 
 ## Where things are
 
 | Path | What |
 |---|---|
+| `CLAUDE.md` | **start here**: context, rules and past decisions (read by Claude Code automatically) |
 | `lib/content.ts`, `lib/content.en.ts` | all site copy (uk / en, same shape) |
-| `components/sections/*` | page sections: Hero, Build (process film), Work, Pricing, FinalCta (form), Footer |
+| `components/HomePage.tsx` | the home page: Hero → Build → Work → Pricing → Faq → FinalCta |
+| `components/sections/*` | page sections: Hero, Build (process film), Work + Stack, Pricing, Faq, FinalCta (form), Footer |
+| `components/build/*` | parts of the home «Як ми працюємо» film |
+| `components/ServicePage.tsx`, `components/explain/*` | service pages (/business-card-site …) and their explainer films |
+| `components/analytics/*`, `lib/track.ts` | Vercel Analytics events, Clarity behind the cookie banner |
 | `components/StarField.tsx`, `lib/stars.ts`, `lib/starShaders.ts` | WebGL star background |
-| `components/Shell.tsx` | page frame shared by both language layouts |
+| `components/Shell.tsx` | page frame shared by both language layouts (head boot script, intro, nav, footer) |
 | `app/(uk)`, `app/(en)` | routes per language |
-| `app/api/contact/route.ts` | contact form endpoint |
+| `app/api/contact/route.ts`, `app/api/tg-check/route.ts` | contact form → Telegram bot / email, Telegram nick check |
+| `lib/guard.ts`, `next.config.ts` | rate limits, origin checks, security headers |
 | `app/globals.css` | design tokens and global styles |
 
 Project conventions and design rules: `CLAUDE.md`.
