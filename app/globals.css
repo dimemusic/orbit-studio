@@ -365,6 +365,18 @@ p {
   filter: none;
 }
 
+/* hero headline: one element rises out of a blur from the first frame, CSS only (it is the LCP: never split into words, never wait for JS / boot) */
+.hero-in {
+  animation: hero-in 0.9s var(--ease) backwards;
+}
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em);
+    filter: blur(12px);
+  }
+}
+
 /* soft fade for content that changes in place (quotes, prices) */
 @keyframes quote-in {
   from {

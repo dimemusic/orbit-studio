@@ -274,7 +274,7 @@ function ContactForm({ preset }: { preset?: number }) {
   const linkBtn = "inline-flex items-center gap-2 rounded-full py-2 text-sm font-medium text-body transition-colors hover:text-fg";
 
   return (
-    <div data-reveal style={{ ["--d" as string]: "160ms" }} className="w-full min-w-0 max-w-[40rem] xl:max-w-none">
+    <div data-reveal style={{ ["--d" as string]: "160ms" }} className="mx-auto w-full min-w-0 max-w-[40rem] xl:mx-0 xl:max-w-none">
       <div data-clarity-mask="True" className="card overflow-hidden text-left">
         {/* the card hugs whichever state is shown: the form, or the short thanks after sending (asked) */}
         <div className="grid p-6 sm:p-10 wide:p-12">
