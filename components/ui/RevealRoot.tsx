@@ -12,7 +12,8 @@ export function RevealRoot() {
   const pathname = usePathname();
   useEffect(() => {
     const show = (el: Element) => el.setAttribute("data-in", "");
-    const pending = () => Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]:not([data-in]):not([data-rv])"));
+    const seen = new WeakSet<Element>(); // per effect run, so the next page scans afresh
+    const pending = () => Array.from(document.querySelectorAll("[data-reveal]:not([data-in])")).filter((el) => !seen.has(el));
 
     if (!("IntersectionObserver" in window)) {
       document.querySelectorAll("[data-reveal]").forEach(show);
@@ -30,7 +31,7 @@ export function RevealRoot() {
     );
     const watch = () =>
       pending().forEach((el) => {
-        el.dataset.rv = "";
+        seen.add(el);
         io.observe(el);
       });
     watch();
@@ -41,8 +42,6 @@ export function RevealRoot() {
     return () => {
       io.disconnect();
       mo.disconnect();
-      // let the next page's scan observe anything still waiting
-      document.querySelectorAll<HTMLElement>("[data-reveal][data-rv]:not([data-in])").forEach((el) => delete el.dataset.rv);
     };
   }, [pathname]);
   return null;

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geologica } from "next/font/google";
+import { Suspense } from "react";
 import { Ambient } from "@/components/Ambient";
 import { Intro } from "@/components/Intro";
 import { LangProvider } from "@/components/Lang";
@@ -74,8 +75,12 @@ export function Shell({ lang, children }: { lang: Lang; children: React.ReactNod
           <div className="relative z-[2]">
             <Footer />
           </div>
-          <RevealRoot />
-          <ParallaxRoot />
+          {/* own boundary AFTER main: React hydrates boundaries in order, so these start once the sections are hydrated.
+              They write attributes on section elements, and doing that earlier is a hydration mismatch */}
+          <Suspense>
+            <RevealRoot />
+            <ParallaxRoot />
+          </Suspense>
           <CardFx />
           <ButtonFx />
           <Tracker />

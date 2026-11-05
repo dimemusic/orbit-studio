@@ -21,7 +21,7 @@ export function OtherServices({ current }: { current?: Plan["id"] }) {
   if (current) cards.push({ href: `${base}${GEO_SLUG}`, name: GEO.link, text: GEO.card });
 
   return (
-    <section aria-labelledby="others-title" className="relative flex w-full flex-col px-gutter pb-12 pt-24">
+    <section aria-labelledby="others-title" className="relative flex w-full flex-col px-gutter pb-40 pt-24 md:pb-60">
       <h2 id="others-title" className="legible relative z-[1] text-headline font-semibold text-fg">
         {SERVICES.pages.others}
       </h2>
