@@ -45,12 +45,29 @@ export function Consent() {
     if (!CLARITY_ID) return;
     const c = read();
     if (c === "yes") loadClarity(CLARITY_ID);
-    // wait for the intro / boot to finish before asking
-    const t = c === null ? window.setTimeout(() => setOpen(true), 3000) : 0;
+    // ask only once the intro / boot is over (3s) AND the visitor did something (scroll, touch, pointer, key):
+    // no banner sliding over a page nobody is looking at yet (it also kept the first screen «unfinished» for page-speed tests)
+    const evs = ["scroll", "wheel", "pointerdown", "pointermove", "touchstart", "keydown"] as const;
+    let ready = false;
+    let acted = false;
+    const tryOpen = () => {
+      if (ready && acted) setOpen(true);
+    };
+    const act = () => {
+      acted = true;
+      evs.forEach((e) => window.removeEventListener(e, act));
+      tryOpen();
+    };
+    const t = c === null ? window.setTimeout(() => {
+            ready = true;
+            tryOpen();
+          }, 3000) : 0;
+    if (c === null) evs.forEach((e) => window.addEventListener(e, act, { passive: true }));
     const again = () => setOpen(true);
     window.addEventListener(CONSENT_OPEN, again);
     return () => {
       window.clearTimeout(t);
+      evs.forEach((e) => window.removeEventListener(e, act));
       window.removeEventListener(CONSENT_OPEN, again);
     };
   }, []);
