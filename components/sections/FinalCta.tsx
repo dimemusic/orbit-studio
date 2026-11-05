@@ -62,15 +62,15 @@ export function FinalCta({ preset }: { preset?: number } = {}) {
     >
       <div className="relative z-[1] grid w-full min-w-0 items-center xl:gap-x-24 2xl:gap-x-32 gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,40rem)] wide:grid-cols-[minmax(0,38rem)_minmax(0,46rem)] wide:justify-center">
         {/* left: the invitation + direct contacts */}
-        <div data-parallax="0.06" className="min-w-0">
+        <div data-parallax="0.06" className="min-w-0 text-center xl:text-left">
           <h2 id="contact-title" className="legible text-mega font-semibold">
             <RevealWords text={CONTACT.title[0]} accent={CONTACT.title[1]} tone="teal" stack />
           </h2>
-          <p data-boot className="legible mt-6 max-w-[26rem] text-lead text-body">{CONTACT.lead}</p>
+          <p data-boot className="legible mx-auto mt-6 max-w-[26rem] text-lead text-body xl:mx-0">{CONTACT.lead}</p>
 
           <div data-reveal style={{ ["--d" as string]: "120ms" }} className="mt-12">
             <p className="text-sm text-grey">{CONTACT.or}</p>
-            <ul className="mt-4 flex flex-col gap-3">
+            <ul className="mt-4 flex flex-col items-center gap-3 xl:items-start">
               <li>
                 <a
                   href={BRAND.telegramUrl}
