@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { Lang } from "@/lib/content";
 import { contentFor } from "@/lib/i18n";
 import { tgUsername } from "@/lib/telegram";
+import { NO_STORE, clientIp, rateLimit, readJson, sameOrigin } from "@/lib/guard";
 
 // Contact form → Telegram bot and / or email. Set in .env.local / Vercel env (either channel is enough):
 //   TELEGRAM_BOT_TOKEN – token from @BotFather
@@ -63,7 +64,8 @@ async function toTelegram(lead: Lead, lang: Lang, token: string, chats: string[]
         let r = await send(chat_id, reply_markup);
         // a rejected button (bad link) must never lose the lead: send it again without the button
         if (!r.ok && reply_markup && r.status === 400) r = await send(chat_id, undefined);
-        if (!r.ok) console.error("[contact] Telegram error", chat_id, r.status, await r.text().catch(() => ""));
+        // logs keep no lead data and only the tail of the chat id
+        if (!r.ok) console.error("[contact] Telegram error", `…${chat_id.slice(-4)}`, r.status, (await r.text().catch(() => "")).slice(0, 300));
         return r.ok;
       } catch (e) {
         console.error("[contact] Telegram failed", e);
@@ -99,25 +101,48 @@ async function toEmail(lead: Lead, key: string, to: string) {
   return !!res?.ok;
 }
 
+const json = (data: unknown, status = 200, extra?: Record<string, string>) =>
+  NextResponse.json(data, { status, headers: { ...NO_STORE, ...extra } });
+
+// a real visitor sends one request, maybe a second after a typo; a script sends hundreds
+const LIMITS = [
+  { scope: "ip10m", limit: 5, windowSec: 600 },
+  { scope: "ipday", limit: 20, windowSec: 86400 },
+] as const;
+// all IPs together: a spread-out flood must not bury the Telegram chat or burn the Resend quota
+const GLOBAL = { limit: 100, windowSec: 3600 };
+
 export async function POST(req: Request) {
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad-json" }, { status: 400 });
+  // only pages of this site may post (another site cannot submit through its visitors' browsers)
+  if (!sameOrigin(req, { requireOrigin: true })) return json({ error: "forbidden" }, 403);
+
+  const ip = clientIp(req);
+  for (const l of LIMITS) {
+    const hit = await rateLimit(`contact:${l.scope}:${ip}`, l.limit, l.windowSec);
+    if (!hit.ok) return json({ error: "too-many" }, 429, { "Retry-After": String(hit.retryAfter) });
   }
+  const all = await rateLimit("contact:all", GLOBAL.limit, GLOBAL.windowSec);
+  if (!all.ok) {
+    console.warn("[contact] global limit reached: possible flood");
+    return json({ error: "too-many" }, 429, { "Retry-After": String(all.retryAfter) });
+  }
+
+  // the form sends ~2 KB at most; anything far bigger is not a visitor
+  const body = await readJson(req, 16_000);
+  if (body === "too-big") return json({ error: "too-big" }, 413);
+  if (!body) return json({ error: "bad-json" }, 400);
   // honeypot: a hidden field real visitors never fill; bots get a fake «ok» and nothing is sent
-  if (str(body.website, 200)) return NextResponse.json({ ok: true });
+  if (str(body.website, 200)) return json({ ok: true });
   const lang: Lang = body.lang === "en" ? "en" : "uk";
   const lead: Lead = {
     name: str(body.name, 120),
     contact: str(body.contact, 160),
     channel: str(body.channel, 30),
     message: str(body.message, 1500),
-    needs: Array.isArray(body.needs) ? body.needs.filter((n): n is string => typeof n === "string").slice(0, 6) : [],
+    needs: Array.isArray(body.needs) ? body.needs.slice(0, 6).map((n) => str(n, 80)).filter(Boolean) : [],
   };
   if (lead.name.length < 2 || lead.contact.length < 4 || lead.needs.length === 0) {
-    return NextResponse.json({ error: "invalid" }, { status: 422 });
+    return json({ error: "invalid" }, 422);
   }
 
   const tgToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -130,9 +155,9 @@ export async function POST(req: Request) {
   if (key && to) jobs.push(toEmail(lead, key, to));
   if (!jobs.length) {
     console.warn("[contact] no channel configured (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID or RESEND_API_KEY + CONTACT_TO), lead not sent");
-    return NextResponse.json({ error: "not-configured" }, { status: 503 });
+    return json({ error: "not-configured" }, 503);
   }
   const sent = await Promise.all(jobs);
-  if (!sent.some(Boolean)) return NextResponse.json({ error: "send-failed" }, { status: 502 });
-  return NextResponse.json({ ok: true });
+  if (!sent.some(Boolean)) return json({ error: "send-failed" }, 502);
+  return json({ ok: true });
 }

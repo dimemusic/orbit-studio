@@ -95,6 +95,13 @@ Spotlight / border light on interactive cards, fine pointers only. **Never set `
 - Intro: the first load of a tab session (sessionStorage `intro`) plays a CSS-only «MaxArt Digital» title card (`Intro.tsx`, `.intro-*`); `window.__introEnd` = 2000 makes the boot wait for it. Skipped under reduced motion.
 - Sharpness: the Build stage is scaled with `transform: scale(k)`; never leave a permanent `will-change`, `translate3d` or `filter` on settled elements inside it (Chrome freezes the raster at 1×).
 
+## Security (Nov 2026, asked: DDoS and client data)
+- Volumetric DDoS is Vercel's edge + Vercel Firewall (set in the dashboard). In code (`lib/guard.ts`): `rateLimit` (Upstash Redis REST when `UPSTASH_REDIS_REST_URL` / `_TOKEN` are set, else an in-memory counter per instance), `clientIp`, `sameOrigin`, `readJson` (size cap), `NO_STORE`.
+- `/api/contact`: same-origin only (Origin required), 5 per 10 min + 20 per day per IP, 100 per hour for all IPs together, body ≤ 16 KB, every field length-capped, 429 + Retry-After. The form already shows its «write to us in Telegram» fallback on any error. `/api/tg-check`: same-origin (Sec-Fetch-Site), 30 per minute per IP, answers `private` (no shared CDN cache that would skip the limit).
+- Logs never hold lead data (names, contacts, notes); Telegram errors log only the chat id's last 4 digits.
+- Security headers on every route in `next.config.ts` (HSTS, nosniff, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy, COOP, a CSP with only the non-breaking directives: frame-ancestors / base-uri / form-action / object-src / upgrade-insecure-requests), `poweredByHeader: false`. A script allow-list CSP needs nonces for Next's boot script, Vercel Analytics and Clarity first: do not add `script-src` without them.
+- No database: leads live only in the Telegram chat and the mailbox. Secrets only in Vercel env, never `NEXT_PUBLIC_`.
+
 ## Rules
 - Never invent numbers, prices, testimonials or facts: use `[PLACEHOLDERS]` / `// DRAFT`.
 - Responsive: check 320 / 375 / 768 / 1024 / 1440 / 1920, no horizontal scroll.
