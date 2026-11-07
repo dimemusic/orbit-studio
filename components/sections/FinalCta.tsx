@@ -361,7 +361,7 @@ function ContactForm({ preset }: { preset?: number }) {
                     size="nav"
                     variant={answers[step] !== null ? "primary" : "secondary"}
                     disabled={answers[step] === null}
-                    className={`ml-auto w-36 gap-2 ${answers[step] === null ? "cursor-not-allowed opacity-50" : ""}`}
+                    className={`w-full gap-2 sm:ml-auto sm:w-36 ${answers[step] === null ? "cursor-not-allowed opacity-50" : ""}`}
                   >
                     {Q.next}
                     <ArrowRight size={16} aria-hidden="true" />

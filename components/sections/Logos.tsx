@@ -33,8 +33,8 @@ function useCountUp(value: number, go: boolean) {
 function Stat({ stat, go }: { stat: Content["HERO"]["stats"][number]; go: boolean }) {
   const n = useCountUp(stat.value ?? 0, go);
   return (
-    <span className="flex items-baseline gap-2 whitespace-nowrap">
-      <span className="text-base font-semibold tracking-[-0.02em] text-fg tabular-nums">
+    <span className="flex flex-col items-start gap-1 sm:flex-row sm:items-baseline sm:gap-2 sm:whitespace-nowrap">
+      <span className="text-title font-semibold sm:text-base tracking-[-0.02em] text-fg tabular-nums">
         {stat.value === null ? stat.prefix : `${stat.prefix}${n}${stat.suffix}`}
       </span>
       <span className="text-sm text-grey">{stat.label}</span>
@@ -48,9 +48,9 @@ export function LogoStrip() {
   const go = useInView(ref, 0.5);
   const { HERO, UI } = useContent();
   return (
-    <ul ref={ref} aria-label={UI.why} className="mx-auto grid w-fit grid-cols-1 justify-items-center gap-x-10 gap-y-3 sm:grid-cols-2 sm:justify-items-start nav:flex nav:items-center nav:gap-x-0">
+    <ul ref={ref} aria-label={UI.why} className="grid w-full grid-cols-2 gap-x-6 gap-y-6 border-t border-white/[0.09] pt-6 text-left sm:mx-auto sm:w-fit sm:gap-x-10 sm:gap-y-3 sm:border-0 sm:pt-0 nav:flex nav:items-center nav:gap-x-0">
       {HERO.stats.map((s, i) => (
-        <li key={s.label} className="flex items-center">
+        <li key={s.label} className="flex items-start sm:items-center">
           {i > 0 && <span aria-hidden="true" className="mx-5 hidden size-1 rounded-full bg-white/20 nav:block" />}
           <Stat stat={s} go={go} />
         </li>

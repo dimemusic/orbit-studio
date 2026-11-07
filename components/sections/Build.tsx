@@ -82,7 +82,6 @@ export function Build() {
   /** seconds into the held final frame (0..HOLD): the finale runs on it */
   const hold = Math.min(HOLD, Math.max(0, time - INTRO - TOTAL));
   const cur = stageAt(t);
-  const st = BUILD.stages[cur];
   // the grid draws only on the first lap
   const gridH = lap ? 1 : ease(seg(time, 0, 0.7));
   const gridV = lap ? 1 : ease(seg(time, 0.15, 0.85));
@@ -154,15 +153,6 @@ export function Build() {
         <Stages t={t} fin={fin} hold={hold} />
       </StageBox>
 
-      {/* phones only: what this stage means for the client, fills the space under the stage */}
-      <div className="relative z-[1] mx-auto mb-10 mt-4 flex w-full max-w-[40rem] flex-col gap-5 px-gutter lg:hidden">
-        <p key={cur} className="build-note legible min-h-[4.5em] text-[16px] leading-relaxed text-body">
-          <span className="font-semibold tabular-nums" style={{ color: st.color }}>
-            0{cur + 1} / 0{BUILD.stages.length}
-          </span>{" "}
-          {st.note}
-        </p>
-      </div>
       </div>
     </section>
   );
