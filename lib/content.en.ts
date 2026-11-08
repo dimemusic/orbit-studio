@@ -202,6 +202,48 @@ export const en: Content = {
     includes: "What's included",
     hot: "Recommended",
     listLabel: "Plans",
+    headline: ["Our", "services."],
+    intro: "Design, development, admin panel and support. You can order them separately, but they work best together.",
+    gives: "What you get",
+    why: "Why us",
+    who: "Who it suits",
+    discuss: "Discuss a project",
+    vis: {
+      designer: "Designer", color: "Colour", font: "Font", gap: "Spacing", product: "Product · Cappuccino", price: "Price", stock: "In stock", save: "Save", coffee: "Cappuccino", saved: "Price updated on the site",
+      up: "Site is up", done: ["Updated dependencies", "Added a promo page", "Checked the speed"], tabs: ["About", "Services", "Projects", "Contacts"],
+      alt: { design: "A site mock-up comes together in Figma", dev: "Code is typed and the site comes alive", admin: "A price changes in the admin and on the site at once", support: "Site uptime chart and finished tasks", card: "A business card page with contact buttons", landing: "A landing page scrolls to the request button", shop: "A product flies into the cart", corp: "A corporate site switches sections" },
+    },
+    // DRAFT: keep in step with the Ukrainian copy
+    directions: [
+      {
+        id: "design", name: "Design", color: "#a78bfa", price: "from $250",
+        short: "A Figma mock-up of the site: structure, style and every screen before a single line of code.",
+        gives: ["You see the finished site before development and can approve or adjust it", "A structure that leads people to a request", "A mobile version designed on its own, not squeezed from desktop"],
+        why: ["Designer and developer in one team: the mock-up can be built exactly as drawn", "A style made for your business, no ready-made templates", "We show work in progress, not only the final"],
+        who: ["You only need a mock-up and already have a developer", "You want to refresh how your site looks", "You plan a launch and want to see it first"],
+      },
+      {
+        id: "dev", name: "Development", color: "#5aa2ff", price: "from $400",
+        short: "We turn the mock-up into a fast site that works well on phones and can be found on Google.",
+        gives: ["Fast loading even on mobile data", "Responsive on phones, tablets and desktops", "SEO basics: titles, descriptions, sitemap", "Form requests straight to Telegram or email"],
+        why: ["A modern stack without heavy site builders", "The site is yours: code, domain and access", "Checked on different screens before launch"],
+        who: ["You need a new turnkey site", "Your old site is slow or awkward on phones", "You have a design that needs to come alive"],
+      },
+      {
+        id: "admin", name: "Admin panel", color: "#2dd4bf", price: "from $200",
+        short: "Change prices, photos and texts yourself, without a developer and without code.",
+        gives: ["Edit prices, products, banners and texts yourself", "Changes go live right after you save", "We show you how to use it"],
+        why: ["Built for your site, not one size for all", "Only the fields you need", "Can be added to an existing site"],
+        who: ["Your prices and range change often", "You don't want to message a developer for every small thing", "Several people update the site"],
+      },
+      {
+        id: "support", name: "Support", color: "#fb7185", price: "from $50 / mo",
+        short: "After launch the site is not left alone: we update, fix and add new things.",
+        gives: ["Small edits and new blocks without separate deals", "We keep the site up and fast", "Updates and security under control"],
+        why: ["The same team that built the site supports it", "No need to find a new contractor for every small thing", "We reply within 24 hours"],
+        who: ["Your site changes often: offers, news, products", "There is no developer on your team", "You want to focus on your business"],
+      },
+    ],
     plans: PLANS,
     extrasLabel: "Separately",
     extras: [

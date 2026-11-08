@@ -894,3 +894,144 @@ html {
 }
 .consent-in { animation: consent-in 0.5s var(--ease) both; }
 @media (prefers-reduced-motion: reduce) { .consent-in { animation: none; } }
+
+/* ───────── «Наші послуги»: looping mini films (components/services/Visuals.tsx) ─────────
+   One loop = --L. Everything is paused until the stage is on screen ([data-play]); [data-still] (reduced motion)
+   drops the animations so the base styles, which are the finished frame, show. Pops use the site buttons'
+   spring (cubic-bezier(0.34,1.56,0.64,1)) plus a squash, so every piece lands like the liquid button. */
+.sv { --L: 6s; --spring: cubic-bezier(0.34, 1.56, 0.64, 1); }
+.sv * { animation-play-state: paused; }
+.sv[data-play] * { animation-play-state: running; }
+.sv[data-still] * { animation: none !important; }
+.sv .sv-panel,
+.sv .sv-browser,
+.sv .sv-product,
+.sv .sv-page { position: absolute; }
+.sv-panel {
+  padding: 14px;
+  border-radius: 14px;
+  background: linear-gradient(156deg, rgb(14 16 26 / 0.92), rgb(18 21 32 / 0.86));
+  border: 0.5px solid rgb(255 255 255 / 0.1);
+  box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9);
+  color: #c4cad4;
+  font-size: 13px;
+}
+.sv-panel::before { content: ""; position: absolute; left: 14px; right: 14px; top: 0; height: 2px; border-radius: 2px; background: var(--ac); opacity: 0.9; }
+.sv-lab { font-size: 11px; color: #8b919c; margin-bottom: 8px; }
+.sv-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; line-height: 2; }
+.sv-board { position: absolute; left: 24px; top: 24px; width: 300px; height: 272px; border-radius: 12px; background: #f3ede4; box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9); }
+.sv-b { position: absolute; }
+.sv-cup { border-radius: 50%; background: radial-gradient(circle, #6b3a1d 0 34%, #e9dccb 35% 55%, #efe6da 56%); }
+.sv-sw { display: block; width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgb(255 255 255 / 0.15); }
+/* a block drops in, squashes on landing and springs back; gone again at the end of the loop */
+@keyframes sv-drop {
+  0%, 6% { opacity: 0; transform: translateY(-18px) scale(1, 1.08); }
+  12% { opacity: 1; transform: translateY(0) scale(1.06, 0.9); }
+  16% { transform: translateY(0) scale(0.98, 1.03); }
+  20%, 90% { opacity: 1; transform: none; }
+  97%, 100% { opacity: 0; transform: none; }
+}
+.sv-drop { animation: sv-drop var(--L) var(--ease) calc(var(--i, 0) * 0.32s) infinite both; }
+/* selection frame blinks onto each block in turn */
+@keyframes sv-sel {
+  0%, 9% { opacity: 0; transform: scale(1.06); }
+  12%, 24% { opacity: 1; transform: scale(1); }
+  28%, 100% { opacity: 0; transform: scale(1); }
+}
+.sv-sel { position: absolute; border: 2px solid var(--ac); border-radius: 6px; opacity: 0; animation: sv-sel var(--L) var(--ease) calc(var(--i, 0) * 0.32s) infinite both; }
+.sv-cur { position: absolute; left: 0; top: 0; }
+.sv-cur span { position: absolute; left: 14px; top: 16px; padding: 2px 8px; border-radius: 6px; background: var(--ac); color: #05070d; font-size: 11px; font-weight: 600; white-space: nowrap; }
+@keyframes sv-cur-design {
+  0% { transform: translate(250px, 290px); }
+  18% { transform: translate(140px, 70px); }
+  36% { transform: translate(90px, 112px); }
+  54% { transform: translate(250px, 100px); }
+  72% { transform: translate(200px, 220px); }
+  100% { transform: translate(250px, 290px); }
+}
+.sv-cur-design { animation: sv-cur-design var(--L) cubic-bezier(0.65, 0, 0.35, 1) infinite both; }
+@keyframes sv-pop {
+  0%, 8% { opacity: 0; transform: scale(0.4); }
+  14% { opacity: 1; transform: scale(1.12, 0.92); }
+  19% { transform: scale(0.97, 1.03); }
+  24%, 92% { opacity: 1; transform: none; }
+  98%, 100% { opacity: 0; transform: scale(0.9); }
+}
+.sv-pop { animation: sv-pop var(--L) var(--spring) calc(var(--i, 0) * 0.32s) infinite both; }
+/* code lines type in (clip-path draw, no layout changes) */
+@keyframes sv-type {
+  0%, 6% { clip-path: inset(0 100% 0 0); }
+  18%, 92% { clip-path: inset(0 0 0 0); }
+  98%, 100% { clip-path: inset(0 100% 0 0); }
+}
+.sv-type { white-space: nowrap; animation: sv-type var(--L) steps(14, end) calc(var(--i, 0) * 0.55s) infinite both; }
+.sv-bar { height: 6px; border-radius: 99px; background: rgb(255 255 255 / 0.08); overflow: hidden; }
+@keyframes sv-fill { 0%, 10% { transform: scaleX(0); } 50%, 92% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+.sv-fill { display: block; height: 100%; background: #34d399; transform-origin: left; animation: sv-fill var(--L) var(--ease) infinite both; }
+.sv-browser { border-radius: 12px; overflow: hidden; box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9); }
+.sv-chrome { height: 20px; background: #14161d; display: flex; align-items: center; gap: 5px; padding: 0 8px; }
+.sv-chrome i { width: 6px; height: 6px; border-radius: 50%; background: #3a3d46; }
+@keyframes sv-real {
+  0%, 14% { opacity: 0; transform: scale(0.94); }
+  20% { opacity: 1; transform: scale(1.04, 0.96); }
+  25%, 92% { opacity: 1; transform: none; }
+  98%, 100% { opacity: 0; }
+}
+.sv-real { animation: sv-real var(--L) var(--ease) calc(var(--i, 0) * 0.55s + 0.4s) infinite both; }
+/* admin: field value rolls, toggle slides, button squashes, the product card takes the new price */
+.sv-field { height: 36px; border-radius: 9px; background: rgb(255 255 255 / 0.06); border: 0.5px solid rgb(255 255 255 / 0.1); display: flex; align-items: center; padding: 0 12px; color: #eef0f5; font-size: 14px; }
+.sv-roll { display: inline-flex; flex-direction: column; height: 1.4em; line-height: 1.4em; overflow: hidden; vertical-align: bottom; }
+.sv-roll span { display: block; animation: sv-roll var(--L) var(--spring) infinite both; }
+.sv-roll-late span { animation-delay: 0.9s; }
+@keyframes sv-roll { 0%, 22% { transform: translateY(0); } 30%, 90% { transform: translateY(-100%); } 96%, 100% { transform: translateY(0); } }
+.sv-toggle { width: 34px; height: 20px; border-radius: 99px; background: #3a3d46; position: relative; animation: sv-tg-bg var(--L) linear infinite both; }
+.sv-toggle i { position: absolute; left: 3px; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff; animation: sv-tg var(--L) var(--spring) infinite both; }
+@keyframes sv-tg { 0%, 34% { transform: none; } 42%, 92% { transform: translateX(14px); } 98%, 100% { transform: none; } }
+@keyframes sv-tg-bg { 0%, 36% { background: #3a3d46; } 40%, 94% { background: var(--ac); } 98%, 100% { background: #3a3d46; } }
+.sv-save { height: 38px; border-radius: 99px; background: #2a6fe8; color: #fff; display: grid; place-items: center; font-size: 14px; font-weight: 600; animation: sv-press var(--L) linear infinite both; }
+@keyframes sv-press {
+  0%, 48% { transform: none; background: #2a6fe8; }
+  50% { transform: scale(0.95, 0.88); }
+  53% { transform: scale(1.05, 1.08); background: #7c3aed; }
+  57% { transform: scale(0.99, 0.98); }
+  60%, 92% { transform: none; background: #7c3aed; }
+  100% { background: #2a6fe8; }
+}
+.sv-product { border-radius: 14px; background: #fffaf3; box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9); }
+.sv-ring { position: absolute; inset: -4px; border-radius: 18px; border: 2px solid var(--ac); opacity: 0; animation: sv-ring var(--L) var(--ease) infinite both; }
+@keyframes sv-ring { 0%, 52% { opacity: 0; transform: scale(0.96); } 56% { opacity: 1; transform: scale(1); } 75%, 100% { opacity: 0; transform: scale(1.04); } }
+.sv-toast { position: absolute; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 99px; background: #14161f; border: 0.5px solid rgb(255 255 255 / 0.12); color: #fff; font-size: 13px; font-weight: 500; white-space: nowrap; animation: sv-toast var(--L) var(--spring) infinite both; }
+@keyframes sv-toast { 0%, 58% { opacity: 0; transform: translateY(16px) scale(0.8); } 64% { opacity: 1; transform: translateY(0) scale(1.06, 0.94); } 68%, 90% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; } }
+.sv-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ac); }
+/* support: uptime line draws, checks pop one by one */
+.sv-draw { animation: sv-draw var(--L) var(--ease) infinite both; }
+@keyframes sv-draw { 0%, 4% { clip-path: inset(0 100% 0 0); } 45%, 92% { clip-path: inset(0 0 0 0); } 100% { clip-path: inset(0 100% 0 0); } }
+.sv-live { width: 8px; height: 8px; border-radius: 50%; background: #34d399; animation: sv-live 1.6s ease-in-out infinite both; }
+@keyframes sv-live { 50% { opacity: 0.35; } }
+.sv-check { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #05070d; background: var(--ac); animation: sv-check var(--L) var(--spring) calc(var(--i, 0) * 0.5s + 1.2s) infinite both; }
+@keyframes sv-check { 0%, 6% { transform: scale(0); } 12% { transform: scale(1.2, 0.85); } 16% { transform: scale(0.95, 1.05); } 20%, 88% { transform: none; } 96%, 100% { transform: scale(0); } }
+/* plans: light mini pages */
+.sv-page { border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9); }
+.sv-tap { position: absolute; left: 58px; top: 116px; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--ac); opacity: 0; animation: sv-tap var(--L) var(--ease) 1.4s infinite both; }
+@keyframes sv-tap { 0%, 40% { opacity: 0; transform: scale(0.4); } 46% { opacity: 1; } 60%, 100% { opacity: 0; transform: scale(1.4); } }
+.sv-scroll { padding: 12px; animation: sv-scroll var(--L) cubic-bezier(0.65, 0, 0.35, 1) infinite both; }
+@keyframes sv-scroll { 0%, 12% { transform: translateY(0); } 55%, 80% { transform: translateY(-140px); } 96%, 100% { transform: translateY(0); } }
+.sv-cta { animation: sv-cta var(--L) var(--spring) infinite both; }
+@keyframes sv-cta { 0%, 58% { transform: none; } 62% { transform: scale(0.94, 0.86); } 66% { transform: scale(1.04, 1.06); } 70%, 100% { transform: none; } }
+.sv-cart { position: relative; font-size: 15px; line-height: 1; }
+.sv-badge { position: absolute; right: -10px; top: -8px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 99px; background: var(--ac); color: #05070d; font-size: 10px; line-height: 16px; text-align: center; animation: sv-badge var(--L) var(--spring) infinite both; }
+.sv-badge .sv-roll { height: 16px; line-height: 16px; }
+.sv-roll-cart span { animation-delay: 0.4s; }
+@keyframes sv-badge { 0%, 34% { transform: none; } 38% { transform: scale(1.4, 0.8); } 42% { transform: scale(0.9, 1.15); } 46%, 100% { transform: none; } }
+.sv-fly { position: absolute; width: 60px; height: 40px; border-radius: 8px; background: var(--ac); opacity: 0; animation: sv-fly var(--L) cubic-bezier(0.5, 0, 0.75, 0) infinite both; }
+@keyframes sv-fly { 0%, 10% { opacity: 0; transform: none; } 14% { opacity: 0.9; transform: scale(1.06, 0.94); } 34% { opacity: 0.9; transform: translate(126px, -60px) scale(0.2); } 36%, 100% { opacity: 0; transform: translate(126px, -60px) scale(0.2); } }
+.sv-tab { position: absolute; left: 12px; bottom: -6px; width: 44px; height: 2px; border-radius: 2px; background: var(--ac); animation: sv-tab var(--L) var(--spring) infinite both; }
+@keyframes sv-tab { 0%, 20% { transform: translateX(0); } 25%, 45% { transform: translateX(60px) scaleX(1.1); } 50%, 70% { transform: translateX(120px); } 75%, 95% { transform: translateX(178px) scaleX(1.15); } 100% { transform: translateX(0); } }
+.sv-tabpage { opacity: 0; animation: sv-tabpage var(--L) var(--ease) calc(var(--i, 0) * 1.5s) infinite both; }
+.sv-tabpage.sv-first { opacity: 1; }
+@keyframes sv-tabpage { 0% { opacity: 0; transform: translateY(8px); } 4%, 22% { opacity: 1; transform: none; } 26%, 100% { opacity: 0; } }
+
+.sv-t11 { font-size: 11px; }
+.sv-t13 { font-size: 13px; }
+.sv-t14 { font-size: 14px; }
+.sv-t15 { font-size: 15px; }

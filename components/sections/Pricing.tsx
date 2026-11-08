@@ -13,8 +13,8 @@ import { Button } from "../ui/Button";
 import { RevealWords } from "../ui/RevealWords";
 
 const delay = (i: number) => ({ "--d": `${i * 80}ms` }) as CSSProperties;
-const ICON = { card: IdentificationCard, landing: Rocket, shop: ShoppingBag, corp: Buildings } as const;
-const COLOR: Record<Plan["id"], Accent> = { card: "cyan", landing: "violet", shop: "green", corp: "blue" };
+export const ICON = { card: IdentificationCard, landing: Rocket, shop: ShoppingBag, corp: Buildings } as const;
+export const COLOR: Record<Plan["id"], Accent> = { card: "cyan", landing: "violet", shop: "green", corp: "blue" };
 
 /**
  * Pricing by website type: one full screen (lg+). Title + one line on the right, then 4 plan rows on hairlines
@@ -116,7 +116,7 @@ export function Pricing() {
 }
 
 /** «Детальніше»: what the plan includes, price + term, and «Обговорити проєкт» with that website type picked in the form */
-function PlanDialog({ open, onClose, returnFocus }: { open: number | null; onClose: () => void; returnFocus: React.RefObject<HTMLElement | null> }) {
+export function PlanDialog({ open, onClose, returnFocus }: { open: number | null; onClose: () => void; returnFocus: React.RefObject<HTMLElement | null> }) {
   const { SERVICES, CONTACT, CTA, UI } = useContent();
   const lang = useLang();
   const dialog = useRef<HTMLDialogElement>(null);

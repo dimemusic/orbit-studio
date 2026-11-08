@@ -3,7 +3,7 @@ import { Build } from "@/components/sections/Build";
 import { Faq } from "@/components/sections/Faq";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { Hero } from "@/components/sections/Hero";
-import { Pricing } from "@/components/sections/Pricing";
+import { Services } from "@/components/sections/Services";
 import { Work } from "@/components/sections/Work";
 import { JsonLd } from "@/components/JsonLd";
 import type { Lang } from "@/lib/content";
@@ -27,7 +27,7 @@ export function HomePage({ lang }: { lang: Lang }) {
         <Work />
       </Suspense>
       <Suspense>
-        <Pricing />
+        <Services />
       </Suspense>
       <Suspense>
         <Faq />
