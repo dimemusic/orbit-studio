@@ -16,9 +16,7 @@ const fromPath = (): Lang => (/^\/en(\/|$)/.test(window.location.pathname) ? "en
 export function AutoLang({ children }: { children: ReactNode }) {
   const lang = useSyncExternalStore<Lang>(none, fromPath, () => "uk");
   useEffect(() => {
-    if (lang !== "en") return;
-    document.documentElement.lang = "en";
-    document.title = `${en.NOT_FOUND.meta} · MaxArt Digital`;
+    if (lang === "en") document.documentElement.lang = "en";
   }, [lang]);
   return (
     <LangProvider lang={lang} content={lang === "en" ? en : uk}>

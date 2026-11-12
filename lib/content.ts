@@ -759,7 +759,6 @@ export const CONSENT = {
 
 /** the 404 page (app/(uk)/not-found.tsx, app/(en)/not-found.tsx) */
 export const NOT_FOUND = {
-  meta: "Сторінку не знайдено",
   title: ["Такої сторінки", "немає."],
   lead: "Помилка 404: посилання застаріло або в адресі помилка. Усе найважливіше є на головній.",
   home: "На головну",

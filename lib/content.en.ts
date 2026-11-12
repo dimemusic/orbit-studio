@@ -712,7 +712,6 @@ export const en: Content = {
   },
 
   NOT_FOUND: {
-    meta: "Page not found",
     title: ["This page", "does not exist."],
     lead: "Error 404: the link is out of date or the address has a typo. Everything important is on the home page.",
     home: "Go to the home page",
