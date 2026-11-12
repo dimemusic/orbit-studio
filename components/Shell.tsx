@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geologica } from "next/font/google";
-import { Suspense } from "react";
+import { Suspense, type ComponentType, type ReactNode } from "react";
 import { Ambient } from "@/components/Ambient";
 import { Intro } from "@/components/Intro";
-import { LangProvider } from "@/components/Lang";
 import { Nav } from "@/components/Nav";
 import { Scene } from "@/components/Scene";
 import { Consent } from "@/components/analytics/Consent";
@@ -44,8 +43,12 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-/** the whole page frame (html, background, nav, footer); each language root layout renders it */
-export function Shell({ lang, children }: { lang: Lang; children: React.ReactNode }) {
+/**
+ * The whole page frame (html, background, nav, footer); each language root layout renders it.
+ * `Provider` = that language's copy for client components (components/lang/Uk.tsx or En.tsx): the layout passes it
+ * in, so the bundle of one language never contains the other one's copy.
+ */
+export function Shell({ lang, Provider, children }: { lang: Lang; Provider: ComponentType<{ children: ReactNode }>; children: ReactNode }) {
   return (
     <html lang={lang} className={geologica.variable} suppressHydrationWarning>
       {/* root layout <head> (App Router), not next/head: Shell is rendered by app/(uk|en)/layout.tsx */}
@@ -62,7 +65,7 @@ export function Shell({ lang, children }: { lang: Lang; children: React.ReactNod
         />
       </head>
       <body>
-        <LangProvider lang={lang}>
+        <Provider>
           <Intro />
           {/* fixed background layers (below everything) and the floating nav */}
           <Ambient />
@@ -87,7 +90,7 @@ export function Shell({ lang, children }: { lang: Lang; children: React.ReactNod
           <Consent />
           <Analytics />
           <SpeedInsights />
-        </LangProvider>
+        </Provider>
       </body>
     </html>
   );

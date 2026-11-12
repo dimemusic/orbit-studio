@@ -472,7 +472,7 @@ export function DesignScreen({ s, edits = NO_EDITS }: { s: number; edits?: Edits
         }}
       >
         <EnvelopeSimple size={16} className="text-[#7a7368]" />
-        <span className="flex-1 text-[13px] text-[#9a9287]">{D.email}</span>
+        <span className="flex-1 text-[13px] text-[#7a7268]">{D.email}</span>
         <span className="flex h-full items-center rounded-xl bg-[#1a1714] px-4 text-[12px] font-semibold text-[#f4f0e8]">
           {D.join}
         </span>

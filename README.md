@@ -20,6 +20,8 @@ Copy `.env.example` to `.env.local` and fill what you need: Telegram bot (leads)
 |---|---|
 | `CLAUDE.md` | **start here**: context, rules and past decisions (read by Claude Code automatically) |
 | `lib/content.ts`, `lib/content.en.ts` | all site copy (uk / en, same shape) |
+| `components/Lang.tsx`, `components/lang/*`, `lib/i18n.ts`, `lib/site.ts` | how copy reaches the page: one language per visitor on the client, both on the server; language-independent constants |
+| `app/global-not-found.tsx`, `components/NotFoundPage.tsx` | the 404 page |
 | `components/HomePage.tsx` | the home page: Hero → Build → Work → Pricing → Faq → FinalCta |
 | `components/sections/*` | page sections: Hero, Build (process film), Work + Stack, Pricing, Faq, FinalCta (form), Footer |
 | `components/build/*` | parts of the home «Як ми працюємо» film |

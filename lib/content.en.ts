@@ -14,7 +14,6 @@ const PLANS = [
 export const en: Content = {
   BRAND: {
     name: "MaxArt Digital",
-    wordmark: ["MaxArt", "Digital"],
     city: "Lviv",
     telegram: "@maxartdigital", // DRAFT
     telegramUrl: "https://t.me/maxartdigital", // DRAFT
@@ -67,15 +66,8 @@ export const en: Content = {
       ],
     },
     more: "Discuss a project",
-    next: {
-      name: "Your website could be here",
-      kind: "Let's talk about your project", // DRAFT
-      text: "Tell us your idea and we'll suggest a solution for your business.", // DRAFT
-      cta: "Discuss a project",
-    },
     open: "Project details",
     cta: "I want one like this",
-    view: "View project",
     visit: "Open the website",
     close: "Close",
     taskLabel: "Task",
@@ -86,17 +78,13 @@ export const en: Content = {
         name: "Maina by Rivka",
         kind: "Frozen food shop", // DRAFT
         type: "Online store",
-        did: ["UX and structure", "UI design", "Next.js development", "Sanity admin"], // DRAFT
         text: "An online store for frozen and ready meals with delivery across Ukraine. A catalogue with categories, ordering in a few clicks, and the owner updates products and prices herself in Sanity.", // DRAFT
         short: "A catalogue with categories, ordering in a few clicks, and the owner updates prices herself.",
         tags: ["Design", "Next.js", "Sanity"],
         media: "/cases/maina.webp",
-        shots: ["/cases/maina.webp"],
         full: { src: "/cases/maina-page.webp", w: 1440, h: 3874 },
         photo: "/cases/maina-mockup.webp",
         url: null,
-        status: "Live project",
-        result: "[RESULT]",
         color: "#4fe3c1",
         accent: "green",
         task: "The shop needed a website where customers browse and order, and the owner updates products herself without a developer.",
@@ -111,17 +99,13 @@ export const en: Content = {
         name: "Avtoban Trailers",
         kind: "Manufacturer website",
         type: "Corporate website",
-        did: ["UX structure", "UI design", "Product catalogue", "Request form"], // DRAFT
         text: "Website for a maker of sandwich panels, vans and trailers. We planned the structure and user flows, the product catalogue and a quote request form so clients find what they need fast.", // DRAFT
         short: "A product catalogue and a quote request form so clients quickly find what they need.",
         tags: ["UI/UX", "Design"],
         media: "/cases/avtoban-hero.webp",
-        shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
         full: { src: "/cases/avtoban-page.webp", w: 1440, h: 4646 },
         photo: "/cases/avtoban-mockup.webp",
         url: "https://avtoban-trailers.vercel.app/",
-        status: "UI/UX",
-        result: "[RESULT]",
         color: "#e5322d",
         accent: "cyan",
         task: "A clear website for a maker of sandwich panels and vans: products, services and a quick quote request.",
@@ -136,17 +120,13 @@ export const en: Content = {
         name: "BIGANSKIY",
         kind: "Architecture studio (concept)", // DRAFT
         type: "Portfolio website",
-        did: ["Art direction", "UI design", "Animations", "Development"], // DRAFT
         text: "Portfolio website for a studio of futuristic houses. Video on the first screen, a project gallery and animations that present every house as an event.", // DRAFT
         short: "Video on the first screen, a project gallery and animations that present every house as an event.",
         tags: ["Design", "Next.js"],
         media: "/cases/biganskiy.webp",
-        shots: ["/cases/biganskiy.webp"],
         full: { src: "/cases/biganskiy-page.webp", w: 1440, h: 7742 },
         photo: "/cases/biganskiy-mockup.webp",
         url: "https://biganskiy-site.vercel.app",
-        status: "Concept",
-        result: "[RESULT]",
         color: "#a78bfa",
         accent: "violet",
         task: "Present the studio's projects so the first screen says «wow» and makes people want to book a consultation.",
@@ -161,17 +141,13 @@ export const en: Content = {
         name: "Zdorovo!",
         kind: "Mobile app website", // DRAFT
         type: "Landing page",
-        did: ["UI design", "Responsive", "Development"], // DRAFT
         text: "Website for an app that scans a barcode and rates the product's ingredients at once. It explains how the score works, shows additives and allergens, and leads to the download.", // DRAFT
         short: "Barcode scanner with an ingredient score: how it works, additives, allergens and the download.",
         tags: ["Design", "Landing page"],
         media: "/cases/zdorovo.webp",
-        shots: ["/cases/zdorovo.webp"],
         full: { src: "/cases/zdorovo-page.webp", w: 1440, h: 6897 },
         photo: "/cases/zdorovo-mockup.webp",
         url: "https://zdorovo.app/",
-        status: "Live",
-        result: "[RESULT]",
         color: "#6a9a2f",
         accent: "green",
         task: "The app scans a barcode and shows in seconds how healthy a product is. The 0 to 100 score is based on Nutri-Score: it counts sugar, salt, saturated fat, calories, protein and fibre, and risky additives lower it separately. The app recognises the 14 regulated allergens, shows additives by risk level and suggests better alternatives from a base of over 100,000 products. The site had to explain all of this on one screen and bring people to the download.", // DRAFT: from the product's own page
@@ -197,7 +173,6 @@ export const en: Content = {
     pricePrefix: "from",
     currency: "$",
     term: "from",
-    choose: "Choose",
     more: "Details",
     includes: "What's included",
     hot: "Recommended",
@@ -446,7 +421,6 @@ export const en: Content = {
       change: "Change",
       estimate: "Rough price",
       perMonth: "/ mo",
-      note: "Starting price from our price list. The exact amount is fixed after the brief.",
       free: "Your notes",
       freePh: "For example: we have a logo and photos, need online booking",
       from: "from",
@@ -512,20 +486,13 @@ export const en: Content = {
     title: ["Got an idea?", "Let's talk."],
     lead: "We reply within 24 hours and suggest how to make it happen.",
     name: "Your name",
-    namePh: "How should we call you",
-    contact: "Telegram or email",
-    contactPh: "@username or name@mail.com",
-    message: "About the project",
-    messagePh: "For example: a café website with a menu and delivery",
-    needs: "What do you need?",
+    namePh: "What should we call you",
     consent: "By sending the request you agree to the",
     consentLink: "privacy policy",
     chips: ["Business card site", "Landing page", "Online store", "Corporate website", "Other"],
     submit: "Send",
-    availability: "Now booking projects for November", // DRAFT
     sending: "Sending…",
-    errName: "Tell us how to call you.",
-    errContact: "Enter your Telegram (@username) or email.",
+    errName: "Tell us what to call you.",
     channelLabel: "How do you prefer to talk?",
     channels: [
       { id: "telegram", label: "Telegram", field: "Your Telegram", ph: "@username or phone number", err: "Enter your @username (5 to 32 characters: Latin letters, digits, _) or phone number." },
@@ -533,7 +500,6 @@ export const en: Content = {
       { id: "whatsapp", label: "WhatsApp", field: "WhatsApp number", ph: "+380 67 123 45 67", err: "Enter a phone number, e.g. +380 67 123 45 67." },
       { id: "email", label: "Email", field: "Your email", ph: "name@mail.com", err: "Enter an email, e.g. name@mail.com." },
     ],
-    errNeeds: "Pick at least one option.",
     tgChecking: "Checking the Telegram username…",
     tgFound: "Telegram account found",
     tgMissing: "There is no such Telegram username. Check the spelling.",
@@ -658,7 +624,7 @@ export const en: Content = {
     crumb: "Privacy policy",
     title: "Privacy policy",
     lead: "We collect what you type into the request form, so we can reply, and anonymous statistics about how the site is used. Session recordings only with your consent. No ads, no selling of data.",
-    updated: "Updated November 4, 2026",
+    updated: "Updated 4 November 2026",
     sections: [
       {
         id: "who",
@@ -743,6 +709,13 @@ export const en: Content = {
         body: ["A new version of the policy will appear on this page with a new update date."],
       },
     ],
+  },
+
+  NOT_FOUND: {
+    meta: "Page not found",
+    title: ["This page", "does not exist."],
+    lead: "Error 404: the link is out of date or the address has a typo. Everything important is on the home page.",
+    home: "Go to the home page",
   },
 
   UI: {

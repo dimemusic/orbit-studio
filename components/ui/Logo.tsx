@@ -1,8 +1,8 @@
-import { BRAND } from "@/lib/content";
+import { WORDMARK } from "@/lib/site";
 
 /** Studio mark: two linked points + «MaxArt Digital» wordmark, second word dimmed. */
 export function Logo({ className = "" }: { className?: string }) {
-  const [main, rest] = BRAND.wordmark;
+  const [main, rest] = WORDMARK;
   return (
     <span className={`inline-flex items-center gap-2 ${className}`} translate="no">
       <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">

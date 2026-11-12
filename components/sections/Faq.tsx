@@ -6,8 +6,9 @@ import { useContent } from "../Lang";
 import { RevealWords } from "../ui/RevealWords";
 
 /**
- * Frequently asked questions (FAQ in the content files; numbers follow the price list). Shown on the home page and on
- * every service page (`faq` = another set, e.g. the «all Ukraine» page's own); the same Q&A go into FAQPage JSON-LD (JsonLd.tsx), which is what search and AI answers quote.
+ * Frequently asked questions (FAQ in the content files; numbers follow the price list). Shown on the home page and,
+ * with its own set (`faq`), on the «all Ukraine» page; not on the plan pages. The same Q&A go into FAQPage JSON-LD
+ * (JsonLd.tsx), which is what search and AI answers quote.
  * Centred, questions on hairlines, all closed at first (asked), blue accent word.
  */
 export function Faq({ id = "faq", faq }: { id?: string; faq?: { title: readonly string[]; items: readonly { q: string; a: string }[] } }) {

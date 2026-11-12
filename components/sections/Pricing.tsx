@@ -130,7 +130,10 @@ function PlanDialog({ open, onClose, returnFocus }: { open: number | null; onClo
     onClose();
     returnFocus.current?.focus({ preventScroll: true });
   };
-  const p = open !== null ? SERVICES.plans[open] : null;
+  // the window keeps its last plan while it closes (the closing animation needs something to show)
+  const [last, setLast] = useState(open);
+  if (open !== null && open !== last) setLast(open);
+  const p = last !== null ? SERVICES.plans[last] : null;
   const a = p ? ACCENT[COLOR[p.id]] : null;
   const Ic = p ? ICON[p.id] : null;
   return (
@@ -177,7 +180,7 @@ function PlanDialog({ open, onClose, returnFocus }: { open: number | null; onClo
               </li>
             ))}
           </ul>
-          {/* the plan's own page (SEO): more detail, process, FAQ */}
+          {/* the plan's own page (SEO): what it is, who it fits, how we work */}
           <Link
             href={`${lang === "en" ? "/en/" : "/"}${SLUG[p.id]}`}
             className="mt-6 inline-flex items-center gap-2 rounded-full py-1 text-sm font-medium text-blue transition-colors hover:text-fg"
@@ -189,7 +192,7 @@ function PlanDialog({ open, onClose, returnFocus }: { open: number | null; onClo
             href="#contact"
             className="mt-8 w-full"
             onClick={() => {
-              window.dispatchEvent(new CustomEvent(PACKAGE_PICK, { detail: [CONTACT.chips[open!]] }));
+              window.dispatchEvent(new CustomEvent(PACKAGE_PICK, { detail: [CONTACT.chips[last!]] }));
               onClose();
             }}
           >

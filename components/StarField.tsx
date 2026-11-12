@@ -154,8 +154,17 @@ export default function StarField() {
       });
       mo.observe(root, { attributes: true, attributeFilter: ["class"] });
     } else wait = window.setTimeout(start, 0);
+    // the browser gave the GPU context back (after a driver reset, or a phone that dropped it in the background):
+    // everything made on the old context is gone, so set the stars up again
+    const onRestored = () => {
+      dispose?.();
+      dispose = undefined;
+      start();
+    };
+    canvas.addEventListener("webglcontextrestored", onRestored);
     return () => {
       stopped = true;
+      canvas.removeEventListener("webglcontextrestored", onRestored);
       mo?.disconnect();
       clearTimeout(wait);
       cancelAnimationFrame(raf0);
@@ -331,7 +340,8 @@ export default function StarField() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
-    // a lost GPU context (driver reset, too many tabs) just stops the stars; the page stays usable
+    // a lost GPU context (driver reset, too many tabs) stops the stars and the page stays usable;
+    // preventDefault lets the browser hand the context back later (see `onRestored`)
     const onLost = (e: Event) => {
       e.preventDefault();
       cancelAnimationFrame(raf);
@@ -361,7 +371,7 @@ export default function StarField() {
       <div className="scene-fade h-full w-full" data-on={on || undefined}>
         <canvas ref={canvasRef} className="block h-full w-full" />
       </div>
-      {failed && <p className="fixed inset-x-4 bottom-20 text-center text-[13px] text-grey">{UI.noWebgl}</p>}
+      {failed && <p className="fixed inset-x-4 bottom-20 text-center text-sm text-grey">{UI.noWebgl}</p>}
     </div>
   );
 }

@@ -9,7 +9,7 @@ const LINK = /(https:\/\/[^\s)]+|[\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
 function linkify(text: string): ReactNode[] {
   return text.split(LINK).map((part, i) =>
     i % 2 ? (
-      <a key={i} href={part.startsWith("https") ? part : `mailto:${part}`} className="text-blue underline-offset-4 hover:underline" {...(part.startsWith("https") ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+      <a key={i} href={part.startsWith("https") ? part : `mailto:${part}`} className="text-blue underline decoration-blue/40 underline-offset-4 transition-colors hover:decoration-blue" {...(part.startsWith("https") ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
         {part.replace(/^https:\/\//, "")}
       </a>
     ) : (
@@ -18,11 +18,11 @@ function linkify(text: string): ReactNode[] {
   );
 }
 
-/** Privacy policy body: plain headings and paragraphs. */
+/** Privacy policy body: plain headings and paragraphs (no landmark of its own: the page hero above already names the page). */
 export function Policy() {
   const { PRIVACY } = useContent();
   return (
-    <section aria-label={PRIVACY.title} className="relative isolate w-full px-gutter pb-24 pt-12">
+    <div className="relative isolate w-full px-gutter pb-24 pt-12">
       {/* dark veil: solid behind the column, fading into the stars on every side (starts above the section, under the hero) */}
       <div aria-hidden="true" className="reading-veil absolute -top-48 -bottom-24 left-1/2 -z-10 w-[74rem] -translate-x-1/2" />
       <div data-boot className="legible mx-auto max-w-[42rem] text-base text-body">
@@ -38,6 +38,6 @@ export function Policy() {
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

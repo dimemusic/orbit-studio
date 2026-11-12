@@ -138,7 +138,8 @@ export async function POST(req: Request) {
     name: str(body.name, 120),
     contact: str(body.contact, 160),
     channel: str(body.channel, 30),
-    message: str(body.message, 1500),
+    // the free text is capped at 1200 in the form; the answer lines and the rough price come on top of that
+    message: str(body.message, 2000),
     needs: Array.isArray(body.needs) ? body.needs.slice(0, 6).map((n) => str(n, 80)).filter(Boolean) : [],
   };
   if (lead.name.length < 2 || lead.contact.length < 4 || lead.needs.length === 0) {

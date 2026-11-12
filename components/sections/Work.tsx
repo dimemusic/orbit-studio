@@ -12,10 +12,10 @@ import { RevealWords } from "../ui/RevealWords";
 import { Stack } from "./Stack";
 
 /**
- * Work: one full screen (lg+), header + 4 case cards in a row (2 on tablets, 1 on phones).
- * A card = browser-like frame with the site's full-page screenshot and a site-type pill, name, kind, a short
- * description, tags and a full-width «Переглянути» button (the whole card is the button).
- * Hover (fine pointers): the screenshot scrolls top → bottom inside the frame like a mini preview
+ * Work: header + 4 case cards in a row (2 on tablets, 1 on phones), then the tech stack.
+ * A card = a 16:10 frame edge to edge with the site's first screen, then name + kind with a round arrow, a short
+ * description and tags (the whole card is the button).
+ * Hover (fine pointers): the full-page screenshot scrolls top → bottom inside the frame like a mini preview
  * (speed follows the page length), and slides back on leave. Click opens the case window.
  * Cases without a full-page shot show their cover, no scroll. Reduced motion: no scroll.
  */
@@ -155,7 +155,10 @@ function CaseDialog({ open, onClose, returnFocus }: { open: number | null; onClo
     onClose();
     returnFocus.current?.focus({ preventScroll: true });
   };
-  const c = open !== null ? CASES[open] : null;
+  // the window keeps its last case while it closes (the closing animation needs something to show)
+  const [last, setLast] = useState(open);
+  if (open !== null && open !== last) setLast(open);
+  const c = last !== null ? CASES[last] : null;
   return (
     <dialog
       ref={dialog}

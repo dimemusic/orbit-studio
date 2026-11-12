@@ -1,7 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { HOME_SECTIONS } from "@/lib/content";
+import { HOME_IDS } from "./home";
 
 /**
  * Calm background below the hero: the page colour with two very soft, slowly drifting colour washes.
@@ -20,6 +21,8 @@ const TINTS: Record<string, [string, string]> = {
 };
 
 export function Ambient() {
+  // the layout (and this component) survives client navigation: look the sections up again on every page
+  const pathname = usePathname();
   useEffect(() => {
     const root = document.documentElement;
     const set = (id: string) => {
@@ -28,7 +31,7 @@ export function Ambient() {
       root.style.setProperty("--amb-b", t[1]);
     };
     set("top");
-    const els = HOME_SECTIONS.map((s) => document.getElementById(s.id)).filter((el): el is HTMLElement => !!el);
+    const els = HOME_IDS.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
     if (!els.length || !("IntersectionObserver" in window)) return;
     // the section crossing the middle of the screen owns the tint
     const io = new IntersectionObserver(
@@ -39,7 +42,7 @@ export function Ambient() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [pathname]);
 
   return (
     <div aria-hidden="true" className="ambient pointer-events-none fixed inset-0 z-0">

@@ -7,7 +7,6 @@ import type { Accent } from "@/components/ui/accent";
 
 export const BRAND = {
   name: "MaxArt Digital",
-  wordmark: ["MaxArt", "Digital"],
   city: "Львів",
   telegram: "@maxartdigital", // DRAFT
   telegramUrl: "https://t.me/maxartdigital", // DRAFT
@@ -62,22 +61,15 @@ export type Case = {
   text: string;
   /** one line for the card (the full text lives in the case window) */
   short: string;
-  /** four short items in the Work list row («що зробили») */
-  did: string[];
   tags: string[];
   /** cover screenshot (case window, light spill) */
   media: string;
-  /** screens the laptop cycles through while the case is active, sorted by name; one shot = slow vertical scroll */
-  shots: string[];
   /** full-page screenshot (720px wide) that scrolls inside the Work card on hover; null = static cover */
   full: { src: string; w: number; h: number } | null;
   /** photo of the finished site in a real setting (laptop mockup) for the case window; null = the old monitor mockup */
   photo: string | null;
   /** live project link, null when there is none (yet) */
   url: string | null;
-  status: string;
-  /** DRAFT: measurable result of the project */
-  result: string;
   color: string;
   accent: Accent;
   /** case window */
@@ -103,15 +95,8 @@ export const WORK = {
   /** link in the section header */
   more: "Обговорити проєкт",
   /** closing row of the list */
-  next: {
-    name: "Тут може бути ваш сайт",
-    kind: "Обговорімо ваш проєкт", // DRAFT
-    text: "Розкажіть про ідею, і ми запропонуємо рішення під ваш бізнес.", // DRAFT
-    cta: "Обговорити проєкт",
-  },
   open: "Деталі проєкту",
   cta: "Хочу схожий",
-  view: "Переглянути",
   visit: "Відкрити сайт",
   close: "Закрити",
   taskLabel: "Задача",
@@ -122,17 +107,13 @@ export const WORK = {
       name: "Maina by Rivka",
       kind: "Магазин напівфабрикатів", // DRAFT
       type: "Інтернет-магазин",
-      did: ["UX і структура", "UI-дизайн", "Розробка Next.js", "Адмін-панель Sanity"], // DRAFT
       text: "Інтернет-магазин напівфабрикатів і готової їжі з доставкою по Україні. Каталог із категоріями, замовлення в кілька кліків, а асортимент і ціни власниця оновлює сама в адмінці Sanity.", // DRAFT
       short: "Каталог із категоріями й замовлення в кілька кліків, а ціни власниця оновлює сама.",
       tags: ["Дизайн", "Next.js", "Sanity"],
       media: "/cases/maina.webp",
-      shots: ["/cases/maina.webp"],
       full: { src: "/cases/maina-page.webp", w: 1440, h: 3874 },
       photo: "/cases/maina-mockup.webp",
       url: null,
-      status: "Живий проєкт",
-      result: "[РЕЗУЛЬТАТ]",
       color: "#4fe3c1",
       accent: "green",
       // DRAFT: case texts
@@ -148,17 +129,13 @@ export const WORK = {
       name: "Автобан Трейлерз",
       kind: "Сайт виробника",
       type: "Корпоративний сайт",
-      did: ["UX-структура", "UI-дизайн", "Каталог продукції", "Форма запиту"], // DRAFT
       text: "Сайт виробника сендвіч-панелей, фургонів і причепів. Продумали структуру й сценарії, каталог продукції та форму запиту на розрахунок, щоб клієнт швидко знаходив потрібне.", // DRAFT
       short: "Каталог продукції та форма запиту на розрахунок, щоб клієнт швидко знаходив потрібне.",
       tags: ["UI/UX", "Дизайн"],
       media: "/cases/avtoban-hero.webp",
-      shots: ["/cases/avtoban.webp", "/cases/avtoban-2.webp", "/cases/avtoban-3.webp"],
       full: { src: "/cases/avtoban-page.webp", w: 1440, h: 4646 },
       photo: "/cases/avtoban-mockup.webp",
       url: "https://avtoban-trailers.vercel.app/",
-      status: "UI/UX",
-      result: "[РЕЗУЛЬТАТ]",
       color: "#e5322d",
       accent: "cyan",
       // DRAFT: case texts
@@ -174,17 +151,13 @@ export const WORK = {
       name: "BIGANSKIY",
       kind: "Архітектурне бюро (концепт)", // DRAFT
       type: "Сайт-портфоліо",
-      did: ["Арт-дирекшн", "UI-дизайн", "Анімації", "Розробка"], // DRAFT
       text: "Сайт-портфоліо архітектурного бюро футуристичних будинків. Відео на першому екрані, галерея проєктів і анімації, що подають кожен будинок як подію.", // DRAFT
       short: "Відео на першому екрані, галерея проєктів і анімації, що подають кожен будинок як подію.",
       tags: ["Дизайн", "Next.js"],
       media: "/cases/biganskiy.webp",
-      shots: ["/cases/biganskiy.webp"],
       full: { src: "/cases/biganskiy-page.webp", w: 1440, h: 7742 },
       photo: "/cases/biganskiy-mockup.webp",
       url: "https://biganskiy-site.vercel.app",
-      status: "Концепт",
-      result: "[РЕЗУЛЬТАТ]",
       color: "#a78bfa",
       accent: "violet",
       // DRAFT: case texts
@@ -200,17 +173,13 @@ export const WORK = {
       name: "Здорово!",
       kind: "Сайт мобільного застосунку", // DRAFT
       type: "Лендинг",
-      did: ["UI-дизайн", "Адаптив", "Розробка"], // DRAFT
       text: "Сайт застосунку, що сканує штрих-код і одразу оцінює склад продукту. Пояснили, як працює оцінка, показали добавки й алергени та привели до завантаження.", // DRAFT
       short: "Сканер штрих-кодів з оцінкою складу: як це працює, добавки, алергени й завантаження.",
       tags: ["Дизайн", "Лендинг"],
       media: "/cases/zdorovo.webp",
-      shots: ["/cases/zdorovo.webp"],
       full: { src: "/cases/zdorovo-page.webp", w: 1440, h: 6897 },
       photo: "/cases/zdorovo-mockup.webp",
       url: "https://zdorovo.app/",
-      status: "Запущено",
-      result: "[РЕЗУЛЬТАТ]",
       color: "#6a9a2f",
       accent: "green",
       // DRAFT: case texts
@@ -292,7 +261,6 @@ export const SERVICES = {
   pricePrefix: "від",
   currency: "$",
   term: "від",
-  choose: "Обрати",
   more: "Детальніше",
   includes: "Що входить",
   hot: "Рекомендуємо",
@@ -552,7 +520,6 @@ export const SERVICES = {
     change: "Змінити",
     estimate: "Орієнтовно",
     perMonth: "/ міс",
-    note: "Стартова ціна за нашим прайсом. Точну суму фіксуємо після брифу.",
     free: "Ваші примітки",
     freePh: "Наприклад: є логотип і фото, потрібен запис онлайн",
     from: "від",
@@ -646,20 +613,13 @@ export const CONTACT = {
   lead: "Відповімо протягом 24 годин і запропонуємо, як це зробити.",
   name: "Ваше ім'я",
   namePh: "Як до вас звертатись",
-  contact: "Telegram або email",
-  contactPh: "@нік або name@mail.com",
-  message: "Коротко про проєкт",
-  messagePh: "Наприклад: сайт для кав'ярні з меню й доставкою",
-  needs: "Що потрібно?",
   consent: "Надсилаючи заявку, ви погоджуєтесь з",
   consentLink: "політикою конфіденційності",
   /** [i] = SERVICES.plans[i], then «Інше» */
   chips: ["Сайт-візитівка", "Лендинг", "Інтернет-магазин", "Корпоративний сайт", "Інше"],
   submit: "Надіслати",
-  availability: "Зараз приймаємо проєкти на листопад", // DRAFT
   sending: "Надсилаємо…",
   errName: "Вкажіть, як до вас звертатись.",
-  errContact: "Вкажіть Telegram (@нік) або email.",
   /** «Де зручніше зв'язатися?»: the one contact field below follows the chosen channel */
   channelLabel: "Де вам зручніше спілкуватися?",
   channels: [
@@ -668,7 +628,6 @@ export const CONTACT = {
     { id: "whatsapp", label: "WhatsApp", field: "Номер у WhatsApp", ph: "+380 67 123 45 67", err: "Вкажіть номер телефону, наприклад +380 67 123 45 67." },
     { id: "email", label: "Email", field: "Ваш email", ph: "name@mail.com", err: "Вкажіть email, наприклад name@mail.com." },
   ],
-  errNeeds: "Оберіть хоча б один варіант.",
   tgChecking: "Перевіряємо нік у Telegram…",
   tgFound: "Акаунт у Telegram знайдено",
   tgMissing: "Такого ніка в Telegram немає. Перевірте написання.",
@@ -798,6 +757,14 @@ export const CONSENT = {
   more: "Докладніше",
 };
 
+/** the 404 page (app/(uk)/not-found.tsx, app/(en)/not-found.tsx) */
+export const NOT_FOUND = {
+  meta: "Сторінку не знайдено",
+  title: ["Такої сторінки", "немає."],
+  lead: "Помилка 404: посилання застаріло або в адресі помилка. Усе найважливіше є на головній.",
+  home: "На головну",
+};
+
 /** small interface strings (aria labels, menu, plural rules) */
 export const UI = {
   skip: "Перейти до змісту",
@@ -913,16 +880,7 @@ export const PRIVACY = {
   ] as { id: string; title: string; body: string[] }[],
 };
 
-/** Home page story: order shared by section headers, the ambient background and the bottom section indicator. */
-export const HOME_SECTIONS = [
-  { id: "top", label: "Головна" },
-  { id: "process", label: BUILD.label },
-  { id: "work", label: WORK.label },
-  { id: "services", label: SERVICES.label },
-  { id: "contact", label: CONTACT.label },
-] as const;
-
 /** everything the live pages read, per language */
-export const uk = { BRAND, META, CTA, NAV, HERO, WORK, SERVICES, GEO, FAQ, CONTACT, BUILD, FOOTER, CONSENT, PRIVACY, UI };
+export const uk = { BRAND, META, CTA, NAV, HERO, WORK, SERVICES, GEO, FAQ, CONTACT, BUILD, FOOTER, CONSENT, PRIVACY, NOT_FOUND, UI };
 export type Content = typeof uk;
 export type Lang = "uk" | "en";

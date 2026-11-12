@@ -9,7 +9,7 @@ import { GEO_SLUG, SLUG } from "@/lib/services";
  * Indexable pages in both languages, linked to each other (hreflang). The privacy pages hold placeholder text (noindex)
  * and join the sitemap once the real policy is in.
  */
-export const LAST_UPDATED = "2026-11-05";
+export const LAST_UPDATED = "2026-11-11";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date(LAST_UPDATED);

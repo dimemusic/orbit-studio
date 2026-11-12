@@ -1,5 +1,5 @@
 import { G } from "@/components/ui/Bits";
-import { BRAND } from "@/lib/content";
+import { WORDMARK } from "@/lib/site";
 
 /**
  * Opening title: «MaxArt Digital» on the page colour, first visit of a tab session only.
@@ -8,7 +8,7 @@ import { BRAND } from "@/lib/content";
  * Hidden without JS, on repeat loads and under reduced motion. Timings in globals.css («intro»).
  */
 export function Intro() {
-  const [a, b] = BRAND.wordmark;
+  const [a, b] = WORDMARK;
   return (
     <div className="intro-screen" aria-hidden="true">
       <div className="intro-word text-mega font-semibold leading-none tracking-[-0.04em] text-fg">

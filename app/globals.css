@@ -204,9 +204,10 @@ p {
       transform 0.6s var(--ease),
       --spot 0.45s var(--ease);
   }
-  /* navbar: a touch lighter */
+  /* navbar: the same glass with a denser body. Section titles (bright, up to 104px) scroll right under it and
+     showed through the links and the open phone menu as a coloured smear */
   .card-nav {
-    background: linear-gradient(156deg, rgb(0 0 0 / 0.42) 5.7%, rgb(13 16 24 / 0.34) 99.6%);
+    background: linear-gradient(156deg, rgb(4 5 9 / 0.74) 5.7%, rgb(11 14 21 / 0.68) 99.6%);
   }
   /* Pro plan: same card, thin blue → cyan gradient border, no glow */
   .card-pro {
@@ -283,21 +284,25 @@ p {
     color: #fff;
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25);
   }
-  .btn-primary:hover {
-    background-color: #7c3aed;
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.3),
-      0 0 32px rgba(167, 139, 250, 0.45);
+  /* hover states only where a pointer can hover: on a touch screen :hover sticks to the button after a tap
+     (the form's «Надіслати» stayed violet) */
+  @media (hover: hover) {
+    .btn-primary:hover {
+      background-color: #7c3aed;
+      box-shadow:
+        inset 0 1px 0 rgb(255 255 255 / 0.3),
+        0 0 32px rgba(167, 139, 250, 0.45);
+    }
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
   }
   /* secondary: transparent + hairline, never grey-filled */
   .btn-secondary {
     background-color: transparent;
     color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.18);
-  }
-  .btn-secondary:hover {
-    background-color: rgba(255, 255, 255, 0.07);
-    border-color: rgba(255, 255, 255, 0.4);
   }
   .btn-secondary[aria-pressed="true"] {
     border-color: rgba(255, 255, 255, 0.45);
@@ -369,9 +374,12 @@ p {
 .hero-in {
   animation: hero-in 0.9s var(--ease) backwards;
 }
+/* starts at 0.01, not 0: Chrome skips text painted at opacity 0 when it looks for the LCP, and this animation runs
+   on the compositor (no repaint), so when the first paint fell on frame 0 the headline was only counted once the
+   animation ended (LCP 1.3s instead of 0.3s in about a third of throttled loads) */
 @keyframes hero-in {
   from {
-    opacity: 0;
+    opacity: 0.01;
     transform: translateY(0.3em);
     filter: blur(12px);
   }
@@ -516,6 +524,41 @@ html {
 .case-dialog[open]::backdrop {
   animation: fade-in 0.4s ease both;
 }
+/* the page behind an open window stays put (the wheel used to scroll it); the gutter keeps the layout from
+   jumping sideways on systems with a classic scrollbar */
+html {
+  scrollbar-gutter: stable;
+}
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+/* closing: the panel sinks a little and fades with the backdrop instead of vanishing. Needs a browser that can keep
+   a closing dialog in the top layer (`overlay`); the others close at once, as before. The fade is on the panel
+   itself for 0.2s, never on an ancestor (that would switch its glass off) */
+@supports (overlay: auto) {
+  .case-dialog,
+  .case-dialog::backdrop {
+    transition:
+      display 0.2s allow-discrete,
+      overlay 0.2s allow-discrete,
+      opacity 0.2s ease;
+  }
+  .case-dialog .case-panel {
+    transition:
+      transform 0.2s cubic-bezier(0.4, 0, 1, 1),
+      opacity 0.2s ease;
+  }
+  .case-dialog:not([open]) {
+    pointer-events: none;
+  }
+  .case-dialog:not([open]) .case-panel {
+    transform: translateY(16px) scale(0.985);
+    opacity: 0;
+  }
+  .case-dialog:not([open])::backdrop {
+    opacity: 0;
+  }
+}
 @keyframes case-in {
   from {
     transform: translateY(24px) scale(0.98);
@@ -534,6 +577,11 @@ html {
   .case-dialog[open] .case-panel,
   .case-dialog[open]::backdrop {
     animation: none;
+  }
+  .case-dialog,
+  .case-dialog::backdrop,
+  .case-dialog .case-panel {
+    transition: none;
   }
 }
 

@@ -43,16 +43,15 @@ function Err({ id, children }: { id: string; children?: string }) {
   );
 }
 
-
 /**
  * Last screen: request form. Left: stacked title, one line, direct contacts. Right: the form in one .card, built as
  * a short step-by-step request (asked, Nov 2026: the price quiz became the form): type of site → admin panel →
- * support → launch → «Ваш запит» (summary with a rough price, free text, name + contact, send). Any step can be
- * changed; «Пропустити» jumps straight to writing in your own words. Two columns from xl, stacked below.
- * Sends to /api/contact (Resend); without the env keys the route answers 503 and the form points to Telegram / email.
+ * support → launch → «Ваш запит» (the answers, free text, name + contact, send). The rough price is not shown, it
+ * only goes into the message. Any step can be changed; «Пропустити» jumps straight to writing in your own words.
+ * Two columns from xl, stacked below. Sends to /api/contact (Telegram bot and / or Resend); without the env keys the
+ * route answers 503 and the form points to Telegram / email.
  */
-/** `preset` = plan index: on a service page the form opens with that type already picked, on the second question */
-export function FinalCta({ preset }: { preset?: number } = {}) {
+export function FinalCta() {
   const { BRAND, CONTACT } = useContent();
   return (
     <section
@@ -98,7 +97,7 @@ export function FinalCta({ preset }: { preset?: number } = {}) {
         </div>
 
         {/* right: the form */}
-        <ContactForm preset={preset} />
+        <ContactForm />
       </div>
     </section>
   );
@@ -106,16 +105,16 @@ export function FinalCta({ preset }: { preset?: number } = {}) {
 
 const CHANNEL_ICON = { telegram: TelegramLogo, viber: ChatCircleDots, whatsapp: WhatsappLogo, email: EnvelopeSimple } as const;
 
-function ContactForm({ preset }: { preset?: number }) {
+function ContactForm() {
   const { BRAND, CONTACT, SERVICES, UI } = useContent();
   const lang = useLang();
   const Q = SERVICES.quiz;
   const plans = SERVICES.plans;
   const uid = useId();
   const N = Q.questions.length; // answer steps; the last screen is N
-  const [step, setStep] = useState(preset === undefined ? 0 : 1);
+  const [step, setStep] = useState(0);
   // answers[i] = option index (step 0: plan index, plans.length = «Інше»)
-  const [answers, setAnswers] = useState<(number | null)[]>(() => Array.from({ length: N }, (_, i) => (i === 0 && preset !== undefined ? preset : null)));
+  const [answers, setAnswers] = useState<(number | null)[]>(() => Array(N).fill(null));
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [channelId, setChannelId] = useState("telegram");
@@ -384,13 +383,17 @@ function ContactForm({ preset }: { preset?: number }) {
                         <div key={q.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-3 text-sm sm:grid-cols-[7rem_minmax(0,1fr)_auto]">
                           <dt className="text-grey">{q.short}</dt>
                           <dd className="col-start-1 text-fg sm:col-start-2 sm:row-start-1">{answer(i)}</dd>
-                          <button
-                            type="button"
-                            onClick={() => go(i)}
-                            className="col-start-2 row-start-1 justify-self-end rounded-full text-sm font-medium text-blue transition-colors hover:text-fg sm:col-start-3"
-                          >
-                            {Q.change}
-                          </button>
+                          {/* a second <dd>: a list row may hold only terms and descriptions; the label says which answer it changes */}
+                          <dd className="col-start-2 row-start-1 justify-self-end sm:col-start-3">
+                            <button
+                              type="button"
+                              onClick={() => go(i)}
+                              aria-label={`${Q.change}: ${q.short}`}
+                              className="rounded-full text-sm font-medium text-blue transition-colors hover:text-fg"
+                            >
+                              {Q.change}
+                            </button>
+                          </dd>
                         </div>
                       ),
                     )}

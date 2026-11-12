@@ -8,7 +8,7 @@ import { useContent } from "../Lang";
  * «Стек технологій» under the cases (asked, Nov 2026, from a reference with grouped logo rows): a title,
  * then one row per group on hairlines: group name left, logo tiles (mark + name) right. Marks are the full-colour
  * original logos (public/stack/<id>.svg, from devicon; asked: like the real logos, static, no hover). Black marks
- * (GitHub, Resend) are recoloured white so they read on the dark page. Only tools the studio really uses (WORK.stack, DRAFT).
+ * (Next.js, Sanity) are recoloured white so they read on the dark page. Only tools the studio really uses (WORK.stack, DRAFT).
  */
 export function Stack() {
   const { WORK } = useContent();

@@ -6,6 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "MaxArt Digital",
     short_name: "MaxArt",
     description: "Розробка сайтів під ключ: дизайн, розробка й адмін-панель.",
+    lang: "uk",
     start_url: "/",
     display: "standalone",
     background_color: "#05070d",

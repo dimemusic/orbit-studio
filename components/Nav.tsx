@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { Button } from "./ui/Button";
 import { Logo } from "./ui/Logo";
-import { otherPath } from "@/lib/i18n";
+import { otherPath } from "@/lib/site";
 import { useContent, useLang } from "./Lang";
 
 /** page links are active on their own route; home anchors never are */
