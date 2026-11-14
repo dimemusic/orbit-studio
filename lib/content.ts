@@ -42,13 +42,14 @@ export const HERO = {
   /** line 1 · plain start of line 2 · gradient end of line 2 */
   title: ["Сайти під\u00a0ключ", "для", "вашого бізнесу."],
   lead: "Дизайн, розробка й адмін-панель в одних руках. Ви отримуєте сайт, який редагуєте самі.",
-  /** count-up parts: prefix · value (animated) · suffix. `value: null` = static text in `prefix`. */
+  /** count-up parts: prefix · value (animated) · suffix. `value: null` = static text in `prefix`.
+   *  `short` = one-word label for the phone row of three; `null` = not shown on phones */
   stats: [
-    { prefix: "", value: 2, suffix: " тижні", label: "мінімальний термін запуску" },
-    { prefix: "3 в 1", value: null, suffix: "", label: "дизайн + код + CMS" },
-    { prefix: "", value: 24, suffix: " год", label: "відповідь на заявку" },
-    { prefix: "", value: 90, suffix: "+", label: "PageSpeed на мобільних" },
-  ] as { prefix: string; value: number | null; suffix: string; label: string }[],
+    { prefix: "", value: 2, suffix: " тижні", label: "мінімальний термін запуску", short: "запуск" },
+    { prefix: "3 в 1", value: null, suffix: "", label: "дизайн + код + CMS", short: null },
+    { prefix: "", value: 24, suffix: " год", label: "відповідь на заявку", short: "відповідь" },
+    { prefix: "", value: 90, suffix: "+", label: "PageSpeed на мобільних", short: "PageSpeed" },
+  ] as { prefix: string; value: number | null; suffix: string; label: string; short: string | null }[],
 };
 
 export type Case = {

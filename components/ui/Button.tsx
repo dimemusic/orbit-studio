@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "text";
-type Size = "lg" | "nav";
+type Size = "lg" | "nav" | "hero";
 
 const base =
   "inline-flex items-center justify-center whitespace-nowrap rounded-full font-semibold tracking-[-0.01em]";
@@ -18,8 +18,10 @@ const variants: Record<Variant, string> = {
 const sizes: Record<Size, string> = {
   lg: "h-16 px-6 text-base",
   nav: "h-12 px-4 text-sm",
+  /** hero: 56 tall on phones (one compact button, asked Nov 2026), the usual 64 from sm */
+  hero: "h-14 px-6 text-base sm:h-16",
 };
-const widths: Record<Size, string> = { lg: "w-64", nav: "w-48" };
+const widths: Record<Size, string> = { lg: "w-64", nav: "w-48", hero: "w-64" };
 
 type Common = { variant?: Variant; size?: Size; children: ReactNode; className?: string };
 type AsLink = Common & { href: string } & Omit<ComponentPropsWithoutRef<"a">, "className" | "children">;

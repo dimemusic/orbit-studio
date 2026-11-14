@@ -33,24 +33,34 @@ function useCountUp(value: number, go: boolean) {
 function Stat({ stat, go }: { stat: Content["HERO"]["stats"][number]; go: boolean }) {
   const n = useCountUp(stat.value ?? 0, go);
   return (
-    <span className="flex flex-col items-start gap-1 sm:flex-row sm:items-baseline sm:gap-2 sm:whitespace-nowrap">
+    <span className="flex flex-col items-center gap-1 sm:flex-row sm:items-baseline sm:gap-2 sm:whitespace-nowrap">
       <span className="text-title font-semibold sm:text-base tracking-[-0.02em] text-fg tabular-nums">
         {stat.value === null ? stat.prefix : `${stat.prefix}${n}${stat.suffix}`}
       </span>
-      <span className="text-sm text-grey">{stat.label}</span>
+      {/* phones: the one-word label (row of three); from sm: the full label */}
+      <span className="text-sm text-grey sm:hidden">{stat.short}</span>
+      <span className="hidden text-sm text-grey sm:inline">{stat.label}</span>
     </span>
   );
 }
 
-/** Quiet line under the hero promise: no box, just value + label pairs separated by dots. */
+/**
+ * Quiet line under the hero promise: no box, just value + label pairs separated by dots.
+ * Phones: the facts with a `short` label in one row of three, split by hairlines, under a hairline.
+ */
 export function LogoStrip() {
   const ref = useRef<HTMLUListElement>(null);
   const go = useInView(ref, 0.5);
   const { HERO, UI } = useContent();
   return (
-    <ul ref={ref} aria-label={UI.why} className="grid w-full grid-cols-2 gap-x-6 gap-y-6 border-t border-white/[0.09] pt-6 text-left sm:mx-auto sm:w-fit sm:gap-x-10 sm:gap-y-3 sm:border-0 sm:pt-0 nav:flex nav:items-center nav:gap-x-0">
+    <ul ref={ref} aria-label={UI.why} className="grid w-full grid-cols-3 border-t border-white/[0.09] pt-5 text-center sm:mx-auto sm:w-fit sm:grid-cols-2 sm:gap-x-10 sm:gap-y-3 sm:border-0 sm:pt-0 nav:flex nav:items-center nav:gap-x-0">
       {HERO.stats.map((s, i) => (
-        <li key={s.label} className="flex items-start sm:items-center">
+        <li
+          key={s.label}
+          className={`items-center justify-center sm:flex sm:justify-start ${s.short === null ? "hidden" : "flex"} ${
+            HERO.stats.slice(0, i).some((p) => p.short !== null) && s.short !== null ? "border-l border-white/[0.09] sm:border-0" : ""
+          }`}
+        >
           {i > 0 && <span aria-hidden="true" className="mx-5 hidden size-1 rounded-full bg-white/20 nav:block" />}
           <Stat stat={s} go={go} />
         </li>

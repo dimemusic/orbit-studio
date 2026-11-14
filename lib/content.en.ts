@@ -46,10 +46,10 @@ export const en: Content = {
     title: ["Turnkey websites", "for", "your business."],
     lead: "Design, development and an admin panel from one team. You get a website you can edit yourself.",
     stats: [
-      { prefix: "", value: 2, suffix: " weeks", label: "fastest launch" },
-      { prefix: "3 in 1", value: null, suffix: "", label: "design + code + CMS" },
-      { prefix: "", value: 24, suffix: " h", label: "reply to your request" },
-      { prefix: "", value: 90, suffix: "+", label: "PageSpeed on mobile" },
+      { prefix: "", value: 2, suffix: " weeks", label: "fastest launch", short: "launch" },
+      { prefix: "3 in 1", value: null, suffix: "", label: "design + code + CMS", short: null },
+      { prefix: "", value: 24, suffix: " h", label: "reply to your request", short: "reply" },
+      { prefix: "", value: 90, suffix: "+", label: "PageSpeed on mobile", short: "PageSpeed" },
     ],
   },
 
