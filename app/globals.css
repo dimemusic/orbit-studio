@@ -319,8 +319,8 @@ p {
    Text only, static (no animation, no blur filter): never on borders or as free glow blobs (banned) */
 .hero-glow {
   text-shadow:
-    0 0 16px rgb(167 139 250 / 0.42),
-    0 0 44px rgb(167 139 250 / 0.22),
+    0 0 12px rgb(167 139 250 / 0.26),
+    0 0 32px rgb(167 139 250 / 0.12),
     0 1px 24px rgb(5 7 13 / 0.85);
 }
 
