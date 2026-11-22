@@ -315,6 +315,15 @@ p {
   text-shadow: 0 1px 24px rgb(5 7 13 / 0.85);
 }
 
+/* hero accent words (asked, Nov 2026): a light glow in their own violet, on top of the dark .legible halo.
+   Text only, static (no animation, no blur filter): never on borders or as free glow blobs (banned) */
+.hero-glow {
+  text-shadow:
+    0 0 16px rgb(167 139 250 / 0.42),
+    0 0 44px rgb(167 139 250 / 0.22),
+    0 1px 24px rgb(5 7 13 / 0.85);
+}
+
 /* dark reading veil behind long text (privacy, asked): page colour, feathered on all four sides into the stars.
    Its own static layer, mask only (no filter); never put it on a .card. */
 .reading-veil {

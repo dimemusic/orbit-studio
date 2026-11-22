@@ -25,7 +25,7 @@ export function Hero() {
           <h1 id="hero-title" className="hero-in legible text-mega font-semibold">
             {first}
             <br />
-            {second} <G tone="violet">{last}</G>
+            {second} <span className="hero-glow"><G tone="violet">{last}</G></span>
           </h1>
           <p data-reveal data-in style={{ ["--d" as string]: "80ms" }} className="legible mt-5 max-w-[40rem] text-lead text-body sm:mt-8">
             {HERO.lead}
