@@ -19,7 +19,7 @@ const COLOR: Record<Plan["id"], Accent> = { card: "cyan", landing: "violet", sho
 /**
  * Pricing by website type: one full screen (lg+). Title + one line on the right, then 4 plan rows on hairlines
  * (icon, name + who it's for, «від $N» + term, «Детальніше» → PlanDialog with what is included and «Обговорити проєкт», which picks that type in the form).
- * The recommended plan gets a blue stripe, a faint tint, a badge and the primary button. Under the list: one line of extras.
+ * All rows look the same; the recommended plan only gets its badge (asked, Nov 2026). Under the list: one line of extras.
  */
 export function Pricing() {
   const { SERVICES, UI } = useContent();
@@ -48,12 +48,8 @@ export function Pricing() {
             <li key={p.id} data-reveal style={delay(i)} className="min-w-0 border-t border-white/[0.09] last:border-b">
               <article
                 aria-labelledby={`plan-${p.id}`}
-                className={`relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-6 pl-4 pr-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-6 md:px-5 ${
-                  p.hot ? "bg-linear-to-r from-white/[0.035] via-white/[0.015] to-transparent" : ""
-                }`}
+                className="relative grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4 py-6 pl-4 pr-4 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-x-6 md:px-5"
               >
-                {/* recommended: a stripe in the plan colour */}
-                {p.hot && <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[2px] bg-blue" />}
                 <span className={`grid size-11 place-items-center self-start rounded-xl md:self-center ${a.tint} ${a.text}`}>
                   <Ic size={22} weight="light" aria-hidden="true" />
                 </span>
@@ -83,7 +79,7 @@ export function Pricing() {
                   </p>
                   <Button
                     size="nav"
-                    variant={p.hot ? "primary" : "secondary"}
+                    variant="secondary"
                     aria-haspopup="dialog"
                     onClick={(e) => {
                       opener.current = e.currentTarget;
